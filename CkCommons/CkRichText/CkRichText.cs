@@ -3,6 +3,8 @@ using CkCommons.Helpers;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CkCommons.RichText;
 
@@ -58,6 +60,8 @@ public static partial class CkRichText
     public static void Text(ImFontPtr fontPtr, float wrapWidth, string text, int cloneId = 0)
     {
         RichTextKey key = new RichTextKey(cloneId, text);
+        _accessedKeys.Add(key); // Mark as accessed
+
         // If not cached, construct a new cache along with its internal payloads, and store it.
         if (!_cache.TryGetValue(key, out RichTextString? richString))
         {
@@ -66,5 +70,45 @@ public static partial class CkRichText
         }
         // Render the thingy.
         richString.Render(fontPtr, wrapWidth);
+    }
+
+    // Monitored Cleanup service.
+    private static readonly HashSet<RichTextKey> _accessedKeys = new();
+    private static CancellationTokenSource? _cleanupCts;
+    private static Task? _cleanupTask;
+
+
+    internal static void Init()
+    {
+        if (_cleanupCts != null)
+            return; // Already running
+        // Set the token and begin the task.
+        _cleanupCts = new CancellationTokenSource();
+        _cleanupTask = CleanupLoop(_cleanupCts.Token);
+    }
+
+    // Still figuring out how to make a desisive choice on this cleanup cache period.
+    internal static async Task CleanupLoop(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromMinutes(5), token).ConfigureAwait(false);
+            var accessed = _accessedKeys.ToHashSet();
+            foreach (var key in _cache.Keys)
+            {
+                if (!accessed.Contains(key))
+                    _cache.TryRemove(key, out _);
+            }
+        }
+    }
+
+    internal static void Dispose()
+    {
+        _cleanupCts?.Cancel();
+        _cleanupTask?.Wait();
+        _cleanupTask = null;
+        _cleanupCts?.Dispose();
+        _cache.Clear();
+        _accessedKeys.Clear();
     }
 }

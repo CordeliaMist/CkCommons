@@ -1,3 +1,4 @@
+using CkCommons.RichText;
 using CkCommons.Services;
 using CkCommons.Textures;
 using Dalamud.Plugin;
@@ -27,6 +28,8 @@ public static class CkCommonsHost
         Instance = instance;
         Svc.Init(pluginInterface);
 
+        CkRichText.Init();
+
         Svc.Log.MinimumLogLevel = LogEventLevel.Debug;
         Svc.Log.Information($"This is ECommons v{typeof(CkCommonsHost).Assembly.GetName().Version} " +
             $"and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}.");
@@ -50,5 +53,6 @@ public static class CkCommonsHost
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
         CoreTextureManager.Dispose();
+        CkRichText.Dispose();
     }
 }

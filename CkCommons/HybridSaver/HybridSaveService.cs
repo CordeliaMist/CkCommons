@@ -9,21 +9,15 @@ namespace CkCommons.HybridSaver;
 /// <summary> The Base Class for the hybrid save service, not wrapped. </summary>
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class HybridSaveServiceBase<T> where T : IConfigFileProvider
+public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
 {
-    private readonly ILogger _logger;
-    private readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
-    private readonly SemaphoreSlim _saveLock = new(1, 1);
-    private readonly CancellationTokenSource _cts = new();
+    private static readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
+    private static readonly SemaphoreSlim _saveLock = new(1, 1);
+    private static readonly CancellationTokenSource _cts = new();
 
-    public readonly T FileNames;
-    public HybridSaveServiceBase(ILogger logger, T fileNameStructure)
-    {
-        _logger = logger;
-        FileNames = fileNameStructure;
-    }
+    public static readonly T FileNames = default(T)!;
 
-    protected void StartChecking()
+    internal static void Init(T fileNameStructure)
     {
         _ = Task.Run(async () =>
         {
@@ -40,13 +34,13 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Error while checking dirty configs.");
+                    Svc.Log.Error(ex, "Error while checking dirty configs.");
                 }
             }
         }, _cts.Token);
     }
 
-    protected async Task StopCheckingAsync()
+    internal static async Task Dispose()
     {
         // wait for the save lock to finish, then cancel the cts and exit.
         await _saveLock.WaitAsync().ConfigureAwait(false);
@@ -54,7 +48,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         _cts.Dispose();
     }
 
-    public void Save(IHybridConfig<T> config)
+    public static void Save(IHybridConfig<T> config)
     {
         _saveLock.Wait();
         _dirtyConfigs.Add(config);
@@ -62,7 +56,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         _saveLock.Release();
     }
 
-    private async Task CheckDirtyConfigs()
+    private static async Task CheckDirtyConfigs()
     {
         if (_dirtyConfigs.Count == 0)
             return;
@@ -79,13 +73,13 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             SaveConfigAsync(config);
     }
 
-    private void SaveConfigAsync(IHybridConfig<T> config)
+    private static void SaveConfigAsync(IHybridConfig<T> config)
     {
-        _logger.Verbose($"Saving {config.GetType().Name}.");
+        Svc.Log.Verbose($"Saving {config.GetType().Name}.");
         var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
         if (uniquePerAccount && !FileNames.HasValidProfileConfigs)
         {
-            _logger.Warning($"UID is null for {configPath}. Not saving.");
+            Svc.Log.Warning($"UID is null for {configPath}. Not saving.");
             return;
         }
         // define a temporary filepath.
@@ -117,7 +111,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
         catch (Exception ex)
         {
-            _logger.Error($"Failed to save {configPath}: {ex}");
+            Svc.Log.Error($"Failed to save {configPath}: {ex}");
         }
     }
 }
