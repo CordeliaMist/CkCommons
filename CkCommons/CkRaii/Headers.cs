@@ -1,8 +1,8 @@
+using CkCommons.Gui;
+using CkCommons.Services;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
-using GagSpeak.Services;
 using ImGuiNET;
 
 namespace CkCommons.Raii;
@@ -28,27 +28,27 @@ public static partial class CkRaii
     {
         ImGui.BeginGroup();
 
-        var wdl = ImGui.GetWindowDrawList();
-        var min = ImGui.GetCursorScreenPos();
-        var lineH = 2 * ImGuiHelpers.GlobalScale;
-        var headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
-        var max = min + headerSize;
-        var linePos = min + new Vector2(0, ImGui.GetFrameHeight());
+        ImDrawListPtr wdl = ImGui.GetWindowDrawList();
+        Vector2 min = ImGui.GetCursorScreenPos();
+        float lineH = 2 * ImGuiHelpers.GlobalScale;
+        Vector2 headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
+        Vector2 max = min + headerSize;
+        Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
         // Draw the header.
         wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, colors.SplitColor, lineH);
-        var textStart = HeaderTextOffset(size.X, ImGui.GetFrameHeight(), ImGui.CalcTextSize(text).X, flags);
+        Vector2 textStart = HeaderTextOffset(size.X, ImGui.GetFrameHeight(), ImGui.CalcTextSize(text).X, flags);
         wdl.AddText(min + textStart, ImGui.GetColorU32(ImGuiCol.Text), text);
 
         // Adjust the cursor.
         ImGui.SetCursorScreenPos(min + new Vector2(0, headerSize.Y));
         // Correctly retrieve the height.
-        var height = size.Y;
+        float height = size.Y;
         if ((flags & HeaderFlags.SizeIncludesHeader) != 0) height -= headerSize.Y;
         if ((flags & HeaderFlags.AddPaddingToHeight) != 0) height += ImGui.GetStyle().WindowPadding.Y * 2;
 
-        var innerSize = new Vector2(size.X, height);
+        Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
         return new EndObjectContainer(
@@ -82,24 +82,24 @@ public static partial class CkRaii
     {
         ImGui.BeginGroup();
 
-        var wdl = ImGui.GetWindowDrawList();
-        var min = ImGui.GetCursorScreenPos();
-        var lineH = 2 * ImGuiHelpers.GlobalScale;
-        var headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
-        var max = min + headerSize;
-        var linePos = min + new Vector2(0, ImGui.GetFrameHeight());
+        ImDrawListPtr wdl = ImGui.GetWindowDrawList();
+        Vector2 min = ImGui.GetCursorScreenPos();
+        float lineH = 2 * ImGuiHelpers.GlobalScale;
+        Vector2 headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
+        Vector2 max = min + headerSize;
+        Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
         wdl.AddRectFilled(min, max, CkColor.ElementHeader.Uint(), rounding, ImDrawFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, CkColor.ElementSplit.Uint(), lineH);
 
         // Text & Icon Alignment
-        var textWidth = ImGui.CalcTextSize(text).X;
-        var textStart = min + HeaderTextOffset(size.X, ImGui.GetFrameHeight(), textWidth, flags);
-        var hoverSize = new Vector2((size.X - textWidth) / 2, ImGui.GetFrameHeight());
+        float textWidth = ImGui.CalcTextSize(text).X;
+        Vector2 textStart = min + HeaderTextOffset(size.X, ImGui.GetFrameHeight(), textWidth, flags);
+        Vector2 hoverSize = new Vector2((size.X - textWidth) / 2, ImGui.GetFrameHeight());
 
         // Text & Icon Drawing.
-        var isHovered = ImGui.IsMouseHoveringRect(textStart, textStart + hoverSize);
-        var col = isHovered ? ImGui.GetColorU32(ImGuiCol.ButtonHovered) : ImGui.GetColorU32(ImGuiCol.Text);
+        bool isHovered = ImGui.IsMouseHoveringRect(textStart, textStart + hoverSize);
+        uint col = isHovered ? ImGui.GetColorU32(ImGuiCol.ButtonHovered) : ImGui.GetColorU32(ImGuiCol.Text);
         ImGui.GetWindowDrawList().AddText(textStart, col, text);
 
         // Action Handling.
@@ -113,8 +113,8 @@ public static partial class CkRaii
         // Adjust the cursor.
         ImGui.SetCursorScreenPos(min + new Vector2(0, headerSize.Y));
         // Correctly retrieve the height.
-        var height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerSize.Y : size.Y;
-        var innerSize = new Vector2(size.X, height);
+        float height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerSize.Y : size.Y;
+        Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
         return new EndObjectContainer(
@@ -139,29 +139,29 @@ public static partial class CkRaii
     {
         ImGui.BeginGroup();
 
-        var wdl = ImGui.GetWindowDrawList();
-        var min = ImGui.GetCursorScreenPos();
-        var lineH = 2 * ImGuiHelpers.GlobalScale;
-        var headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
-        var max = min + headerSize;
-        var linePos = min + new Vector2(0, ImGui.GetFrameHeight());
+        ImDrawListPtr wdl = ImGui.GetWindowDrawList();
+        Vector2 min = ImGui.GetCursorScreenPos();
+        float lineH = 2 * ImGuiHelpers.GlobalScale;
+        Vector2 headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
+        Vector2 max = min + headerSize;
+        Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
         wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, colors.SplitColor, lineH);
 
         // Text & Icon Alignment
-        var textWidth = ImGui.CalcTextSize(text).X;
+        float textWidth = ImGui.CalcTextSize(text).X;
         var textIconWidth = textWidth + ImGui.GetStyle().ItemInnerSpacing.X + CkGui.IconSize(icon).X;
         var textStart = min + HeaderTextOffset(size.X, ImGui.GetFrameHeight(), textIconWidth, flags);
-        var hoverSize = new Vector2(textIconWidth, ImGui.GetFrameHeight());
+        Vector2 hoverSize = new Vector2(textIconWidth, ImGui.GetFrameHeight());
 
         // Text & Icon Drawing.
-        var isHovered = ImGui.IsMouseHoveringRect(textStart, textStart + hoverSize);
-        var col = isHovered ? ImGui.GetColorU32(ImGuiCol.ButtonHovered) : ImGui.GetColorU32(ImGuiCol.Text);
+        bool isHovered = ImGui.IsMouseHoveringRect(textStart, textStart + hoverSize);
+        uint col = isHovered ? ImGui.GetColorU32(ImGuiCol.ButtonHovered) : ImGui.GetColorU32(ImGuiCol.Text);
         ImGui.GetWindowDrawList().AddText(textStart, col, text);
 
         var centerPos = textStart + new Vector2(textWidth + ImGui.GetStyle().ItemInnerSpacing.X, 0);
-        using (UiFontService.IconFont.Push()) ImGui.GetWindowDrawList().AddText(centerPos, col, icon.ToIconString());
+        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push()) ImGui.GetWindowDrawList().AddText(centerPos, col, icon.ToIconString());
 
         // Action Handling.
         if (isHovered && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
@@ -174,8 +174,8 @@ public static partial class CkRaii
         // Adjust the cursor.
         ImGui.SetCursorScreenPos(min + new Vector2(0, headerSize.Y));
         // Correctly retrieve the height.
-        var height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerSize.Y : size.Y;
-        var innerSize = new Vector2(size.X, height);
+        float height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerSize.Y : size.Y;
+        Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
         return new EndObjectContainer(

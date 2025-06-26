@@ -3,7 +3,6 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OtterGui.Text;
-using System.Text.RegularExpressions;
 
 namespace CkCommons.Gui;
 
@@ -18,7 +17,7 @@ public static partial class CkGui
     /// <remarks> If the string is null, empty, or whitespace, will do early return at no performance impact. </remarks>
     public static void AttachToolTip(string? text, float borderSize = 1f, Vector4? color = null)
     {
-        if (text.IsNullOrWhitespace())
+        if (string.IsNullOrWhiteSpace(text))
             return;
 
         // if the item is currently hovered, with the ImGuiHoveredFlags set to allow when disabled
@@ -30,7 +29,7 @@ public static partial class CkGui
     /// <remarks> If the string is null, empty, or whitespace, will do early return at no performance impact. </remarks>
     public static void AttachToolTipRect(Vector2 min, Vector2 max, string? text, float borderSize = 1f, Vector4? color = null)
     {
-        if (text.IsNullOrWhitespace())
+        if (string.IsNullOrWhiteSpace(text))
             return;
 
         // if the item is currently hovered, with the ImGuiHoveredFlags set to allow when disabled
@@ -40,16 +39,16 @@ public static partial class CkGui
 
     private static void ToolTipInternal(string text, float borderSize = 1f, Vector4? color = null)
     {
-        using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
+        using ImRaii.Style s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, borderSize);
-        using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
 
         ImGui.BeginTooltip();
         ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
 
         // Split the text by regex.
-        var tokens = TooltipTokenRegex.Split(text);
+        string[] tokens = TooltipTokenRegex.Split(text);
 
         // if there were no tokens, just print the text unformatted
         if (tokens.Length <= 1)
@@ -61,10 +60,10 @@ public static partial class CkGui
         }
 
         // Otherwise, parse it!
-        var useColor = false;
-        var firstLineSegment = true;
+        bool useColor = false;
+        bool firstLineSegment = true;
 
-        foreach (var token in tokens)
+        foreach (string token in tokens)
         {
             switch(token)
             {
@@ -108,7 +107,7 @@ public static partial class CkGui
         else
             ImGui.SameLine();
 
-        var hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
+        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
         FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
         AttachToolTip(helpText);
     }
@@ -120,7 +119,7 @@ public static partial class CkGui
         else
             ImGui.SameLine();
 
-        var hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
+        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
         FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
         AttachToolTip(helpText, color: tooltipCol);
     }
@@ -132,7 +131,7 @@ public static partial class CkGui
         else
             ImGui.SameLine();
 
-        var hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
+        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
         FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
         AttachToolTip(helpText, color: ColorHelpers.RgbaUintToVector4(tooltipCol));
     }

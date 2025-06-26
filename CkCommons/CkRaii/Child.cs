@@ -1,7 +1,6 @@
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OtterGui.Text.EndObjects;
 
 namespace CkCommons.Raii;
 public static partial class CkRaii
@@ -45,8 +44,8 @@ public static partial class CkRaii
     private static void FramedChildEndAction(uint bgCol, float rounding, float frameThickness, ImDrawFlags corners)
     {
         ImGui.EndChild();
-        var min = ImGui.GetItemRectMin();
-        var max = ImGui.GetItemRectMax();
+        Vector2 min = ImGui.GetItemRectMin();
+        Vector2 max = ImGui.GetItemRectMax();
 
         // Draw out the child BG.
         if (bgCol is not 0)

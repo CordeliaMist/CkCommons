@@ -1,32 +1,9 @@
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System;
-using System.Text.RegularExpressions;
 using System.IO;
 
 namespace CkCommons.FileSystem;
 
 public static partial class Extensions
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static IEnumerable<(T Value, int Index)> WithIndex<T>(this IEnumerable<T> list)
-        => list.Select((x, i) => (x, i));
-
-
-    public static int IndexOf<T>(this IEnumerable<T> array, Predicate<T> predicate)
-    {
-        var i = 0;
-        foreach (var obj in array)
-        {
-            if (predicate(obj))
-                return i;
-
-            ++i;
-        }
-
-        return -1;
-    }
-
     /// <summary> Move an item in a list from index 1 to index 2. The indices are clamped to the valid range.
     /// <remarks> Other list entries are shifted accordingly. </remarks>
     public static bool Move<T>(this IList<T> list, int idx1, int idx2)
@@ -36,14 +13,14 @@ public static partial class Extensions
         if (idx1 == idx2)
             return false;
 
-        var tmp = list[idx1];
+        T? tmp = list[idx1];
         // move element down and shift other elements up
         if (idx1 < idx2)
-            for (var i = idx1; i < idx2; i++)
+            for (int i = idx1; i < idx2; i++)
                 list[i] = list[i + 1];
         // move element up and shift other elements down
         else
-            for (var i = idx1; i > idx2; i--)
+            for (int i = idx1; i > idx2; i--)
                 list[i] = list[i - 1];
 
         list[idx2] = tmp;
@@ -59,14 +36,14 @@ public static partial class Extensions
         if (idx1 == idx2)
             return false;
 
-        var tmp = list[idx1];
+        T? tmp = list[idx1];
         // move element down and shift other elements up
         if (idx1 < idx2)
-            for (var i = idx1; i < idx2; i++)
+            for (int i = idx1; i < idx2; i++)
                 list[i] = list[i + 1];
         // move element up and shift other elements down
         else
-            for (var i = idx1; i > idx2; i--)
+            for (int i = idx1; i > idx2; i--)
                 list[i] = list[i - 1];
 
         list[idx2] = tmp;
@@ -79,7 +56,7 @@ public static partial class Extensions
     /// <remarks> The empty string as name signifies the root, so it can also not be used. </remarks>
     public static string FixName(this string name)
     {
-        var fix = name.Replace('/', '\\').Trim();
+        string fix = name.Replace('/', '\\').Trim();
         return fix.Length == 0 ? "<None>" : fix;
     }
 
@@ -107,7 +84,7 @@ public static partial class Extensions
     /// <remarks> If it is not, baseName is empty and number is 0. </remarks>
     public static bool IsDuplicateName(this string name, out string baseName, out int number)
     {
-        var match = DuplicatePathRegex().Match(name);
+        Match match = DuplicatePathRegex().Match(name);
         if (match.Success)
         {
             baseName = match.Groups["BaseName"].Value;
@@ -132,11 +109,11 @@ public static partial class Extensions
         if (name.Length == 0 || !isDuplicate(name))
             return name;
 
-        if (!name.IsDuplicateName(out var baseName, out _))
+        if (!name.IsDuplicateName(out string? baseName, out _))
             baseName = name;
 
-        var idx     = 2;
-        var newName = $"{baseName} ({idx})";
+        int idx     = 2;
+        string newName = $"{baseName} ({idx})";
         while (isDuplicate(newName))
         {
             newName = $"{baseName} ({++idx})";
@@ -150,7 +127,7 @@ public static partial class Extensions
     // Increment the duplication part of a given name.
     // If the name does not end in a duplication part, appends (2).
     public static string IncrementDuplicate(this string name)
-        => name.IsDuplicateName(out var baseName, out var idx) ? $"{baseName} ({idx + 1})" : $"{name} (2)";
+        => name.IsDuplicateName(out string? baseName, out int idx) ? $"{baseName} ({idx + 1})" : $"{name} (2)";
 
     // Data.
     private static readonly HashSet<char> Invalid            = new(Path.GetInvalidFileNameChars());

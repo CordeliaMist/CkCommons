@@ -1,8 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.IO;
-using System.Linq;
 
 namespace CkCommons.FileSystem;
 
@@ -15,18 +13,18 @@ public partial class CkFileSystem<T>
     /// <remarks> If addEmptyFolders is true, folders without any leaves are stored separately. </remarks>
     protected void SaveToFile(StreamWriter writer, Func<T, string, (string, bool)> conversion, bool addEmptyFolders)
     {
-        using var j = new JsonTextWriter(writer);
+        using JsonTextWriter j = new JsonTextWriter(writer);
         j.Formatting = Formatting.Indented;
 
-        var typeName = typeof(T).Name; // Get the type name (e.g., "CursedItem")
-        var emptyFolders = new List<string>();
+        string typeName = typeof(T).Name; // Get the type name (e.g., "CursedItem")
+        List<string> emptyFolders = new List<string>();
         j.WriteStartObject();
         j.WritePropertyName("Data");
         j.WriteStartObject();
         // Iterate lexicographically through all descendants, keep track of empty folders if necessary.
         // otherwise write all the paths that are given by the conversion function.
         if (Root.Children.Count > 0)
-            foreach (var path in Root.GetAllDescendants(ISortMode<T>.Lexicographical))
+            foreach (IPath path in Root.GetAllDescendants(ISortMode<T>.Lexicographical))
             {
                 switch (path)
                 {
@@ -35,8 +33,8 @@ public partial class CkFileSystem<T>
                             emptyFolders.Add(f.FullName());
                         break;
                     case Leaf l:
-                        var fullPath = l.FullName();
-                        var (name, write) = conversion(l.Value, fullPath);
+                        string fullPath = l.FullName();
+                        (string name, bool write) = conversion(l.Value, fullPath);
                         if (write)
                         {
                             j.WritePropertyName(name);
@@ -53,7 +51,7 @@ public partial class CkFileSystem<T>
         {
             j.WritePropertyName("EmptyFolders");
             j.WriteStartArray();
-            foreach (var emptyFolder in emptyFolders)
+            foreach (string emptyFolder in emptyFolders)
                 j.WriteValue(emptyFolder);
             j.WriteEndArray();
         }
@@ -86,32 +84,32 @@ public partial class CkFileSystem<T>
         IdCounter = 1;
         Root.Children.Clear();
 
-        var typeName = typeof(T).Name; // Get the type name (e.g., "CursedItem")
-        var changes = true;
+        string typeName = typeof(T).Name; // Get the type name (e.g., "CursedItem")
+        bool changes = true;
         if (jObject != null)
         {
             changes = false;
             try
             {
-                var data         = jObject["Data"]?.ToObject<Dictionary<string, string>>() ?? new Dictionary<string, string>();
-                var emptyFolders = jObject["EmptyFolders"]?.ToObject<string[]>() ?? Array.Empty<string>();
+                Dictionary<string, string> data         = jObject["Data"]?.ToObject<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+                string[] emptyFolders = jObject["EmptyFolders"]?.ToObject<string[]>() ?? Array.Empty<string>();
 
-                foreach (var value in objects)
+                foreach (T value in objects)
                 {
-                    var identifier = toIdentifier(value);
+                    string identifier = toIdentifier(value);
                     // If the data has a path in the filesystem, create all necessary folders and set the leaf.
-                    if (data.TryGetValue(identifier, out var path))
+                    if (data.TryGetValue(identifier, out string? path))
                     {
                         data.Remove(identifier);
-                        var split = path.SplitDirectories();
-                        var (result, folder) = CreateAllFolders(split[..^1]);
+                        string[] split = path.SplitDirectories();
+                        (Result result, Folder folder) = CreateAllFolders(split[..^1]);
                         if (result is not Result.Success and not Result.SuccessNothingDone)
                         {
                             changes = true;
                             continue;
                         }
 
-                        var leaf = new Leaf(folder, split[^1], value, IdCounter++);
+                        Leaf leaf = new Leaf(folder, split[^1], value, IdCounter++);
                         while (SetChild(folder, leaf, out _) == Result.ItemExists)
                         {
                             leaf.SetName(leaf.Name.IncrementDuplicate());
@@ -121,7 +119,7 @@ public partial class CkFileSystem<T>
                     else
                     {
                         // Add a new leaf using the given toName function.
-                        var leaf = new Leaf(Root, toName(value), value, IdCounter++);
+                        Leaf leaf = new Leaf(Root, toName(value), value, IdCounter++);
                         while (SetChild(Root, leaf, out _) == Result.ItemExists)
                         {
                             leaf.SetName(leaf.Name.IncrementDuplicate());
@@ -131,9 +129,9 @@ public partial class CkFileSystem<T>
                 }
 
                 // Add all empty folders.
-                foreach (var split in emptyFolders.Select(folder => folder.SplitDirectories()))
+                foreach (string[]? split in emptyFolders.Select(folder => folder.SplitDirectories()))
                 {
-                    var (result, _) = CreateAllFolders(split);
+                    (Result result, Folder _) = CreateAllFolders(split);
                     if (result is not Result.Success and not Result.SuccessNothingDone)
                         changes = true;
                 }

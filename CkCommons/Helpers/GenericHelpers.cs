@@ -1,6 +1,7 @@
 using Dalamud.Plugin.Services;
 using System.Runtime.CompilerServices;
 using System;
+using CkCommons.Services;
 
 namespace CkCommons;
 
@@ -16,7 +17,7 @@ public static class GenericHelpers
         }
         catch (Exception e)
         {
-            if (!suppressErrors) PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
+            if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
         }
     }
 }

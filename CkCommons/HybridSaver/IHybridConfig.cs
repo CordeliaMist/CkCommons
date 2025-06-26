@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace CkCommons.HybridSaver;
 
 public interface IHybridConfig<in T> where T : IConfigFileProvider

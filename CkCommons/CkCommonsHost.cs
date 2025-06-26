@@ -1,14 +1,11 @@
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using System.Runtime.CompilerServices;
-using System;
 using CkCommons.Services;
+using CkCommons.Textures;
+using Dalamud.Plugin;
 using Serilog.Events;
 using System.Reflection;
-using System.Linq;
 
 namespace CkCommons;
-// #nullable disable
+#nullable disable
 
 /// <summary>
 ///     The main hoster for CkCommons. <see cref="Init(IDalamudPluginInterface, IDalamudPlugin)"/> must
@@ -28,7 +25,7 @@ public static class CkCommonsHost
     public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance)
     {
         Instance = instance;
-        GenericHelpers.Safe(() => Svc.Init(pluginInterface));
+        Svc.Init(pluginInterface);
 
         Svc.Log.MinimumLogLevel = LogEventLevel.Debug;
         Svc.Log.Information($"This is ECommons v{typeof(CkCommonsHost).Assembly.GetName().Version} " +
@@ -52,7 +49,6 @@ public static class CkCommonsHost
         Disposed = true;
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
-
-        // Currently, this is not nessisary.
+        CoreTextureManager.Dispose();
     }
 }

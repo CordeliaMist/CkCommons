@@ -1,17 +1,10 @@
 using CkCommons.Gui;
+using CkCommons.Utility;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
-using GagSpeak.Localization;
-using GagSpeak.Utils;
 using ImGuiNET;
-using OtterGui;
-using OtterGui.Raii;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+using OtterGui.Extensions;
 
 namespace CkCommons.Widgets;
 
@@ -54,7 +47,7 @@ public class TagCollection
     /// </summary>
     private void UpdateOrSetLatest(IEnumerable<string> tags)
     {
-        var tagList = GetTagCollection(tags).ToList();
+        List<string> tagList = GetTagCollection(tags).ToList();
         if (_latestStringTags.SequenceEqual(tagList))
             return;
 
@@ -93,26 +86,26 @@ public class TagCollection
     private void DrawPreviewBase(string id)
     {
         // provide unique ID
-        using var _ = ImRaii.PushId(id);
+        using ImRaii.Id _ = ImRaii.PushId(id);
         // Encapsulate all in a group.
-        using var group = ImRaii.Group();
+        using ImRaii.IEndObject group = ImRaii.Group();
         // Grab the correct x position.
-        var x = ImGui.GetCursorPosX();
+        float x = ImGui.GetCursorPosX();
         ImGui.SetCursorPosX(x);
 
-        var color = ImGui.GetColorU32(ImGuiCol.FrameBg);
-        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color)
+        uint color = ImGui.GetColorU32(ImGuiCol.FrameBg);
+        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
+        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color)
             .Push(ImGuiCol.ButtonActive, color)
             .Push(ImGuiCol.Button, color);
 
         // Add some padding to the right end offset.
-        var rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
+        float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
         // Draw the tags.
-        foreach (var (tag, idx) in _latestStringTags.WithIndex())
+        foreach ((string tag, int idx) in _latestStringTags.WithIndex())
         {
-            using var id2 = ImRaii.PushId(idx);
+            using ImRaii.Id id2 = ImRaii.PushId(idx);
 
             SetPosButton(tag, x, rightEndOffset);
             Button(tag, idx, false);
@@ -128,11 +121,11 @@ public class TagCollection
         UpdateOrSetLatest(csvString);
 
         // do the draws.
-        var pos = ImGui.GetCursorPos();
-        var available = ImGui.GetContentRegionAvail();
-        var bottomRightPos = pos + available;
-        var width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
-        var iconSize = new Vector2(width, ImGui.GetFrameHeight());
+        Vector2 pos = ImGui.GetCursorPos();
+        Vector2 available = ImGui.GetContentRegionAvail();
+        Vector2 bottomRightPos = pos + available;
+        float width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
+        Vector2 iconSize = new Vector2(width, ImGui.GetFrameHeight());
         // Move and draw the icons.
         ImGui.SetCursorPos(bottomRightPos - iconSize);
         if (showSort)
@@ -160,11 +153,11 @@ public class TagCollection
         UpdateOrSetLatest(tags);
 
         // do the draws.
-        var pos = ImGui.GetCursorPos();
-        var available = ImGui.GetContentRegionAvail();
-        var bottomRightPos = pos + available;
-        var width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
-        var iconSize = new Vector2(width, ImGui.GetFrameHeight());
+        Vector2 pos = ImGui.GetCursorPos();
+        Vector2 available = ImGui.GetContentRegionAvail();
+        Vector2 bottomRightPos = pos + available;
+        float width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
+        Vector2 iconSize = new Vector2(width, ImGui.GetFrameHeight());
         // Move and draw the icons.
         ImGui.SetCursorPos(bottomRightPos - iconSize);
         if(showSort)
@@ -186,44 +179,44 @@ public class TagCollection
 
     public bool DrawTagsEditor(string id, IReadOnlyCollection<string> tags, out List<string> updatedTags)
     {
-        using var _ = ImRaii.PushId(id);
-        using var group = ImRaii.Group();
+        using ImRaii.Id _ = ImRaii.PushId(id);
+        using ImRaii.IEndObject group = ImRaii.Group();
 
-        var color = ImGui.GetColorU32(ImGuiCol.Button);
-        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
+        uint color = ImGui.GetColorU32(ImGuiCol.Button);
+        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
+        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
             .Push(ImGuiCol.ButtonActive, color, false)
             .Push(ImGuiCol.Button, color);
 
         UpdateOrSetLatest(tags);
 
-        var x = ImGui.GetCursorPosX();
+        float x = ImGui.GetCursorPosX();
         ImGui.SetCursorPosX(x);
-        var rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
+        float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        var changed = DrawEditorCore(x, rightEndOffset);
+        bool changed = DrawEditorCore(x, rightEndOffset);
         updatedTags = _latestStringTags.ToList();
         return changed;
     }
 
     public bool DrawTagsEditor(string id, string csvString, out string updatedCsvString)
     {
-        using var _ = ImRaii.PushId(id);
-        using var group = ImRaii.Group();
+        using ImRaii.Id _ = ImRaii.PushId(id);
+        using ImRaii.IEndObject group = ImRaii.Group();
 
-        var color = ImGui.GetColorU32(ImGuiCol.Button);
-        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
+        uint color = ImGui.GetColorU32(ImGuiCol.Button);
+        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
+        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
             .Push(ImGuiCol.ButtonActive, color, false)
             .Push(ImGuiCol.Button, color);
 
         UpdateOrSetLatest(csvString);
 
-        var x = ImGui.GetCursorPosX();
+        float x = ImGui.GetCursorPosX();
         ImGui.SetCursorPosX(x);
-        var rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
+        float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        var changed = DrawEditorCore(x, rightEndOffset);
+        bool changed = DrawEditorCore(x, rightEndOffset);
         updatedCsvString = string.Join(", ", _latestStringTags);
         return changed;
     }
@@ -231,14 +224,14 @@ public class TagCollection
     private bool DrawEditorCore(float x, float rightEndOffset)
     {
         bool changeOccurred = false;
-        var tagGroupClone = _latestStringTags.ToList();
+        List<string> tagGroupClone = _latestStringTags.ToList();
 
-        foreach (var (tag, idx) in tagGroupClone.WithIndex())
+        foreach ((string tag, int idx) in tagGroupClone.WithIndex())
         {
-            using var id2 = ImRaii.PushId(idx);
+            using ImRaii.Id id2 = ImRaii.PushId(idx);
             if (_editIdx == idx)
             {
-                var width = SetPosText(_currentTag, x);
+                float width = SetPosText(_currentTag, x);
                 SetFocus();
 
                 ImGui.SetNextItemWidth(width);
@@ -254,8 +247,8 @@ public class TagCollection
             {
                 SetPosButton(tag, x, rightEndOffset);
                 Button(tag, idx, true);
-                var lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
-                var rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
+                bool lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
+                bool rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
                 CkGui.AttachToolTip(HELP_TEXT_SHORT, color: CkColor.VibrantPink.Vec4());
                 // Rearrangement.
                 if(ImGui.IsItemHovered() && KeyMonitor.ShiftPressed())
@@ -285,7 +278,7 @@ public class TagCollection
 
         if (_editIdx == _latestStringTags.Count)
         {
-            var width = SetPosText(_currentTag, x);
+            float width = SetPosText(_currentTag, x);
             SetFocus();
 
             ImGui.SetNextItemWidth(width);

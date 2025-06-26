@@ -1,8 +1,7 @@
 using CkCommons.Gui;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using System;
-using System.Linq;
+using OtterGui.Extensions;
 
 namespace CkCommons.FileSystem.Selector;
 

@@ -1,6 +1,5 @@
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OtterGui.Raii;
-using System.Linq;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
@@ -21,14 +20,14 @@ public static partial class CkGuiUtils
         string defaultText = "Select Item..", CFlags flags = CFlags.None) where T : struct, Enum
     {
         ImGui.SetNextItemWidth(width);
-        var previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
         using (var combo = ImRaii.Combo(label, previewText, flags))
         {
             if (combo)
             {
-                foreach (var data in options)
+                foreach (T data in options)
                 {
-                    var name = toString?.Invoke(data) ?? data.ToString();
+                    string name = toString?.Invoke(data) ?? data.ToString();
                     if (name.Length == 0 || !ImGui.Selectable(name, data.Equals(current)) || data.Equals(current))
                         continue;
 
@@ -53,7 +52,7 @@ public static partial class CkGuiUtils
     {
         ImGui.SetNextItemWidth(width);
         bool inRange = curIdx >= 0 && curIdx < items;
-        var previewText = inRange ? $"Layer {curIdx + 1}" : "Any Layer";
+        string previewText = inRange ? $"Layer {curIdx + 1}" : "Any Layer";
         using (var c = ImRaii.Combo(label, previewText, flags))
         {
             if (c)
@@ -68,9 +67,9 @@ public static partial class CkGuiUtils
                     }
                 }
                 // Remaining layers.
-                for (var i = 0; i < items; i++)
+                for (int i = 0; i < items; i++)
                 {
-                    var name = $"Layer {i + 1}";
+                    string name = $"Layer {i + 1}";
                     if (!ImGui.Selectable(name, i == curIdx) || i == curIdx)
                         continue;
 
@@ -98,10 +97,10 @@ public static partial class CkGuiUtils
         IEnumerable<string> options, string defaultText = "Select Item...")
     {
         ImGui.SetNextItemWidth(width);
-        var previewText = options.Contains(current) ? current.ToString() : defaultText;
+        string previewText = options.Contains(current) ? current.ToString() : defaultText;
         using var combo = ImRaii.Combo(label, previewText);
         if (combo)
-            foreach (var data in options)
+            foreach (string data in options)
             {
                 if (data.Length == 0 || !ImGui.Selectable(data, data.Equals(current)) || data.Equals(current))
                     continue;
@@ -118,14 +117,14 @@ public static partial class CkGuiUtils
         Func<int, string>? toString = null, string defaultText = "Select Item...", CFlags flags = CFlags.None)
     {
         ImGui.SetNextItemWidth(width);
-        var previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
         using (var combo = ImRaii.Combo(label, previewText, flags))
         {
             if (combo)
             {
-                foreach (var option in options)
+                foreach (int option in options)
                 {
-                    var display = toString?.Invoke(option) ?? option.ToString();
+                    string display = toString?.Invoke(option) ?? option.ToString();
                     if (display.Length == 0 || !ImGui.Selectable(display, option == current) || option == current)
                         continue;
 

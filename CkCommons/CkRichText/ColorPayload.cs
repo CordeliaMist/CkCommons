@@ -1,27 +1,28 @@
-using Dalamud.Interface.Utility.Raii;
-using CkCommons.Raii;
 using ImGuiNET;
 
-namespace CkCommons;
+namespace CkCommons.RichText;
 
-public class ColorPayload : RichPayload
+public static partial class CkRichText
 {
-    public uint Color { get; }
-    public ColorPayload(uint color)
+    private class ColorPayload : RichPayload
     {
-        Color = color;
+        public uint Color { get; }
+        public ColorPayload(uint color)
+        {
+            Color = color;
+        }
+
+        public static ColorPayload Off => new(0);
+
+        public void UpdateColor()
+        {
+            if (Color != 0)
+                ImGui.PushStyleColor(ImGuiCol.Text, Color);
+            else
+                ImGui.PopStyleColor();
+        }
+
+        public override void UpdateCache(ImFontPtr _, float __, ref float ___)
+        { }
     }
-
-    public static ColorPayload Off => new(0);
-
-    public void UpdateColor()
-    {
-        if (Color != 0)
-            ImGui.PushStyleColor(ImGuiCol.Text, Color);
-        else
-            ImGui.PopStyleColor();
-    }
-
-    public override void UpdateCache(ImFontPtr _, float __, ref float ___)
-    { }
 }

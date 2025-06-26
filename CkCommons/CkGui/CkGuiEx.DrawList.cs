@@ -61,7 +61,7 @@ public static class CkGuiEx
 
     public static void OutlinedFontScaled(this ImDrawListPtr drawlist, ImFontPtr fontPtr, float size, Vector2 pos, string text, uint col, uint outline, int thickness)
     {
-        var quality = thickness * 2;
+        int quality = thickness * 2;
         for (int i = 0; i < quality; i++)
         {
             float angle = (2 * MathF.PI / quality) * i;

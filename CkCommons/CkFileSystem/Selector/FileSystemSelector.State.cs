@@ -1,5 +1,5 @@
 using CkCommons.Widgets;
-using OtterGui.Raii;
+using Dalamud.Interface.Utility.Raii;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -65,11 +65,11 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Also contains the buttons to add new items and folders if desired. </remarks>
     public void DrawFilterRow(float width)
     {
-        using var group = ImRaii.Group();
-        var       searchW   = CustomFiltersWidth(width);
-        var       tmp       = FilterValue;
-        var       tooltip   = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
-        var       change    = FancySearchBar.Draw("Filter", width, tooltip, ref tmp, 128, width - searchW, DrawCustomFilters);
+        using ImRaii.IEndObject group = ImRaii.Group();
+        float searchW   = CustomFiltersWidth(width);
+        string tmp       = FilterValue;
+        string tooltip   = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
+        bool change    = FancySearchBar.Draw("Filter", width, tooltip, ref tmp, 128, width - searchW, DrawCustomFilters);
 
         // the filter box had its value updated.
         if (change)
@@ -114,7 +114,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> But if any of a folders descendants is visible, the folder will also remain visible. </remarks>
     private bool ApplyFiltersAddInternal(CkFileSystem<T>.IPath path, ref int idx, byte currentDepth)
     {
-        var filtered = ApplyFiltersAndState(path, out var state);
+        bool filtered = ApplyFiltersAndState(path, out TStateStorage state);
         _state.Insert(idx, new StateStruct()
         {
             Depth        = currentDepth,
@@ -125,7 +125,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
         if (path is CkFileSystem<T>.Folder f)
         {
             if (f.State)
-                foreach (var child in f.GetChildren(SortMode))
+                foreach (CkFileSystem<T>.IPath child in f.GetChildren(SortMode))
                 {
                     ++idx;
                     filtered &= ApplyFiltersAddInternal(child, ref idx, (byte)(currentDepth + 1));
@@ -149,7 +149,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <returns> If any filters were applied after the scan. </returns>
     private bool ApplyFiltersScanInternal(CkFileSystem<T>.IPath path)
     {
-        if (!ApplyFiltersAndState(path, out var state))
+        if (!ApplyFiltersAndState(path, out TStateStorage state))
         {
             if (path is CkFileSystem<T>.Leaf l && _leafCount++ == 0)
                 _singleLeaf = l;
@@ -171,8 +171,8 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
 
         _leafCount = 0;
         _state.Clear();
-        var idx = 0;
-        foreach (var child in CkFileSystem.Root.GetChildren(SortMode))
+        int idx = 0;
+        foreach (CkFileSystem<T>.IPath child in CkFileSystem.Root.GetChildren(SortMode))
         {
             ApplyFiltersAddInternal(child, ref idx, 0);
             ++idx;
@@ -196,7 +196,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     {
         if (folder.State)
         {
-            var idx = _currentIndex;
+            int idx = _currentIndex;
             _fsActions.Enqueue(() => AddDescendants(folder, idx));
         }
         else
@@ -210,9 +210,9 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Used when folders are collapsed. </remarks>
     private void RemoveDescendants(int parentIndex)
     {
-        var start = parentIndex + 1;
-        var depth = parentIndex < 0 ? -1 : _state[parentIndex].Depth;
-        var end   = start;
+        int start = parentIndex + 1;
+        int depth = parentIndex < 0 ? -1 : _state[parentIndex].Depth;
+        int end   = start;
         for (; end < _state.Count; ++end)
         {
             if (_state[end].Depth <= depth)
@@ -229,8 +229,8 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Used when folders are expanded. </remarks>
     private void AddDescendants(CkFileSystem<T>.Folder f, int parentIndex)
     {
-        var depth = (byte)(parentIndex == -1 ? 0 : _state[parentIndex].Depth + 1);
-        foreach (var child in f.GetChildren(SortMode))
+        byte depth = (byte)(parentIndex == -1 ? 0 : _state[parentIndex].Depth + 1);
+        foreach (CkFileSystem<T>.IPath child in f.GetChildren(SortMode))
         {
             ++parentIndex;
             ApplyFiltersAddInternal(child, ref parentIndex, depth);

@@ -1,9 +1,7 @@
+using CkCommons.Gui;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
-using GagSpeak.Gui.Components;
-using GagSpeak.Services;
 using ImGuiNET;
 
 namespace CkCommons.Widgets;
@@ -24,7 +22,10 @@ public abstract class IconTabBar<ITab> where ITab : Enum
         }
     }
 
-    protected IconTabBar() { }
+    protected IconTabBar()
+    {
+        _selectedTab = default!; // Assuming the default value of ITab is a valid tab.
+    }
 
     /// <summary> Invokes actions informing people of the previous and new tab selected. </summary>
     public event Action<ITab, ITab>? TabSelectionChanged;
@@ -35,7 +36,7 @@ public abstract class IconTabBar<ITab> where ITab : Enum
         _tabButtons.Add(new TabButtonDefinition(icon, targetTab, tooltip, customAction));
     }
 
-    protected void DrawTabButton(TabButtonDefinition tab, Vector2 buttonSize, Vector2 spacing, ImDrawListPtr drawList)
+    protected virtual void DrawTabButton(TabButtonDefinition tab, Vector2 buttonSize, Vector2 spacing, ImDrawListPtr drawList)
     {
         var x = ImGui.GetCursorScreenPos();
 
@@ -60,15 +61,15 @@ public abstract class IconTabBar<ITab> where ITab : Enum
                     ImGui.GetColorU32(ImGuiCol.Separator), 2f);
             }
 
-            if (tab.TargetTab is MainMenuTabs.SelectedTab.GlobalChat)
-            {
-                if (DiscoverService.NewMessages > 0)
-                {
-                    var messageCountPosition = new Vector2(x.X + buttonSize.X / 2, x.Y - spacing.Y);
-                    var messageText = DiscoverService.NewMessages > 99 ? "99+" : DiscoverService.NewMessages.ToString();
-                    ImGui.GetWindowDrawList().OutlinedFont(messageText, messageCountPosition, ImGui.ColorConvertFloat4ToU32(ImGuiColors.ParsedGold), 0xFF000000, 1);
-                }
-            }
+            //if (tab.TargetTab is MainMenuTabs.SelectedTab.GlobalChat)
+            //{
+            //    if (DiscoverService.NewMessages > 0)
+            //    {
+            //        var messageCountPosition = new Vector2(x.X + buttonSize.X / 2, x.Y - spacing.Y);
+            //        var messageText = DiscoverService.NewMessages > 99 ? "99+" : DiscoverService.NewMessages.ToString();
+            //        ImGui.GetWindowDrawList().OutlinedFont(messageText, messageCountPosition, ImGui.ColorConvertFloat4ToU32(ImGuiColors.ParsedGold), 0xFF000000, 1);
+            //    }
+            //}
         }
         CkGui.AttachToolTip(tab.Tooltip);
 

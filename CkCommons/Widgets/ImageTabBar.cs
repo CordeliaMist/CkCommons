@@ -1,8 +1,8 @@
+using CkCommons.Gui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
 
@@ -24,7 +24,10 @@ public abstract class ImageTabBar<ITab> where ITab : Enum
         }
     }
 
-    protected ImageTabBar() { }
+    protected ImageTabBar() 
+    {
+        _selectedTab = default!; // Assuming the default value of ITab is a valid tab.
+    }
 
     protected virtual bool IsTabDisabled(ITab tab) => false;
 

@@ -1,12 +1,14 @@
-using CkCommons.Raii;
 using ImGuiNET;
 
-namespace CkCommons;
+namespace CkCommons.RichText;
 
-public class NewLinePayload : RichPayload
+public static partial class CkRichText
 {
-    public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    private class NewLinePayload : RichPayload
     {
-        curLineWidth = 0f;
+        public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+        {
+            curLineWidth = 0f;
+        }
     }
 }

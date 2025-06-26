@@ -1,7 +1,9 @@
+using CkCommons.Services;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OtterGui.Raii;
 using OtterGui.Text;
+using System;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -10,7 +12,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     private int             _currentDepth;
     private int             _currentIndex;
     private int             _currentEnd;
-    private DateTimeOffset  _lastButtonTime = DateTimeOffset.UtcNow;
+    private DateTimeOffset _lastButtonTime = DateTimeOffset.UtcNow;
 
     /// <summary> The main function that determines what is drawn for each item in the listclipper. </summary>
     /// <returns> The Width and Height of the drawn item. </returns>
@@ -256,7 +258,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         catch (Exception e)
         {
             // This should be an exception in final version
-            Svc.Logger.Error("Exception during CkFileSystemSelector rendering:\n"
+            Log.Error("Exception during CkFileSystemSelector rendering:\n"
               + $"{_currentIndex} Current Index\n"
               + $"{_currentDepth} Current Depth\n"
               + $"{_currentEnd} Current End\n"

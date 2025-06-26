@@ -1,13 +1,10 @@
 using CkCommons.Gui;
-using CkCommons.Gui.Utility;
-using CkCommons.Services;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using ImGuiNET;
+using OtterGui.Extensions;
 using Serilog;
-using System;
-using System.Linq;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -57,7 +54,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
                 (idxFrom, idxTo) = idxFrom > idxTo ? (idxTo, idxFrom) : (idxFrom, idxTo);
                 if (_state.Skip(idxFrom).Take(idxTo - idxFrom + 1).All(s => s.Depth == depth))
                 {
-                    foreach (var p in _state.Skip(idxFrom).Take(idxTo - idxFrom + 1))
+                    foreach (StateStruct p in _state.Skip(idxFrom).Take(idxTo - idxFrom + 1))
                         _selectedPaths.Add(p.Path);
                     Select(null, false);
                 }
@@ -158,7 +155,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
         ImGui.InvisibleButton("##CkFileSystem-folder-button", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetFrameHeightWithSpacing()));
         Vector2 rectMin = ImGui.GetItemRectMin();
         Vector2 rectMax = ImGui.GetItemRectMax();
-        var bgColor = ImGui.IsItemHovered() ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : CkGui.Color(new Vector4(0.3f, 0.3f, 0.3f, 0.5f));
+        uint bgColor = ImGui.IsItemHovered() ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : CkGui.Color(new Vector4(0.3f, 0.3f, 0.3f, 0.5f));
         ImGui.GetWindowDrawList().AddRectFilled(rectMin, rectMax, bgColor, 5);
         ImGui.GetWindowDrawList().AddRect(rectMin, rectMax, FolderLineColor, 5);
 
@@ -170,9 +167,9 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
 
     protected void DrawFolder(CkFileSystem<T>.Folder folder, bool selected)
     {
-        using var id = ImRaii.PushId($"CkFileSystem-Folder-{folder.Identifier}");
-        using var color = ImRaii.PushColor(ImGuiCol.Text, folder.State ? ExpandedFolderColor : CollapsedFolderColor);
-        using var group = ImRaii.Group();
+        using ImRaii.Id id = ImRaii.PushId($"CkFileSystem-Folder-{folder.Identifier}");
+        using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, folder.State ? ExpandedFolderColor : CollapsedFolderColor);
+        using ImRaii.IEndObject group = ImRaii.Group();
 
         DrawFolderInner(folder, selected);
     }
@@ -190,8 +187,8 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
     protected void DrawLeaf(CkFileSystem<T>.Leaf leaf, in TStateStorage state, bool selected)
     {
         // Can add custom color application in any override.
-        using var id = ImRaii.PushId($"CKFS-Leaf-{leaf.Identifier}");
-        using var group = ImRaii.Group();
+        using ImRaii.Id id = ImRaii.PushId($"CKFS-Leaf-{leaf.Identifier}");
+        using ImRaii.IEndObject group = ImRaii.Group();
         DrawLeafInner(leaf, state, selected);
     }
 
@@ -221,7 +218,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
     // If a corresponding leaf can be found, also expand its ancestors.
     public void SelectByValue(T value)
     {
-        var leaf = CkFileSystem.Root.GetAllDescendants(ISortMode<T>.Lexicographical).OfType<CkFileSystem<T>.Leaf>()
+        CkFileSystem<T>.Leaf? leaf = CkFileSystem.Root.GetAllDescendants(ISortMode<T>.Lexicographical).OfType<CkFileSystem<T>.Leaf>()
             .FirstOrDefault(l => l.Value == value);
         if (leaf != null)
             EnqueueFsAction(() =>

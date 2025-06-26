@@ -2,6 +2,9 @@ using PInvoke;
 using Dalamud.Utility;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Serilog;
+using System.IO;
+using System.Diagnostics;
 
 namespace CkCommons.Intiface;
 
@@ -37,7 +40,7 @@ public static class IntifaceCentral
         {
             if (pushToForeground)
             {
-                logger.LogDebug("Intiface Central found, bringing to foreground.", LoggerType.Toys);
+                logger.Debug("Intiface Central found, bringing to foreground.");
                 User32.ShowWindow(windowHandle, User32.WindowShowStyle.SW_RESTORE);
                 User32.SetForegroundWindow(windowHandle);
             }
@@ -45,14 +48,14 @@ public static class IntifaceCentral
         // otherwise, start the process to open intiface central
         else if (!string.IsNullOrEmpty(AppPath) && File.Exists(AppPath))
         {
-            logger.LogInformation("Starting Intiface Central", LoggerType.Toys);
+            logger.Information("Starting Intiface Central");
             Process.Start(AppPath);
         }
         // or just open the installer if it doesnt exist.
         else
         {
-            logger.LogWarning("Application not found, redirecting you to download installer." + Environment.NewLine
-                + "Current App Path is: " + AppPath);
+            logger.Warning("Application not found, redirecting you to download installer."
+                + Environment.NewLine + "Current App Path is: " + AppPath);
             Util.OpenLink("https://intiface.com/central/");
         }
     }

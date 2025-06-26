@@ -1,6 +1,6 @@
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OtterGui;
-using OtterGui.Raii;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -39,11 +39,11 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         if (!ImGuiUtil.IsDropping(MoveLabel) || _movedPathsDragDrop == null)
             return;
 
-        var paths = _movedPathsDragDrop;
+        List<KeyValuePair<string, CkFileSystem<T>.IPath>>? paths = _movedPathsDragDrop;
         _movedPathsDragDrop = null;
         _fsActions.Enqueue(() =>
         {
-            foreach (var (_, movedPath) in paths)
+            foreach ((string _, CkFileSystem<T>.IPath movedPath) in paths)
                 CkFileSystem.Move(movedPath, path as CkFileSystem<T>.Folder ?? path.Parent);
         });
     }
@@ -58,15 +58,15 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         }
 
         _movedPathsDragDropCache.EnsureCapacity(_selectedPaths.Count + 1);
-        foreach (var p in _selectedPaths.Append(path))
+        foreach (CkFileSystem<T>.IPath? p in _selectedPaths.Append(path))
             _movedPathsDragDropCache.TryAdd(p.FullName(), p);
 
-        var list = new List<KeyValuePair<string, CkFileSystem<T>.IPath>>(_movedPathsDragDropCache.Count);
-        foreach (var kvp in _movedPathsDragDropCache)
+        List<KeyValuePair<string, CkFileSystem<T>.IPath>> list = new List<KeyValuePair<string, CkFileSystem<T>.IPath>>(_movedPathsDragDropCache.Count);
+        foreach (KeyValuePair<string, CkFileSystem<T>.IPath> kvp in _movedPathsDragDropCache)
         {
-            var skip = false;
+            bool skip = false;
 
-            var parent = DirectoryNameWithSlash(kvp.Key);
+            string parent = DirectoryNameWithSlash(kvp.Key);
             while (parent.Length > 0)
             {
                 if (_movedPathsDragDropCache.ContainsKey(parent))
@@ -88,7 +88,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     /// <summary> Get the directory name with a trailing slash. </summary>
     private static string DirectoryNameWithSlash(string path)
     {
-        var idx = path.LastIndexOf('/');
+        int idx = path.LastIndexOf('/');
         return idx == -1 ? string.Empty : path[..idx];
     }
 }

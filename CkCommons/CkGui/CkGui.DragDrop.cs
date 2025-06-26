@@ -10,7 +10,7 @@ public static partial class CkGui
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
     public static unsafe void SetDragDropPayload<T>(string type, T data, ImGuiCond condition = 0) where T : unmanaged
     {
-        var ptr = Unsafe.AsPointer(ref data);
+        void* ptr = Unsafe.AsPointer(ref data);
         ImGui.SetDragDropPayload(type, new IntPtr(ptr), (uint)Unsafe.SizeOf<T>(), condition);
     }
 
@@ -25,8 +25,8 @@ public static partial class CkGui
     {
         fixed (char* chars = data)
         {
-            var byteCount = Encoding.Default.GetByteCount(data);
-            var bytes = stackalloc byte[byteCount];
+            int byteCount = Encoding.Default.GetByteCount(data);
+            byte* bytes = stackalloc byte[byteCount];
             Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
 
             ImGui.SetDragDropPayload(type, new IntPtr(bytes), (uint)byteCount, condition);

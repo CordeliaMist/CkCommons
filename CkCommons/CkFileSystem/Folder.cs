@@ -1,5 +1,3 @@
-using System;
-
 namespace CkCommons.FileSystem;
 
 public partial class CkFileSystem<T>
@@ -37,12 +35,12 @@ public partial class CkFileSystem<T>
 
         void IWritePath.UpdateDepth()
         {
-            var oldDepth = Depth;
+            byte oldDepth = Depth;
             Depth = unchecked((byte)(Parent.Depth + 1));
             if (Depth == oldDepth)
                 return;
 
-            foreach (var desc in GetWriteDescendants())
+            foreach (IWritePath desc in GetWriteDescendants())
                 desc.UpdateDepth();
         }
 

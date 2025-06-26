@@ -1,7 +1,6 @@
 using CkCommons.Gui;
 using ImGuiNET;
-using System;
-using System.Linq;
+using OtterGui.Classes;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -36,7 +35,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     // remove later maybe? Might be useful for multi- delete later idk.
     protected void DeleteSelectionButton(Vector2 size, DoubleModifier modifier, string singular, string plural, Action<T> delete)
     {
-        var keys        = modifier.IsActive();
+        bool keys        = modifier.IsActive();
         bool anySelected = _selectedPaths.Count > 1 || SelectedLeaf != null;
         string name        = _selectedPaths.Count > 1 ? plural : singular;
         string tt = !anySelected

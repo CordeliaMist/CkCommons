@@ -21,6 +21,8 @@
 		<Optimize>True</Optimize>
 		<!--May not be a good idea to enable by default but we will see.-->
 		<Nullable>enable</Nullable>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<UseWindowsForms>true</UseWindowsForms>
 		<!--Unsure if this is needed for us yet. But keep it incase-->
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -28,13 +30,23 @@
 
 	<!--Support windows and Linux startups-->
 	<PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-		<Dalamud_Home Condition="'$(DALAMUD_HOME)' == ''" >$(HOME)/.xlcore/dalamud/Hooks/dev/</Dalamud_Home>
+		<Dalamud_Home Condition="'$(DALAMUD_HOME)' == ''">$(HOME)/.xlcore/dalamud/Hooks/dev/</Dalamud_Home>
 		<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Use_DalamudPackager>false</Use_DalamudPackager>
 	</PropertyGroup>
  
     <!--As Now that we use Dalamud.SDK, most Dalamud Sources are not needed, but some must stay.-->
 	<ItemGroup>
+		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
+		<!-- Intiface Helper Methods -->
+		<PackageReference Include="Buttplug" Version="4.0.0" />
+		<!--Image Processing and Optimization Features for texture capabilities-->
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
+	
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>

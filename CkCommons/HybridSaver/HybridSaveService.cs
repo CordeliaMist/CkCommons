@@ -1,3 +1,9 @@
+using CkCommons.Services;
+using Serilog;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace CkCommons.HybridSaver;
 
 /// <summary> The Base Class for the hybrid save service, not wrapped. </summary>
@@ -34,7 +40,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while checking dirty configs.");
+                    _logger.Error(ex, "Error while checking dirty configs.");
                 }
             }
         }, _cts.Token);
@@ -75,11 +81,11 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 
     private void SaveConfigAsync(IHybridConfig<T> config)
     {
-        _logger.LogTrace($"Saving {config.GetType().Name}.");
+        _logger.Verbose($"Saving {config.GetType().Name}.");
         var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
         if (uniquePerAccount && !FileNames.HasValidProfileConfigs)
         {
-            _logger.LogWarning($"UID is null for {configPath}. Not saving.");
+            _logger.Warning($"UID is null for {configPath}. Not saving.");
             return;
         }
         // define a temporary filepath.
@@ -111,7 +117,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
         catch (Exception ex)
         {
-            Svc.Logger.Error($"Failed to save {configPath}: {ex}");
+            _logger.Error($"Failed to save {configPath}: {ex}");
         }
     }
 }

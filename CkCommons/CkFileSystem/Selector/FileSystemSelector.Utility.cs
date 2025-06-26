@@ -1,9 +1,7 @@
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using ImGuiNET;
-using System;
-using System.Linq;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -23,7 +21,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     /// <remarks> called after creating the selector, but before starting the draw iteration. </remarks>
     private void HandleActions()
     {
-        while (_fsActions.TryDequeue(out var action))
+        while (_fsActions.TryDequeue(out Action? action))
         {
             try
             {
@@ -38,7 +36,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
 
     public static bool OpenRenamePopup(string popupName, ref string newName)
     {
-        using var popup = ImRaii.Popup(popupName);
+        using ImRaii.IEndObject popup = ImRaii.Popup(popupName);
         if (!popup)
             return false;
 
@@ -48,7 +46,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         ImGui.SetNextItemWidth(300 * ImGuiHelpers.GlobalScale);
         if (ImGui.IsWindowAppearing())
             ImGui.SetKeyboardFocusHere();
-        var enterPressed = ImGui.InputTextWithHint("##newName", "Enter New Name...", ref newName, 512, ImGuiInputTextFlags.EnterReturnsTrue);
+        bool enterPressed = ImGui.InputTextWithHint("##newName", "Enter New Name...", ref newName, 512, ImGuiInputTextFlags.EnterReturnsTrue);
 
         if (!enterPressed)
             return false;
@@ -60,7 +58,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     /// <summary> Used for buttons and context menu entries. </summary>
     private static void RemovePrioritizedDelegate<TDelegate>(List<(TDelegate, int)> list, TDelegate action) where TDelegate : Delegate
     {
-        var idxAction = list.FindIndex(p => p.Item1 == action);
+        int idxAction = list.FindIndex(p => p.Item1 == action);
         if (idxAction >= 0)
             list.RemoveAt(idxAction);
     }
@@ -69,7 +67,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     private static void AddPrioritizedDelegate<TDelegate>(List<(TDelegate, int)> list, TDelegate action, int priority)
         where TDelegate : Delegate
     {
-        var idxAction = list.FindIndex(p => p.Item1 == action);
+        int idxAction = list.FindIndex(p => p.Item1 == action);
         if (idxAction >= 0)
         {
             if (list[idxAction].Item2 == priority)
@@ -78,7 +76,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
             list.RemoveAt(idxAction);
         }
 
-        var idx = list.FindIndex(p => p.Item2 > priority);
+        int idx = list.FindIndex(p => p.Item2 > priority);
         if (idx < 0)
             list.Add((action, priority));
         else
@@ -96,7 +94,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     {
         folder.UpdateState(open);
         RemoveDescendants(stateIdx);
-        foreach (var child in folder.GetAllDescendants(ISortMode<T>.Lexicographical).OfType<CkFileSystem<T>.Folder>())
+        foreach (CkFileSystem<T>.Folder child in folder.GetAllDescendants(ISortMode<T>.Lexicographical).OfType<CkFileSystem<T>.Folder>())
             child.UpdateState(open);
 
         if (open)
@@ -112,8 +110,8 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         if (path.IsRoot || path.Parent.IsRoot)
             return false;
 
-        var parent  = path.Parent;
-        var changes = false;
+        CkFileSystem<T>.Folder parent  = path.Parent;
+        bool changes = false;
         while (!parent.IsRoot)
         {
             changes |= !parent.State;

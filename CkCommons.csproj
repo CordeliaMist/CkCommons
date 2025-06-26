@@ -21,6 +21,7 @@
 		<Optimize>True</Optimize>
 		<!--May not be a good idea to enable by default but we will see.-->
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<!--Unsure if this is needed for us yet. But keep it incase-->
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -39,6 +40,30 @@
     <!--As Now that we use Dalamud.SDK, most Dalamud Sources are not needed, but some must stay.-->
 	<ItemGroup>
 		<!--Nessisary for some core functionality in the fileSystem-->
+		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" ExcludeAssets="all" />
+
+		<!--For JWT token handling, helpful for server connectivity processing-->
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />
+        
+		<!--For SignalR server connectivity, helpful for server connectivity processing-->
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.11" />
+        
+		<!--Handles our own plugin hosting methods for dependency injection and service management-->
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+        
+		<!--Adds support for our simulated vibrator (potentially replace with better audio option for more sound quality.-->
+		<PackageReference Include="NAudio" Version="2.2.1" />
+        
+		<!--For handling debouncing inputs to send vibrations to connected devices, for stablizing overload (might not need this anymore we will see) -->
+		<PackageReference Include="DebounceThrottle" Version="3.0.1" />
+        
+		<!-- Toybox Lovense Compatibility. (According to docs possibly estim too) -->
+		<PackageReference Include="Buttplug" Version="4.0.0" />
+        
+		<!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
@@ -87,8 +112,5 @@
 			<HintPath>$(DalamudLibPath)Serilog.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="CkCommons\Extensions\" />
 	</ItemGroup>
 </Project>

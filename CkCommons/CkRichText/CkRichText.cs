@@ -1,21 +1,17 @@
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
+using CkCommons.Gui;
 using CkCommons.Helpers;
-using GagSpeak.Services.Textures;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
-using ImGuizmoNET;
-using OtterGui.Text;
 
-namespace CkCommons;
+namespace CkCommons.RichText;
 
 /// <summary>
 ///     A class dedicated to mimicing the structure of dalamuds SeString composition but for ImGui. <para/>
 ///     CkRichText allows for composed strings of colors, normal text, outlined text, images, and emotes. <para/>
 ///     Supports proper text wrapping, with internal caching for optimal drawtime performance.
 /// </summary>
-public static class CkRichText
+public static partial class CkRichText
 {
     /// <summary> Represents a key for caching rich text strings. </summary>
     /// <remarks> The <paramref name="cloneId"/> helps stop rapid caching if in multiple windows. </remarks>
@@ -23,8 +19,8 @@ public static class CkRichText
 
     // Cache for RichTextStrings to avoid re-creating them if already cached.
     private static readonly ConcurrentDictionary<RichTextKey, RichTextString> _cache = new();
-    private static ImFontPtr currentFont  => ImGui.GetFont();
-    private static float     currentWidth => ImGui.GetContentRegionAvail().X;
+    private static ImFontPtr _currentFont  => ImGui.GetFont();
+    private static float     _currentWidth => ImGui.GetContentRegionAvail().X;
 
     // ------------------- Methods ------------------- //
     public static void DrawColorHelpText()
@@ -35,15 +31,15 @@ public static class CkRichText
 
     /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
     public static void Text(string text, int cloneId = 0)
-        => Text(currentFont, currentWidth, text, cloneId);
+        => Text(_currentFont, _currentWidth, text, cloneId);
 
     /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
     public static void Text(float wrapWidth, string text, int cloneId = 0)
-        => Text(currentFont, wrapWidth, text, cloneId);
+        => Text(_currentFont, wrapWidth, text, cloneId);
 
     /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
     public static void Text(ImFontPtr fontPtr, string text, int cloneId = 0)
-        => Text(fontPtr, currentWidth, text, cloneId);
+        => Text(fontPtr, _currentWidth, text, cloneId);
 
     /// <summary>
     ///     Renders a rich text string, using the window as a cache key identifier.
@@ -55,15 +51,15 @@ public static class CkRichText
     ///     [stroke=red] turns the text into outlined text. [/stroke] <para/>
     ///     [stroke=5] turns the text into outlined text by xldata number value. [/stroke] <para/>
     ///     [img=path/to/image.png] - image from the Assets folder. <para/>
-    ///     [emote=BallGag] - GagSpeak emote to display on the screen. <para/>
+    ///     [emote=Cappie] - CoreEmoteTexture to display on the screen. <para/>
     ///     
     ///     For color number values, type the command "/xldata uicolor" into the in-game chat.
     /// </summary>
     public static void Text(ImFontPtr fontPtr, float wrapWidth, string text, int cloneId = 0)
     {
-        var key = new RichTextKey(cloneId, text);
+        RichTextKey key = new RichTextKey(cloneId, text);
         // If not cached, construct a new cache along with its internal payloads, and store it.
-        if (!_cache.TryGetValue(key, out var richString))
+        if (!_cache.TryGetValue(key, out RichTextString? richString))
         {
             richString = new RichTextString(text);
             _cache[key] = richString;

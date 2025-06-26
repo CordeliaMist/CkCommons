@@ -1,6 +1,6 @@
+using CkCommons.Gui;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using GagSpeak.Gui;
 using ImGuiNET;
 using OtterGui.Classes;
 using OtterGui.Text;
@@ -12,10 +12,10 @@ public class OptionalBoolIconCheckbox(FontAwesomeIcon icon, uint crossColor = 0x
     /// <inheritdoc/>
     protected override void RenderSymbol(OptionalBool value, Vector2 position, float size)
     {
-        using var font = ImRaii.PushFont(UiBuilder.IconFont);
+        using ImRaii.Font font = ImRaii.PushFont(UiBuilder.IconFont);
 
-        var iconSize = ImUtf8.CalcTextSize(icon.ToIconString());
-        var iconPosition = position + (new Vector2(size) - iconSize) * 0.5f;
+        Vector2 iconSize = ImUtf8.CalcTextSize(icon.ToIconString());
+        Vector2 iconPosition = position + (new Vector2(size) - iconSize) * 0.5f;
 
         switch (value.Value)
         {

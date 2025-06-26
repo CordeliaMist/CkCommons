@@ -1,11 +1,10 @@
+using CkCommons.Services;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using CkCommons.Services;
-using System;
 
 // ImGuiLineCentered is taken from:
 // https://github.com/PunishXIV/PunishLib/blob/8cea907683c36fd0f9edbe700301a59f59b6c78e/PunishLib/ImGuiMethods/ImGuiEx.cs
@@ -18,11 +17,11 @@ public static partial class CkGui
     private static readonly Dictionary<string, float> CenteredLineWidths = new();
     private static void ImGuiLineCentered(string id, Action func)
     {
-        if (CenteredLineWidths.TryGetValue(id, out var dims))
+        if (CenteredLineWidths.TryGetValue(id, out float dims))
         {
             ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
         }
-        var oldCur = ImGui.GetCursorPosX();
+        float oldCur = ImGui.GetCursorPosX();
         func();
         ImGui.SameLine(0, 0);
         CenteredLineWidths[id] = ImGui.GetCursorPosX() - oldCur;
@@ -35,7 +34,7 @@ public static partial class CkGui
     /// <param name="cond"> The condition for the ImGuiWindow to be displayed . </param>
     public static void CenterNextWindow(float width, float height, ImGuiCond cond = ImGuiCond.None)
     {
-        var center = ImGui.GetMainViewport().GetCenter();
+        Vector2 center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(new Vector2(center.X - width / 2, center.Y - height / 2), cond);
     }
 
@@ -83,7 +82,7 @@ public static partial class CkGui
 /*    public float GetFontScalerFloat() => ImGuiHelpers.GlobalScale * (_pi.UiBuilder.DefaultFontSpec.SizePt / 12f); */
     public static float GetButtonSize(string text)
     {
-        var vector2 = ImGui.CalcTextSize(text);
+        Vector2 vector2 = ImGui.CalcTextSize(text);
         return vector2.X + ImGui.GetStyle().FramePadding.X * 2f;
     }
 
@@ -93,20 +92,20 @@ public static partial class CkGui
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
 
-        var vector2 = ImGui.CalcTextSize(text);
-        var num = 3f * ImGuiHelpers.GlobalScale;
+        Vector2 vector2 = ImGui.CalcTextSize(text);
+        float num = 3f * ImGuiHelpers.GlobalScale;
         return vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num;
     }
 
     public static Vector2 IconButtonSize(FAI icon)
     {
-        using var font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
+        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
         return ImGuiHelpers.GetButtonSize(icon.ToIconString());
     }
 
     public static Vector2 IconSize(FAI icon)
     {
-        using var font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
+        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
@@ -121,16 +120,16 @@ public static partial class CkGui
         // push ID for the function
         ImGui.PushID(ID);
         // grab the current cursor position
-        var InitialPos = ImGui.GetCursorPos();
+        Vector2 InitialPos = ImGui.GetCursorPos();
         // calculate the difference in height between the button and the image
-        var heightDiff = buttonSize.Y - imageSize.Y;
+        float heightDiff = buttonSize.Y - imageSize.Y;
         // draw out the button centered
-        if (CenteredLineWidths.TryGetValue(ID, out var dims))
+        if (CenteredLineWidths.TryGetValue(ID, out float dims))
         {
             ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
         }
-        var oldCur = ImGui.GetCursorPosX();
-        var result = ImGui.Button(string.Empty, buttonSize);
+        float oldCur = ImGui.GetCursorPosX();
+        bool result = ImGui.Button(string.Empty, buttonSize);
         //_logger.LogTrace("Result of button: {result}", result);
         ImGui.SameLine(0, 0);
         CenteredLineWidths[ID] = ImGui.GetCursorPosX() - oldCur;
@@ -171,26 +170,26 @@ public static partial class CkGui
     /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
+        using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        int num = 0;
         if (inPopup)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f));
             num++;
         }
 
-        var text = icon.ToIconString();
+        string text = icon.ToIconString();
 
         ImGui.PushID((id == null) ? icon.ToIconString() : id + icon.ToIconString());
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             vector = ImGui.CalcTextSize(text);
-        var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var x = vector.X + ImGui.GetStyle().FramePadding.X * 2f;
-        var frameHeight = height ?? ImGui.GetFrameHeight();
-        var result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
+        ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
+        Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
+        float x = vector.X + ImGui.GetStyle().FramePadding.X * 2f;
+        float frameHeight = height ?? ImGui.GetFrameHeight();
+        bool result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
+        Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
             cursorScreenPos.Y + (height ?? ImGui.GetFrameHeight()) / 2f - (vector.Y / 2f));
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), text);
@@ -205,8 +204,8 @@ public static partial class CkGui
 
     private static bool IconTextButtonInternal(FAI icon, string text, Vector4? defaultColor = null, float? width = null, bool disabled = false, string id = "")
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
+        using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        int num = 0;
         if (defaultColor.HasValue)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, defaultColor.Value);
@@ -217,17 +216,17 @@ public static partial class CkGui
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
-        var vector2 = ImGui.CalcTextSize(text);
-        var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
-        var frameHeight = ImGui.GetFrameHeight();
-        var result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
+        Vector2 vector2 = ImGui.CalcTextSize(text);
+        ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
+        Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
+        float num2 = 3f * ImGuiHelpers.GlobalScale;
+        float x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
+        float frameHeight = ImGui.GetFrameHeight();
+        bool result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
+        Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
-        var pos2 = new Vector2(pos.X + vector.X + num2, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
+        Vector2 pos2 = new Vector2(pos.X + vector.X + num2, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         windowDrawList.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
         ImGui.PopID();
         if (num > 0)
@@ -250,8 +249,8 @@ public static partial class CkGui
     private static bool IconSliderFloatInternal(string id, FAI icon, string label, ref float valueRef, float min,
         float max, Vector4? defaultColor = null, float? width = null, bool disabled = false, string format = "%.1f")
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
+        using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        int num = 0;
         // Disable if issues, tends to be culpret
         if (defaultColor.HasValue)
         {
@@ -263,17 +262,17 @@ public static partial class CkGui
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
-        var vector2 = ImGui.CalcTextSize(label);
-        var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
-        var frameHeight = ImGui.GetFrameHeight();
+        Vector2 vector2 = ImGui.CalcTextSize(label);
+        ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
+        Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
+        float num2 = 3f * ImGuiHelpers.GlobalScale;
+        float x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
+        float frameHeight = ImGui.GetFrameHeight();
         ImGui.SetCursorPosX(vector.X + ImGui.GetStyle().FramePadding.X * 2f);
         ImGui.SetNextItemWidth(x - vector.X - num2 * 4); // idk why this works, it probably doesnt on different scaling. Idfk. Look into later.
-        var result = ImGui.SliderFloat(label + "##" + id, ref valueRef, min, max, format);
+        bool result = ImGui.SliderFloat(label + "##" + id, ref valueRef, min, max, format);
 
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
+        Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         ImGui.PopID();
@@ -298,8 +297,8 @@ public static partial class CkGui
     private static bool IconInputTextInternal(string id, FAI icon, string label, string hint, ref string inputStr,
         uint maxLength, Vector4? defaultColor = null, float? width = null, bool disabled = false)
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
+        using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        int num = 0;
         // Disable if issues, tends to be culpret
         if (defaultColor.HasValue)
         {
@@ -311,17 +310,17 @@ public static partial class CkGui
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
-        var vector2 = ImGui.CalcTextSize(label);
-        var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
-        var frameHeight = ImGui.GetFrameHeight();
+        Vector2 vector2 = ImGui.CalcTextSize(label);
+        ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
+        Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
+        float num2 = 3f * ImGuiHelpers.GlobalScale;
+        float x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
+        float frameHeight = ImGui.GetFrameHeight();
         ImGui.SetCursorPosX(vector.X + ImGui.GetStyle().FramePadding.X * 2f);
         ImGui.SetNextItemWidth(x - vector.X - num2 * 4); // idk why this works, it probably doesnt on different scaling. Idfk. Look into later.
-        var result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, ImGuiInputTextFlags.EnterReturnsTrue);
+        bool result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, ImGuiInputTextFlags.EnterReturnsTrue);
 
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
+        Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         ImGui.PopID();
@@ -345,10 +344,10 @@ public static partial class CkGui
 
     public static void SetScaledWindowSize(float width, bool centerWindow = true)
     {
-        var newLineHeight = ImGui.GetCursorPosY();
+        float newLineHeight = ImGui.GetCursorPosY();
         ImGui.NewLine();
         newLineHeight = ImGui.GetCursorPosY() - newLineHeight;
-        var y = ImGui.GetCursorPos().Y + ImGui.GetWindowContentRegionMin().Y - newLineHeight * 2 - ImGui.GetStyle().ItemSpacing.Y;
+        float y = ImGui.GetCursorPos().Y + ImGui.GetWindowContentRegionMin().Y - newLineHeight * 2 - ImGui.GetStyle().ItemSpacing.Y;
 
         SetScaledWindowSize(width, y, centerWindow, scaledHeight: true);
     }
@@ -356,8 +355,8 @@ public static partial class CkGui
     public static void SetScaledWindowSize(float width, float height, bool centerWindow = true, bool scaledHeight = false)
     {
         ImGui.SameLine();
-        var x = width * ImGuiHelpers.GlobalScale;
-        var y = scaledHeight ? height : height * ImGuiHelpers.GlobalScale;
+        float x = width * ImGuiHelpers.GlobalScale;
+        float y = scaledHeight ? height : height * ImGuiHelpers.GlobalScale;
 
         if (centerWindow)
         {
@@ -383,7 +382,7 @@ public static partial class CkGui
 
     private static void CenterWindow(float width, float height, ImGuiCond cond = ImGuiCond.None)
     {
-        var center = ImGui.GetMainViewport().GetCenter();
+        Vector2 center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetWindowPos(new Vector2(center.X - width / 2, center.Y - height / 2), cond);
     }
 }
