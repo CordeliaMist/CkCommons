@@ -33,6 +33,12 @@ public static partial class CkRichText
         EmoteResolver = resolver;
     }
 
+    public static void ForceCleanCache()
+    {
+        _cache.Clear();
+        _accessedKeys.Clear();
+    }
+
     internal static void Init()
     {
         if (_cleanupCts != null)
