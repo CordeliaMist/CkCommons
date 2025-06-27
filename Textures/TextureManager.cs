@@ -10,7 +10,10 @@ namespace CkCommons.Textures;
 
 public static class TextureManager
 {
+    // maybe add customization for this later?
     public static string AssetFolderPath => Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "Assets");
+    public static string EmoteFolderPath => Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "Assets", "Emotes");
+
 
     // Internally stores the monitored emote caches for future cleanup.
     internal static readonly ConcurrentSet<IDisposable> _monitoredTextureEnumCaches = new();
@@ -68,10 +71,18 @@ public static class TextureManager
 
     public static IDalamudTextureWrap AssetImageOrEmpty(string path)
         => Svc.Texture.GetFromFile(Path.Combine(AssetFolderPath, path)).GetWrapOrEmpty();
+    
+    public static string GetFullAssetPath(string imageName)
+    {
+        var fullPath = Path.Combine(AssetFolderPath, $"{imageName}.png");
+        return File.Exists(fullPath) ? fullPath : string.Empty;
+    }
 
-    public static bool HasEmoteTexture(string emoteName)
-        => File.Exists(Path.Combine(AssetFolderPath, "RequiredImages", "Emotes", $"{emoteName}.png"));
-
+    public static string GetFullEmotePath(string imageName)
+    {
+        var fullPath = Path.Combine(EmoteFolderPath, $"{imageName}.png");
+        return File.Exists(fullPath) ? fullPath : string.Empty;
+    }
 
     public static void Dispose()
     {

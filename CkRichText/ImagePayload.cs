@@ -10,16 +10,10 @@ public class ImagePayload : RichPayload
     /// <summary> if his image should be drawn inline or not. </summary>
     private bool _isInline = false;
 
-    /// <summary> A potential function that obtains our texture wrap for us, over an image path. </summary>
-    private readonly Func<IDalamudTextureWrap?>? _imageFunc;
-
-    /// <summary> If no func provided, this image path should map to a valid image in the asset folder. </summary>
+    /// <summary> The full filepath to load. This includes the assembly directory. </summary>
     public string _path { get; } = string.Empty;
 
-    public ImagePayload(string imagePath)
-        => _path = Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "Assets", imagePath);
-    public ImagePayload(Func<IDalamudTextureWrap?> wrapFunc)
-        => _imageFunc = wrapFunc;
+    public ImagePayload(string fullImagePath) => _path = fullImagePath;
 
     /// <summary> Draws out the image to ImGui. </summary>
     public void Draw()
@@ -27,10 +21,9 @@ public class ImagePayload : RichPayload
         if (_isInline)
             ImGui.SameLine(0, 0);
 
-        IDalamudTextureWrap? img = _imageFunc is not null ? _imageFunc.Invoke() : Svc.Texture.GetFromFile(_path).GetWrapOrDefault();
         // draw based on texture validity.
-        if (img is { } validTexture)
-            ImGui.Image(validTexture.ImGuiHandle, new Vector2(ImGui.GetTextLineHeight()));
+        if (Svc.Texture.GetFromFile(_path).GetWrapOrDefault() is { } valid)
+            ImGui.Image(valid.ImGuiHandle, new Vector2(ImGui.GetTextLineHeight()));
         else
             ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight())); // Fallback to dummy if texture is invalid.
     }
@@ -44,7 +37,4 @@ public class ImagePayload : RichPayload
         float newLineWidth = curLineWidth + ImGui.GetTextLineHeight();
         curLineWidth = newLineWidth > wrapWidth ? 0 : newLineWidth;
     }
-
-    public static bool PathExists(string path)
-        => File.Exists(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "Assets", path));
 }

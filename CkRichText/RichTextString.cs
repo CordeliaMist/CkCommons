@@ -154,11 +154,13 @@ public class RichTextString
                     continue;
                 }
 
+                // From Asset folder (dont let people be too exploitive lol)
                 if (part.StartsWith("[img=", StringComparison.OrdinalIgnoreCase))
                 {
-                    string path = part[5..^1]; // strip [img= and ]
-                    if(ImagePayload.PathExists(path))
-                        _payloads.Add(new ImagePayload(path));
+                    string imgName = part[5..^1]; // strip [img= and ]
+                    var assetImagePath = TextureManager.GetFullAssetPath(imgName);
+                    if (!string.IsNullOrEmpty(assetImagePath))
+                        _payloads.Add(new ImagePayload(assetImagePath));
                     else
                         _payloads.Add(new TextPayload(part)); // fallback to text if image not found.
                     continue;
@@ -166,11 +168,12 @@ public class RichTextString
 
                 if (part.StartsWith(":") && part.EndsWith(":") && part.Length > 2 && !part.Contains(" "))
                 {
-                    string emoteName = part[1..^1];
-                    if (EmoteTextureResolver?.Invoke(emoteName) is { } textureWrap)
-                        _payloads.Add(new ImagePayload(() => EmoteTextureResolver?.Invoke(emoteName)));
+                    var emoteName = part[1..^1];
+                    var emoteImagePath = TextureManager.GetFullEmotePath(emoteName);
+                    if (!string.IsNullOrEmpty(emoteImagePath))
+                        _payloads.Add(new ImagePayload(emoteImagePath));
                     else
-                        _payloads.Add(new TextPayload(part)); // fallback to text if emote not found.
+                        _payloads.Add(new TextPayload(part));
                     continue;
                 }
 
