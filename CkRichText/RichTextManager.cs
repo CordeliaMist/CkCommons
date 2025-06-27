@@ -1,3 +1,4 @@
+using CkCommons.Services;
 using CkCommons.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using System.Threading;
@@ -25,7 +26,7 @@ public static partial class CkRichText
 
     // Monitored Cleanup service.
     private static readonly HashSet<RichTextKey> _accessedKeys = new();
-    private static CancellationTokenSource? _cleanupCts;
+    private static CancellationTokenSource _cleanupCts = new();
     private static Task? _cleanupTask;
 
     public static void DefineEmoteResolver(Func<string, IDalamudTextureWrap?> resolver)
@@ -41,10 +42,7 @@ public static partial class CkRichText
 
     internal static void Init()
     {
-        if (_cleanupCts != null)
-            return; // Already running
-        // Set the token and begin the task.
-        _cleanupCts = new CancellationTokenSource();
+        // Token should be already made.
         _cleanupTask = CleanupLoop(_cleanupCts.Token);
     }
 
@@ -65,10 +63,22 @@ public static partial class CkRichText
 
     internal static void Dispose()
     {
-        _cleanupCts?.Cancel();
-        _cleanupTask?.Wait();
+        Svc.Log.Information("[CkRichText] Disposing of RichText Cache.");
+        _cleanupCts?.SafeCancel();
+        try
+        {
+            _cleanupTask?.Wait();
+        }
+        catch (AggregateException ex) when (ex.InnerException is TaskCanceledException)
+        {
+            // Expected during shutdown, ignore
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected during shutdown, ignore
+        }
         _cleanupTask = null;
-        _cleanupCts?.Dispose();
+        _cleanupCts?.SafeDispose();
         _cache.Clear();
         _accessedKeys.Clear();
     }

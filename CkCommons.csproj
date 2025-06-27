@@ -50,7 +50,6 @@
 	<ItemGroup>
 		<!--Nessisary for some core functionality in the fileSystem-->
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
         <!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
 		

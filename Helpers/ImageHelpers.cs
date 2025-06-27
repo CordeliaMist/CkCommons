@@ -8,50 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CkCommons;
-public static class Generic
+public static class ImageHelpers
 {
-    // #nullable disable
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Safe(Action a, bool suppressErrors = false)
-    {
-        try
-        {
-            a();
-        }
-        catch (Exception e)
-        {
-            if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T? Safe<T>(Func<T> a, bool suppressErrors = false)
-    {
-        try
-        {
-            return a();
-        }
-        catch (Exception e)
-        {
-            if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-            return default;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static async Task<T?> Safe<T>(Func<Task<T>> a, bool suppressErrors = false)
-    {
-        try
-        {
-            return await a();
-        }
-        catch (Exception e)
-        {
-            if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
-            return default;
-        }
-    }
-
     /// <summary> Returns an image currently on your clipboard to raw image byte[] </summary>
     /// <returns> The image data in a byte array. </returns>
     /// <remarks> This method is not operatable on linux to my knowledge. </remarks>

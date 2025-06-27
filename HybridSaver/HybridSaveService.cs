@@ -1,5 +1,4 @@
 using CkCommons.Services;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,19 +6,15 @@ using System.Threading.Tasks;
 namespace CkCommons.HybridSaver;
 
 /// <summary> The Base Class for the hybrid save service, not wrapped. </summary>
-/// </summary>
-/// <typeparam name="T"></typeparam>
 public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 {
-    private readonly ILogger _logger;
     private readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private readonly CancellationTokenSource _cts = new();
 
     public readonly T FileNames = default(T)!;
-    public HybridSaveServiceBase(ILogger logger, T fileNameStructure)
+    public HybridSaveServiceBase(T fileNameStructure)
     {
-        _logger = logger;
         FileNames = fileNameStructure;
     }
 
@@ -40,7 +35,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 }
                 catch (Exception ex)
                 {
-                    Svc.Log.Error(ex, "Error while checking dirty configs.");
+                    Svc.Log.Error(ex, "[SaveService] Error while checking dirty configs.");
                 }
             }
         }, _cts.Token);
@@ -81,11 +76,10 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 
     private void SaveConfigAsync(IHybridConfig<T> config)
     {
-        Svc.Log.Verbose($"Saving {config.GetType().Name}.");
         var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
         if (uniquePerAccount && !FileNames.HasValidProfileConfigs)
         {
-            Svc.Log.Warning($"UID is null for {configPath}. Not saving.");
+            Svc.Log.Warning($"[SaveService] UID is null for {configPath}. Not saving.");
             return;
         }
         // define a temporary filepath.
@@ -117,7 +111,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
         catch (Exception ex)
         {
-            Svc.Log.Error($"Failed to save {configPath}: {ex}");
+            Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
         }
     }
 }

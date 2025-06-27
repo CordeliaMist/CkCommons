@@ -161,7 +161,7 @@ public static partial class CkRaii
         ImGui.GetWindowDrawList().AddText(textStart, col, text);
 
         var centerPos = textStart + new Vector2(textWidth + ImGui.GetStyle().ItemInnerSpacing.X, 0);
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push()) ImGui.GetWindowDrawList().AddText(centerPos, col, icon.ToIconString());
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push()) ImGui.GetWindowDrawList().AddText(centerPos, col, icon.ToIconString());
 
         // Action Handling.
         if (isHovered && ImGui.IsMouseClicked(ImGuiMouseButton.Left))

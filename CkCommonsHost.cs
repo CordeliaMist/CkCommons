@@ -28,13 +28,11 @@ public static class CkCommonsHost
         Instance = instance;
         Svc.Init(pluginInterface);
 
-        CkRichText.Init();
-
         Svc.Log.MinimumLogLevel = LogEventLevel.Debug;
-        Svc.Log.Information($"This is ECommons v{typeof(CkCommonsHost).Assembly.GetName().Version} " +
+        Svc.Log.Information($"This is CkCommons v{typeof(CkCommonsHost).Assembly.GetName().Version} " +
             $"and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}.");
 
-        // Nothing to really initialize yet.
+        CkRichText.Init();
     }
 
     public static void CheckForObfuscation()
@@ -52,7 +50,7 @@ public static class CkCommonsHost
         Disposed = true;
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
-        TextureManager.Dispose();
-        CkRichText.Dispose();
+        Generic.Safe(TextureManager.Dispose);
+        Generic.Safe(CkRichText.Dispose);
     }
 }

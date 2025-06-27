@@ -8,13 +8,11 @@ using System.Runtime.CompilerServices;
 
 namespace CkCommons.Classes;
 
-public class OptionalBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor = 0xFF00FF00, uint dotColor = 0xFFD0D0D0)
-    : MultiStateCheckbox<OptionalBool>
+public class TriStateBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor = 0xFF00FF00, uint dotColor = 0xFFD0D0D0)
+    : MultiStateCheckbox<TriStateBool>
 {
-
-
     /// <inheritdoc/>
-    protected override void RenderSymbol(OptionalBool value, Vector2 position, float size)
+    protected override void RenderSymbol(TriStateBool value, Vector2 position, float size)
     {
         switch (value.Value)
         {
@@ -31,11 +29,9 @@ public class OptionalBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor 
     }
 
     /// <summary> Draw the tri-state checkbox. </summary>
-    /// <param name="label"> The label for the checkbox as a UTF8 string. HAS to be null-terminated. </param>
-    /// <param name="value"> The input/output value. </param>
     /// <returns> True when <paramref name="value"/> changed in this frame. </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public virtual bool Draw(ReadOnlySpan<char> label, OptionalBool current, out OptionalBool newValue, bool disabled = false)
+    public virtual bool Draw(ReadOnlySpan<char> label, TriStateBool current, out TriStateBool newValue, bool disabled = false)
     {
         newValue = current;
 
@@ -54,26 +50,10 @@ public class OptionalBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor 
     }
 
     /// <inheritdoc/>
-    protected override OptionalBool NextValue(OptionalBool value)
-    {
-        // Cycle through the states: null -> true -> false -> null
-        return value.Value switch
-        {
-            null => OptionalBool.True,
-            true => OptionalBool.False,
-            false => OptionalBool.Null,
-        };
-    }
+    protected override TriStateBool NextValue(TriStateBool value)
+        => value.NextValue();
 
     /// <inheritdoc/>
-    protected override OptionalBool PreviousValue(OptionalBool value)
-    {
-        // Cycle through the states in reverse: null -> false -> true -> null
-        return value.Value switch
-        {
-            null => OptionalBool.False,
-            true => OptionalBool.Null,
-            false => OptionalBool.True,
-        };
-    }
+    protected override TriStateBool PreviousValue(TriStateBool value)
+        => value.PreviousValue();
 }

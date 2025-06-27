@@ -1,32 +1,31 @@
 using CkCommons.Gui;
+using CkCommons.Services;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OtterGui.Classes;
-using OtterGui.Text;
 using System.Runtime.CompilerServices;
 
 namespace CkCommons.Classes;
-public class OptionalBoolIconCheckbox(FontAwesomeIcon icon, uint crossColor = 0xFF0000FF, uint checkColor = 0xFF00FF00, uint dotColor = 0xFFD0D0D0) : OptionalBoolCheckbox
+public class TriStateBoolIconCheckbox(FontAwesomeIcon icon, uint crossColor = 0xFF0000FF, uint checkColor = 0xFF00FF00, uint dotColor = 0xFFD0D0D0) 
+    : TriStateBoolCheckbox
 {
     /// <inheritdoc/>
-    protected override void RenderSymbol(OptionalBool value, Vector2 position, float size)
+    protected override void RenderSymbol(TriStateBool value, Vector2 position, float size)
     {
-        using ImRaii.Font font = ImRaii.PushFont(UiBuilder.IconFont);
-
-        Vector2 iconSize = ImUtf8.CalcTextSize(icon.ToIconString());
-        Vector2 iconPosition = position + (new Vector2(size) - iconSize) * 0.5f;
-
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
+        var text = string.Empty + (char)icon;
+        var iconSize = ImGui.CalcTextSize(text);
+        var iconPos = position + (new Vector2(size) - iconSize) * 0.5f;
         switch (value.Value)
         {
             case true:
-                ImGui.GetWindowDrawList().AddText(iconPosition, ImGui.GetColorU32(checkColor), icon.ToIconString());
+                ImGui.GetWindowDrawList().AddText(iconPos, ImGui.GetColorU32(checkColor), text);
                 break;
             case false:
-                ImGui.GetWindowDrawList().AddText(iconPosition, ImGui.GetColorU32(crossColor), icon.ToIconString());
+                ImGui.GetWindowDrawList().AddText(iconPos, ImGui.GetColorU32(crossColor), text);
                 break;
             case null:
-                ImGui.GetWindowDrawList().AddText(iconPosition, ImGui.GetColorU32(dotColor), icon.ToIconString());
+                ImGui.GetWindowDrawList().AddText(iconPos, ImGui.GetColorU32(dotColor), text);
                 break;
         }
     }
@@ -36,7 +35,7 @@ public class OptionalBoolIconCheckbox(FontAwesomeIcon icon, uint crossColor = 0x
     /// <param name="value"> The input/output value. </param>
     /// <returns> True when <paramref name="value"/> changed in this frame. </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool DrawIconCheckbox(ReadOnlySpan<char> label, OptionalBool current, out OptionalBool newValue, bool disabled = false)
+    public bool DrawIconCheckbox(ReadOnlySpan<char> label, TriStateBool current, out TriStateBool newValue, bool disabled = false)
     {
         // Initialize newValue to the current state initially
         newValue = current;

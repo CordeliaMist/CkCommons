@@ -305,7 +305,7 @@ public static partial class CkGui
     {
         Vector2 region = new Vector2(ImGui.GetFrameHeight());
 
-        using var font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         // Get the text size.
         string text = icon.ToIconString();
         Vector2 iconSize = ImGui.CalcTextSize(text);

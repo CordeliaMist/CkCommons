@@ -89,7 +89,7 @@ public static partial class CkGui
     public static float IconTextButtonSize(FAI icon, string text)
     {
         Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
 
         Vector2 vector2 = ImGui.CalcTextSize(text);
@@ -99,13 +99,13 @@ public static partial class CkGui
 
     public static Vector2 IconButtonSize(FAI icon)
     {
-        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
+        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         return ImGuiHelpers.GetButtonSize(icon.ToIconString());
     }
 
     public static Vector2 IconSize(FAI icon)
     {
-        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontHandle.Push();
+        using IDisposable font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
@@ -182,7 +182,7 @@ public static partial class CkGui
 
         ImGui.PushID((id == null) ? icon.ToIconString() : id + icon.ToIconString());
         Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(text);
         ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
         Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
@@ -191,7 +191,7 @@ public static partial class CkGui
         bool result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
             cursorScreenPos.Y + (height ?? ImGui.GetFrameHeight()) / 2f - (vector.Y / 2f));
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), text);
         ImGui.PopID();
 
@@ -214,7 +214,7 @@ public static partial class CkGui
 
         ImGui.PushID(text + "##" + id);
         Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
         Vector2 vector2 = ImGui.CalcTextSize(text);
         ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
@@ -224,7 +224,7 @@ public static partial class CkGui
         float frameHeight = ImGui.GetFrameHeight();
         bool result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         Vector2 pos2 = new Vector2(pos.X + vector.X + num2, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         windowDrawList.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
@@ -260,7 +260,7 @@ public static partial class CkGui
 
         ImGui.PushID(id);
         Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
         Vector2 vector2 = ImGui.CalcTextSize(label);
         ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
@@ -273,7 +273,7 @@ public static partial class CkGui
         bool result = ImGui.SliderFloat(label + "##" + id, ref valueRef, min, max, format);
 
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         ImGui.PopID();
         if (num > 0)
@@ -308,7 +308,7 @@ public static partial class CkGui
 
         ImGui.PushID(id);
         Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
         Vector2 vector2 = ImGui.CalcTextSize(label);
         ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
@@ -321,7 +321,7 @@ public static partial class CkGui
         bool result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, ImGuiInputTextFlags.EnterReturnsTrue);
 
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontHandle.Push())
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         ImGui.PopID();
         if (num > 0)
