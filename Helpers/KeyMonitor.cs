@@ -1,7 +1,7 @@
 using PInvoke;
 using System.Windows.Forms;
 
-namespace CkCommons.Utility;
+namespace CkCommons.Helpers;
 
 /// <summary> A class for all of the UI helpers, including basic functions for drawing repetative yet unique design elements </summary>
 public static class KeyMonitor

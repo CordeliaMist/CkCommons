@@ -3,29 +3,23 @@
 	<!--Project Sdk="Microsoft.NET.Sdk" Revert to this id Dalamud.NET.Sdk causes issues.-->
 	<!--Basic Plugin Definitions-->
      <PropertyGroup>
-	     <Authors>CordeliaMist</Authors>
-          <Copyright>Copyright © 2025</Copyright>
-          <Version>1.0.0.0</Version>
+	    <Authors>CordeliaMist</Authors>
+        <Copyright>Copyright © 2025</Copyright>
+        <Version>1.0.0.0</Version>
 		<WarningLevel>4</WarningLevel>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
      </PropertyGroup>
 	
      <PropertyGroup>
-		<TargetFramework>net9.0-windows7.0</TargetFramework>
-		<Platforms>x64</Platforms>
-	     <LangVersion>preview</LangVersion>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>		
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>bin\$(Configuration)\</OutputPath>
-		<Optimize>True</Optimize>
-		<!--May not be a good idea to enable by default but we will see.-->
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<!--Unsure if this is needed for us yet. But keep it incase-->
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
      </PropertyGroup>
+
+    <PropertyGroup>
+        <Use_DalamudPackager>false</Use_DalamudPackager>
+    </PropertyGroup>
 
 	<!--Support windows and Linux startups-->
 	<PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
@@ -33,6 +27,14 @@
 		<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
+
+    <PropertyGroup Label="Build">
+        <UseWindowsForms>true</UseWindowsForms>
+        <Optimize>True</Optimize>
+        <Deterministic>true</Deterministic>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    
 	
 	<ItemGroup>
 		<!--Nessisary for some core functionality in the fileSystem-->
