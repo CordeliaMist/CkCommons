@@ -351,24 +351,26 @@ public static partial class CkGui
     }
 
     // Helper function to draw an input text for a set width, with an icon drawn right aligned.
-    public static void IconInputText(string label, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
+    public static bool IconInputText(string label, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
     {
         using ImRaii.IEndObject _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width);
-        ImGui.InputTextWithHint(label, hint, ref input, (uint)length, flags);
+        var changed = ImGui.InputTextWithHint(label, hint, ref input, (uint)length, flags);
         ImGui.SameLine(ImGui.GetItemRectSize().X - ImGui.GetFrameHeight());
         FramedIconText(icon, ImGui.GetColorU32(ImGuiCol.TextDisabled));
+        return changed;
     }
 
     // Helper function to draw an input text for a set width, with an icon drawn right aligned.
-    public static void IconInputTextOuter(string id, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
+    public static bool IconInputTextOuter(string id, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
     {
         using ImRaii.IEndObject _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width - ImGui.GetFrameHeight() - ImGui.GetStyle().ItemInnerSpacing.X);
-        ImGui.InputTextWithHint(id, hint, ref input, (uint)length, flags);
+        var changed = ImGui.InputTextWithHint(id, hint, ref input, (uint)length, flags);
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         FramedIconText(icon, ImGui.GetColorU32(ImGuiCol.TextDisabled));
+        return changed;
     }
 }

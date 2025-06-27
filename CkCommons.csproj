@@ -50,9 +50,8 @@
 	<ItemGroup>
 		<!--Nessisary for some core functionality in the fileSystem-->
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
-		<!-- Toybox Lovense Compatibility. (According to docs possibly estim too) -->
-		<PackageReference Include="Buttplug" Version="4.0.0" />
-		<!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
+        <!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
 		
 		<Reference Include="ImGui.NET">

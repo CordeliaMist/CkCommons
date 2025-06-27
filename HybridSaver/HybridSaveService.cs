@@ -1,5 +1,5 @@
 using CkCommons.Services;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,15 +9,21 @@ namespace CkCommons.HybridSaver;
 /// <summary> The Base Class for the hybrid save service, not wrapped. </summary>
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
+public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 {
-    private static readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
-    private static readonly SemaphoreSlim _saveLock = new(1, 1);
-    private static readonly CancellationTokenSource _cts = new();
+    private readonly ILogger _logger;
+    private readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
+    private readonly SemaphoreSlim _saveLock = new(1, 1);
+    private readonly CancellationTokenSource _cts = new();
 
-    public static readonly T FileNames = default(T)!;
+    public readonly T FileNames = default(T)!;
+    public HybridSaveServiceBase(ILogger logger, T fileNameStructure)
+    {
+        _logger = logger;
+        FileNames = fileNameStructure;
+    }
 
-    internal static void Init(T fileNameStructure)
+    public void Init()
     {
         _ = Task.Run(async () =>
         {
@@ -40,7 +46,7 @@ public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }, _cts.Token);
     }
 
-    internal static async Task Dispose()
+    public async Task Dispose()
     {
         // wait for the save lock to finish, then cancel the cts and exit.
         await _saveLock.WaitAsync().ConfigureAwait(false);
@@ -48,7 +54,7 @@ public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
         _cts.Dispose();
     }
 
-    public static void Save(IHybridConfig<T> config)
+    public void Save(IHybridConfig<T> config)
     {
         _saveLock.Wait();
         _dirtyConfigs.Add(config);
@@ -56,7 +62,7 @@ public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
         _saveLock.Release();
     }
 
-    private static async Task CheckDirtyConfigs()
+    private async Task CheckDirtyConfigs()
     {
         if (_dirtyConfigs.Count == 0)
             return;
@@ -73,7 +79,7 @@ public static class HybridSaveServiceBase<T> where T : IConfigFileProvider
             SaveConfigAsync(config);
     }
 
-    private static void SaveConfigAsync(IHybridConfig<T> config)
+    private void SaveConfigAsync(IHybridConfig<T> config)
     {
         Svc.Log.Verbose($"Saving {config.GetType().Name}.");
         var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
