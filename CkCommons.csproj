@@ -33,10 +33,7 @@
 		<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Include="CkCommons\CkFileSystem\CkFileSystem.md" />
-	</ItemGroup>
- 
+	
 	<ItemGroup>
 		<!--Nessisary for some core functionality in the fileSystem-->
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
