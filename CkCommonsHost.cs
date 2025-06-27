@@ -52,7 +52,7 @@ public static class CkCommonsHost
         Disposed = true;
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
-        CoreTextureManager.Dispose();
+        TextureManager.Dispose();
         CkRichText.Dispose();
     }
 }

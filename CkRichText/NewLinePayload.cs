@@ -2,13 +2,10 @@ using ImGuiNET;
 
 namespace CkCommons.RichText;
 
-public static partial class CkRichText
+public class NewLinePayload : RichPayload
 {
-    private class NewLinePayload : RichPayload
+    public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
     {
-        public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
-        {
-            curLineWidth = 0f;
-        }
+        curLineWidth = 0f;
     }
 }

@@ -1,10 +1,7 @@
 using CkCommons.Gui;
 using CkCommons.Helpers;
 using Dalamud.Interface.Colors;
-using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CkCommons.RichText;
 
@@ -15,19 +12,12 @@ namespace CkCommons.RichText;
 /// </summary>
 public static partial class CkRichText
 {
-    /// <summary> Represents a key for caching rich text strings. </summary>
-    /// <remarks> The <paramref name="cloneId"/> helps stop rapid caching if in multiple windows. </remarks>
-    private record RichTextKey(int cloneId, string rawText);
-
-    // Cache for RichTextStrings to avoid re-creating them if already cached.
-    private static readonly ConcurrentDictionary<RichTextKey, RichTextString> _cache = new();
     private static ImFontPtr _currentFont  => ImGui.GetFont();
     private static float     _currentWidth => ImGui.GetContentRegionAvail().X;
 
-    // ------------------- Methods ------------------- //
     public static void DrawColorHelpText()
     {
-        string tooltip = $"--COL--Named Color Codes:--COL----SEP--{string.Join(", ", Enum.GetNames<XlDataUiColor>())}";
+        var tooltip = $"--COL--Named Color Codes:--COL----SEP--{string.Join(", ", Enum.GetNames<XlDataUiColor>())}";
         CkGui.HelpText(tooltip, ImGuiColors.ParsedPink);
     }
 
@@ -59,56 +49,16 @@ public static partial class CkRichText
     /// </summary>
     public static void Text(ImFontPtr fontPtr, float wrapWidth, string text, int cloneId = 0)
     {
-        RichTextKey key = new RichTextKey(cloneId, text);
+        var key = new RichTextKey(cloneId, text);
         _accessedKeys.Add(key); // Mark as accessed
 
         // If not cached, construct a new cache along with its internal payloads, and store it.
-        if (!_cache.TryGetValue(key, out RichTextString? richString))
+        if (!_cache.TryGetValue(key, out var richString))
         {
             richString = new RichTextString(text);
             _cache[key] = richString;
         }
         // Render the thingy.
         richString.Render(fontPtr, wrapWidth);
-    }
-
-    // Monitored Cleanup service.
-    private static readonly HashSet<RichTextKey> _accessedKeys = new();
-    private static CancellationTokenSource? _cleanupCts;
-    private static Task? _cleanupTask;
-
-
-    internal static void Init()
-    {
-        if (_cleanupCts != null)
-            return; // Already running
-        // Set the token and begin the task.
-        _cleanupCts = new CancellationTokenSource();
-        _cleanupTask = CleanupLoop(_cleanupCts.Token);
-    }
-
-    // Still figuring out how to make a desisive choice on this cleanup cache period.
-    internal static async Task CleanupLoop(CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            await Task.Delay(TimeSpan.FromMinutes(5), token).ConfigureAwait(false);
-            var accessed = _accessedKeys.ToHashSet();
-            foreach (var key in _cache.Keys)
-            {
-                if (!accessed.Contains(key))
-                    _cache.TryRemove(key, out _);
-            }
-        }
-    }
-
-    internal static void Dispose()
-    {
-        _cleanupCts?.Cancel();
-        _cleanupTask?.Wait();
-        _cleanupTask = null;
-        _cleanupCts?.Dispose();
-        _cache.Clear();
-        _accessedKeys.Clear();
     }
 }

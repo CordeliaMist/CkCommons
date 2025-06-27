@@ -1,7 +1,7 @@
 using ImGuiNET;
 using OtterGui.Raii;
 
-namespace CkCommons.Gui.Clip;
+namespace CkCommons.Gui;
 
 // ClippedDraw Methods are taken from OtterGui's ImGuiClip func, and modified to allow for a width parameter.
 public static class CkGuiClip
