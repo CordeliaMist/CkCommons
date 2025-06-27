@@ -38,6 +38,7 @@
 	</PropertyGroup>
  
 	<ItemGroup>
+		<!--CkCommons is an internal Submodule, and requires also adding OtterGui as a submodule to function.-->
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
 		<!-- Intiface Helper Methods -->
 		<PackageReference Include="Buttplug" Version="4.0.0" />
