@@ -16,6 +16,15 @@ public enum CkGuiCircleBound : byte
 public static class CkGuiEx
 {
     /// <summary> A variant of ImGui's AddImageRounded that uses IDalamudTextureWraps for you. </summary>
+    public static void AddDalamudImageRounded(this ImDrawListPtr wdl, IDalamudTextureWrap? wrap, Vector2 pos, Vector2 size, float rounding, uint tint, string tt = "")
+    {
+        // Ensure the wrap is valid for drawing.
+        if (wrap is { } valid)
+            wdl.AddImageRounded(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, tint, rounding);
+        CkGui.AttachToolTipRect(pos, pos + size, tt);
+    }
+
+    /// <summary> A variant of ImGui's AddImageRounded that uses IDalamudTextureWraps for you. </summary>
     public static void AddDalamudImageRounded(this ImDrawListPtr wdl, IDalamudTextureWrap? wrap, Vector2 pos, Vector2 size, float rounding, string tt = "")
     {
         // Ensure the wrap is valid for drawing.
