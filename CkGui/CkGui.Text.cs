@@ -24,13 +24,13 @@ public static partial class CkGui
 
     public static void RightAlignedColor(string text, uint color, float offset = 0)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         RightAligned(text, offset);
     }
 
     public static void RightAlignedColor(string text, Vector4 color, float offset = 0)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         RightAligned(text, offset);
     }
 
@@ -45,13 +45,13 @@ public static partial class CkGui
 
     public static void RightFrameAlignedColor(string text, uint color, float offset = 0)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         RightFrameAligned(text, offset);
     }
 
     public static void RightFrameAlignedColor(string text, Vector4 color, float offset = 0)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         RightFrameAligned(text, offset);
     }
 
@@ -78,7 +78,7 @@ public static partial class CkGui
     /// <summary> An Unformatted Text version of ImGui.TextColored accepting UINT </summary>
     public static void ColorText(string text, uint color)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
     }
 
@@ -88,14 +88,14 @@ public static partial class CkGui
         if (inner) ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         else ImGui.SameLine();
 
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
     }
 
     /// <summary> An Frame-Aligned Text version of ImGui.TextColored accepting UINT </summary>
     public static void ColorTextFrameAligned(string text, uint color)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImUtf8.TextFrameAligned(text);
     }
 
@@ -105,14 +105,14 @@ public static partial class CkGui
         if (inner) ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         else ImGui.SameLine();
 
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImUtf8.TextFrameAligned(text);
     }
 
     /// <summary> An Unformatted Text version of ImGui.TextColored </summary>
     public static void ColorText(string text, Vector4 color)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
     }
 
@@ -122,14 +122,14 @@ public static partial class CkGui
         if (inner) ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         else ImGui.SameLine();
 
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
     }
 
     /// <summary> An Frame-Aligned Text version of ImGui.TextColored accepting UINT </summary>
     public static void ColorTextFrameAligned(string text, Vector4 color)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImUtf8.TextFrameAligned(text);
     }
 
@@ -139,7 +139,7 @@ public static partial class CkGui
         if (inner) ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         else ImGui.SameLine();
 
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         ImUtf8.TextFrameAligned(text);
     }
 
@@ -177,20 +177,20 @@ public static partial class CkGui
 
     public static void CenterColorTextAligned(string text, Vector4 color, float? width = null)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         CenterTextAligned(text, width);
     }
 
     public static void CenterColorTextAligned(string text, uint color, float? width = null)
     {
-        using ImRaii.Color _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         CenterTextAligned(text, width);
     }
 
     /// <summary> What it says on the tin. </summary>
     public static void ColorTextWrapped(string text, Vector4 color)
     {
-        using ImRaii.Color raiicolor = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var raiicolor = ImRaii.PushColor(ImGuiCol.Text, color);
         TextWrapped(text);
     }
 
@@ -333,8 +333,8 @@ public static partial class CkGui
 
     public static void FontText(string text, IFontHandle font, uint color)
     {
-        using IDisposable pushedFont = font.Push();
-        using ImRaii.Color pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var pushedFont = font.Push();
+        using var pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
     }
 
@@ -345,19 +345,20 @@ public static partial class CkGui
 
     public static void FontTextCentered(string text, IFontHandle font, uint color)
     {
-        using IDisposable pushedFont = font.Push();
-        using ImRaii.Color pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var pushedFont = font.Push();
+        using var pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGuiUtil.Center(text);
     }
 
     // Helper function to draw an input text for a set width, with an icon drawn right aligned.
     public static bool IconInputText(string label, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
     {
-        using ImRaii.IEndObject _ = ImRaii.Group();
+        using var _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width);
         var changed = ImGui.InputTextWithHint(label, hint, ref input, (uint)length, flags);
-        ImGui.SameLine(ImGui.GetItemRectSize().X - ImGui.GetFrameHeight());
+        ImGui.SetCursorScreenPos(ImGui.GetItemRectMax() - new Vector2(ImGui.GetFrameHeight()));
+        //ImGui.SameLine(ImGui.GetItemRectSize().X - ImGui.GetFrameHeight());
         FramedIconText(icon, ImGui.GetColorU32(ImGuiCol.TextDisabled));
         return changed;
     }
@@ -365,7 +366,7 @@ public static partial class CkGui
     // Helper function to draw an input text for a set width, with an icon drawn right aligned.
     public static bool IconInputTextOuter(string id, float width, FAI icon, string hint, ref string input, int length, ITFlags flags = ITFlags.None)
     {
-        using ImRaii.IEndObject _ = ImRaii.Group();
+        using var _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width - ImGui.GetFrameHeight() - ImGui.GetStyle().ItemInnerSpacing.X);
         var changed = ImGui.InputTextWithHint(id, hint, ref input, (uint)length, flags);
