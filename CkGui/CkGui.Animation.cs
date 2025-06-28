@@ -2,7 +2,7 @@ namespace CkCommons.Gui;
 
 public static partial class CkGui
 {
-    public static void AnimatedHourglass(int milliseconds, Vector4? color)
+    public static void AnimatedHourglass(int milliseconds, Vector4 color)
     {
         // Divide the interval into 3 equal segments
         var tick = Environment.TickCount64 % milliseconds;
