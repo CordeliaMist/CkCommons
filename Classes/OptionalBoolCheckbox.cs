@@ -29,7 +29,7 @@ public class TriStateBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor 
     }
 
     /// <summary> Draw the tri-state checkbox. </summary>
-    /// <returns> True when <paramref name="value"/> changed in this frame. </returns>
+    /// <returns> True when <paramref name="current"/> changed in this frame. </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual bool Draw(ReadOnlySpan<char> label, TriStateBool current, out TriStateBool newValue, bool disabled = false)
     {
