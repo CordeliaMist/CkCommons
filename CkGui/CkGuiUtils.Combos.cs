@@ -1,5 +1,6 @@
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
+using static CkCommons.GameDataHelp;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
@@ -143,6 +144,19 @@ public static partial class CkGuiUtils
 
         newValue = current;
         return false;
+    }
+
+    public static bool ResidentialAetheryteCombo(string id, float width, ref ResidentialAetheryteKind refConfigField)
+    {
+        var ret = false;
+        var names = ResidentialNames;
+        if (CkGuiUtils.EnumCombo(id, width, refConfigField, out var newValue, (t) => names.GetValueOrDefault(t) ?? t.ToString(),
+            "Select Aetheryte...", 0, CFlags.NoArrowButton))
+        {
+            refConfigField = newValue;
+            ret = true;
+        }
+        return ret;
     }
 
 }
