@@ -104,7 +104,7 @@ public class RichTextString
 
     public void BuildPayloads(string rawText)
     {
-        string[] result = Regex.Split(rawText, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|()|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase);
+        string[] result = Regex.Split(rawText, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase);
         int[] valid = [0, 0]; // [color, stroke]
         var sw = new Stopwatch();
         sw.Start();
@@ -114,6 +114,7 @@ public class RichTextString
             {
                 if (string.IsNullOrWhiteSpace(part))
                     continue;
+
                 // off switches.
                 switch (part)
                 {
@@ -127,7 +128,7 @@ public class RichTextString
                         _payloads.Add(ColorPayload.Off);
                         valid[0]--;
                         continue;
-                    case "[/stroke]":
+                    case "[/stroke]" or "[/glow]":
                         _payloads.Add(StrokePayload.Off);
                         valid[1]--;
                         continue;
@@ -148,6 +149,16 @@ public class RichTextString
                 {
                     if (!TryParseColor(part[8..^1], out uint stroke))
                         throw new Exception($"[RichText] Invalid [stroke] tag value: {part}");
+
+                    _payloads.Add(new StrokePayload(stroke));
+                    valid[1]++;
+                    continue;
+                }
+
+                if (part.StartsWith("[glow=", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!TryParseColor(part[6..^1], out uint stroke))
+                        throw new Exception($"[RichText] Invalid [glow] tag value: {part}");
 
                     _payloads.Add(new StrokePayload(stroke));
                     valid[1]++;
