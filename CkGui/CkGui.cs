@@ -5,6 +5,7 @@ using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
+using OtterGui.Text;
 
 // ImGuiLineCentered is taken from:
 // https://github.com/PunishXIV/PunishLib/blob/8cea907683c36fd0f9edbe700301a59f59b6c78e/PunishLib/ImGuiMethods/ImGuiEx.cs
@@ -143,6 +144,18 @@ public static partial class CkGui
         ImGui.PopID();
         // return the result
         return result;
+    }
+
+    public static void InlineSpacing()
+    {
+        ImGui.Spacing();
+        ImGui.SameLine();
+    }
+
+    public static void InlineSpacingInner()
+    {
+        ImGui.Spacing();
+        ImUtf8.SameLineInner();
     }
 
     public static float GetSeparatorHeight(float? height = null)

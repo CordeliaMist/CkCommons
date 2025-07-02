@@ -8,6 +8,8 @@ using System.Diagnostics;
 
 namespace CkCommons.RichText;
 
+// If you ever care to support italics down the line use:
+// https://github.com/Infiziert90/ChatTwo/blob/main/ChatTwo/FontManager.cs#L113
 public class RichTextString
 {
     /// <summary>
@@ -104,6 +106,11 @@ public class RichTextString
 
     public void BuildPayloads(string rawText)
     {
+        // update the payload to convert the \n and \r\n into paragraph and newline splits.
+        rawText = rawText.Replace("\r\n", "\n"); // normalize newlines
+        rawText = rawText.Replace("\n\n", "[para]");
+        rawText = rawText.Replace("\n", "[para]");
+
         string[] result = Regex.Split(rawText, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase);
         int[] valid = [0, 0]; // [color, stroke]
         var sw = new Stopwatch();
@@ -198,7 +205,7 @@ public class RichTextString
         {
             Svc.Log.Error($"Error while parsing rich text string: {rawText}\n{ex}");
             _payloads.Clear();
-            _payloads.Add(new TextPayload($"BAD_SYNTAX"));
+            _payloads.Add(new TextPayload(rawText));
             _isValid = false;
         }
         finally

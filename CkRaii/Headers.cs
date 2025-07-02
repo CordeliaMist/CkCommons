@@ -28,12 +28,12 @@ public static partial class CkRaii
     {
         ImGui.BeginGroup();
 
-        ImDrawListPtr wdl = ImGui.GetWindowDrawList();
-        Vector2 min = ImGui.GetCursorScreenPos();
+        var wdl = ImGui.GetWindowDrawList();
+        var min = ImGui.GetCursorScreenPos();
         float lineH = 2 * ImGuiHelpers.GlobalScale;
-        Vector2 headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
-        Vector2 max = min + headerSize;
-        Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
+        var headerSize = new Vector2(size.X, ImGui.GetFrameHeight() + lineH);
+        var max = min + headerSize;
+        var linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
         // Draw the header.
         wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
@@ -51,37 +51,31 @@ public static partial class CkRaii
         Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
-        return new EndObjectContainer(
-            () => HeaderChildEndAction(colors.BodyColor, rounding),
+        return new EndObjectContainer(() =>
+            {
+                ImGui.EndChild();
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.EndGroup();
+            },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
             innerSize.WithoutWinPadding()
         );
     }
 
-    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, HeaderChildColors, float, HeaderFlags, string)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Action act, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => ButtonHeaderChild(text, ImGui.GetContentRegionAvail(), act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags, tt);
+    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, float, string, HeaderFlags)"/>
+    public static ImRaii.IEndObject ButtonHeaderChild(string text, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
+        => ButtonHeaderChild(text, ImGui.GetContentRegionAvail(), act, CkStyle.HeaderRounding(), tt, flags);
 
 
-    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, HeaderChildColors, float, HeaderFlags, string)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => ButtonHeaderChild(text, size, act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags, tt);
-
-
-    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, HeaderChildColors, float, HeaderFlags, string)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => ButtonHeaderChild(text, size, act, HeaderChildColors.Default, rounding, flags, tt);
-
-    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, HeaderChildColors, float, HeaderFlags, string)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, HeaderChildColors colors, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => ButtonHeaderChild(text, size, act, colors, CkStyle.HeaderRounding(), flags, tt);
+    /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, float, string, HeaderFlags)"/>
+    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
+        => ButtonHeaderChild(text, size, act, CkStyle.HeaderRounding(), tt, flags);
 
     /// <summary> Interactable Button Header that has a child body. </summary>
     /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, HeaderChildColors colors, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
+    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, float rounding, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
     {
         ImGui.BeginGroup();
-
         ImDrawListPtr wdl = ImGui.GetWindowDrawList();
         Vector2 min = ImGui.GetCursorScreenPos();
         float lineH = 2 * ImGuiHelpers.GlobalScale;
@@ -108,7 +102,7 @@ public static partial class CkRaii
 
         // tooltip handling.
         if (isHovered && !string.IsNullOrEmpty(tt))
-            CkGui.AttachToolTip(tt);
+            CkGui.ToolTipInternal(tt);
 
         // Adjust the cursor.
         ImGui.SetCursorScreenPos(min + new Vector2(0, headerSize.Y));
@@ -117,25 +111,23 @@ public static partial class CkRaii
         Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
-        return new EndObjectContainer(
-            () => HeaderChildEndAction(colors.BodyColor, rounding),
+        return new EndObjectContainer(() =>
+            {
+                ImGui.EndChild();
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.EndGroup();
+            },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
             innerSize.WithoutWinPadding()
         );
     }
 
     public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => IconButtonHeaderChild(text, icon, size, act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags, tt);
-
-    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => IconButtonHeaderChild(text, icon, size, act, HeaderChildColors.Default, rounding, flags, tt);
-
-    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, HeaderChildColors colors, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
-        => IconButtonHeaderChild(text, icon, size, act, colors, CkStyle.HeaderRounding(), flags, tt);
+        => IconButtonHeaderChild(text, icon, size, act, CkStyle.HeaderRounding(), flags, tt);
 
     /// <summary> Interactable Button Header that has a child body. </summary>
     /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
-    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, HeaderChildColors colors, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
+    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
     {
         ImGui.BeginGroup();
 
@@ -146,8 +138,8 @@ public static partial class CkRaii
         Vector2 max = min + headerSize;
         Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
-        wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
-        wdl.AddLine(linePos, linePos with { X = max.X }, colors.SplitColor, lineH);
+        wdl.AddRectFilled(min, max, HeaderChildColors.Default.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddLine(linePos, linePos with { X = max.X }, HeaderChildColors.Default.SplitColor, lineH);
 
         // Text & Icon Alignment
         float textWidth = ImGui.CalcTextSize(text).X;
@@ -178,8 +170,12 @@ public static partial class CkRaii
         Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
-        return new EndObjectContainer(
-            () => HeaderChildEndAction(colors.BodyColor, rounding),
+        return new EndObjectContainer(() =>
+            {
+                ImGui.EndChild();
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.EndGroup();
+            },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
             innerSize.WithoutWinPadding()
         );
@@ -193,27 +189,16 @@ public static partial class CkRaii
     }
 
 
-    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
-    public static IEOContainer CustomHeaderChild(string id, Action act, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
-        => CustomHeaderChild(id, ImGui.GetContentRegionAvail(), act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags);
+    public static IEOContainer CustomHeaderChild(string id, Action act, HeaderFlags hf = HeaderFlags.AddPaddingToHeight, DFlags df = DFlags.None)
+        => CustomHeaderChild(id, ImGui.GetContentRegionAvail(), act, CkStyle.HeaderRounding(), hf, df);
 
 
-    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
-    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
-        => CustomHeaderChild(id, size, act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags);
-
-
-    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
-    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
-        => CustomHeaderChild(id, size, act, HeaderChildColors.Default, rounding, flags);
-
-    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
-    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, HeaderChildColors colors, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
-        => CustomHeaderChild(id, size, act, colors, CkStyle.HeaderRounding(), flags);
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, HeaderFlags hf = HeaderFlags.AddPaddingToHeight, DFlags df = DFlags.None)
+        => CustomHeaderChild(id, size, act, CkStyle.HeaderRounding(), hf, df);
 
     /// <summary> Custom drawn header above a child body. </summary>
     /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
-    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action drawHeader, HeaderChildColors colors, float rounding, HeaderFlags flags)
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action drawHeader, float rounding, HeaderFlags hf = HeaderFlags.AddPaddingToHeight, DFlags df = DFlags.None)
     {
         ImDrawListPtr wdl = ImGui.GetWindowDrawList();
         Vector2 startPos = ImGui.GetCursorScreenPos();
@@ -230,17 +215,21 @@ public static partial class CkRaii
         float headerHeight = headerMax.Y - headerMin.Y;
 
         // Background/line drawing AFTER measuring header
-        wdl.AddRectFilled(headerMin, headerMax, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
-        wdl.AddLine(new Vector2(headerMin.X, headerMax.Y), new Vector2(headerMax.X, headerMax.Y), colors.SplitColor, 2f);
+        wdl.AddRectFilled(headerMin, headerMax, HeaderChildColors.Default.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddLine(new Vector2(headerMin.X, headerMax.Y), new Vector2(headerMax.X, headerMax.Y), HeaderChildColors.Default.SplitColor, 2f);
 
         // get the height for the body child, this should be based on our flags.
-        float height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerHeight : size.Y;
+        float height = ((hf & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerHeight : size.Y;
         ImGui.SetCursorScreenPos(headerMin with { Y = headerMax.Y });
         Vector2 innerSize = new Vector2(size.X, height);
 
         // Return the EndObjectContainer with the child, and the inner region.
-        return new EndObjectContainer(
-            () => HeaderChildEndAction(colors.BodyColor, rounding),
+        return new EndObjectContainer(() =>
+            {
+                ImGui.EndChild();
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.EndGroup();
+            },
             ImGui.BeginChild("CHC_" + id, innerSize, false, WFlags.AlwaysUseWindowPadding),
             innerSize.WithoutWinPadding()
         );

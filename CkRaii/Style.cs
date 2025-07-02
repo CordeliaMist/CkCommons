@@ -68,11 +68,11 @@ public static partial class CkRaii
 
     /// <summary> An IEndObject extention of EndObjectContainer, for advanced container objects built from CkRaii. </summary>
     /// <remarks> This should only be used for unconditionally ended ImGui.Group and ImGui.Child objects. </remarks>
-    private struct EndObjectLabelContainer(Action endAction, bool success, Vector2 inner, Vector2 label) : IEOLabelContainer
+    private struct EndObjectLabelContainer(Action endAction, bool success, Vector2 inner, Vector2 innerNoLabel) : IEOLabelContainer
     {
         private Action EndAction { get; } = endAction;
         public Vector2 InnerRegion { get; } = inner;
-        public Vector2 LabelRegion { get; } = label;
+        public Vector2 InnerNoLabel { get; } = innerNoLabel;
         public bool Success { get; } = success;
         public bool Disposed { get; private set; } = false;
 
@@ -88,13 +88,13 @@ public static partial class CkRaii
 
     public interface IEOLabelContainer : IEOContainer
     {
-        /// <summary> The label region of the container. </summary>
-        Vector2 LabelRegion { get; }
+        /// <summary> The region of the main container. </summary>
+        Vector2 InnerNoLabel { get; }
     }
 
     public interface IEOContainer : ImRaii.IEndObject
     {
-        /// <summary> The inner region of the container. </summary>
+        /// <summary> The inner region below the label. </summary>
         Vector2 InnerRegion { get; }
     }
 }

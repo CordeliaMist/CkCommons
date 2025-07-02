@@ -22,8 +22,21 @@ public enum HeaderFlags : byte
     /// <remarks> Useful for when you want to pass in an internal height you know of. </remarks>
     AddPaddingToHeight = 0x08,
 
-
     CR_HeaderLeft = SizeIncludesHeader | AlignLeft,
     CR_HeaderCentered = SizeIncludesHeader | AlignCenter,
     CR_HeaderRight = SizeIncludesHeader | AlignRight,
+}
+
+public enum LabelFlags : byte
+{
+    /// <summary> Nothing. </summary>
+    None = 0x00,
+
+    /// <summary> The passed in size includes the header height, and should have it subtracted before making the body. </summary>
+    /// <remarks> useful for cases where your height is ImGui.GetContentRegionAvail().Y </remarks>
+    SizeIncludesHeader = 0x01,
+
+    /// <summary> Means any container should append WindowPadding.Y * 2 to the size parameter. </summary>
+    /// <remarks> Useful for when you want to pass in an internal height you know of. </remarks>
+    AddPaddingToHeight = 0x02,
 }

@@ -37,7 +37,7 @@ public static partial class CkGui
             ToolTipInternal(text, borderSize, color);
     }
 
-    private static void ToolTipInternal(string text, float borderSize = 1f, Vector4? color = null)
+    public static void ToolTipInternal(string text, float borderSize = 1f, Vector4? color = null)
     {
         using ImRaii.Style s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
