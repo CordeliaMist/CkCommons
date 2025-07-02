@@ -12,16 +12,16 @@ namespace CkCommons.Widgets;
 public class TagCollection
 {
     private const string HELP_TEXT = $"Keybinds:--SEP--"+
-        "--NL----COL--[SHIFT + L-Click]--COL-- -> Shift entry to the left." +
-        "--NL----COL--[SHIFT + R-Click]--COL-- -> Shift entry to the right." +
-        "--NL----COL--[CTRL + R-Click]--COL-- -> Remove entry." +
-        "--NL----COL--[L-Click]--COL-- -> Edit entry.";
+        "--NL----COL--[SHIFT + L-Click]--COL-- ⇒ Shift entry to the left." +
+        "--NL----COL--[SHIFT + R-Click]--COL-- ⇒ Shift entry to the right." +
+        "--NL----COL--[CTRL + R-Click]--COL-- ⇒ Remove entry." +
+        "--NL----COL--[L-Click]--COL-- ⇒ Edit entry.";
 
     private const string HELP_TEXT_SHORT =
-        "--COL--[SHIFT + L-Click]--COL-- -> Shift left\n" +
-        "--NL----COL--[SHIFT + R-Click]--COL-- -> Shift right\n" +
-        "--NL----COL--[CTRL + R-Click]--COL-- -> Remove\n" +
-        "--NL----COL--[L-Click]--COL-- -> Edit";
+        "--COL--[SHIFT + L-Click]--COL-- ⇒ Shift left\n" +
+        "--NL----COL--[SHIFT + R-Click]--COL-- ⇒ Shift right\n" +
+        "--NL----COL--[CTRL + R-Click]--COL-- ⇒ Remove\n" +
+        "--NL----COL--[L-Click]--COL-- ⇒ Edit";
 
     private string _latestString = string.Empty;
     private List<string> _latestStringTags = new List<string>();
