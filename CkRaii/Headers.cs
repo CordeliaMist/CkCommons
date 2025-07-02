@@ -184,10 +184,67 @@ public static partial class CkRaii
             innerSize.WithoutWinPadding()
         );
     }
+
     private static void HeaderChildEndAction(uint bgCol, float rounding)
     {
         ImGui.EndChild();
         ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, ImDrawFlags.RoundCornersBottom);
         ImGui.EndGroup();
     }
+
+
+    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
+    public static IEOContainer CustomHeaderChild(string id, Action act, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
+        => CustomHeaderChild(id, ImGui.GetContentRegionAvail(), act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags);
+
+
+    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
+        => CustomHeaderChild(id, size, act, HeaderChildColors.Default, CkStyle.HeaderRounding(), flags);
+
+
+    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
+        => CustomHeaderChild(id, size, act, HeaderChildColors.Default, rounding, flags);
+
+    /// <inheritdoc cref="CustomHeaderChild(Vector2, Action, HeaderChildColors, float, HeaderFlags)"/>
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action act, HeaderChildColors colors, HeaderFlags flags = HeaderFlags.AddPaddingToHeight)
+        => CustomHeaderChild(id, size, act, colors, CkStyle.HeaderRounding(), flags);
+
+    /// <summary> Custom drawn header above a child body. </summary>
+    /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
+    public static IEOContainer CustomHeaderChild(string id, Vector2 size, Action drawHeader, HeaderChildColors colors, float rounding, HeaderFlags flags)
+    {
+        ImDrawListPtr wdl = ImGui.GetWindowDrawList();
+        Vector2 startPos = ImGui.GetCursorScreenPos();
+        ImGui.BeginGroup();
+
+        // Begin a sub-group for the header
+        ImGui.BeginGroup();
+        drawHeader.Invoke();
+        ImGui.EndGroup();
+
+        // Measure header bounds
+        Vector2 headerMin = ImGui.GetItemRectMin();
+        Vector2 headerMax = ImGui.GetItemRectMax();
+        float headerHeight = headerMax.Y - headerMin.Y;
+
+        // Background/line drawing AFTER measuring header
+        wdl.AddRectFilled(headerMin, headerMax, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddLine(new Vector2(headerMin.X, headerMax.Y), new Vector2(headerMax.X, headerMax.Y), colors.SplitColor, 2f);
+
+        // get the height for the body child, this should be based on our flags.
+        float height = ((flags & HeaderFlags.SizeIncludesHeader) != 0) ? size.Y - headerHeight : size.Y;
+        ImGui.SetCursorScreenPos(headerMin with { Y = headerMax.Y });
+        Vector2 innerSize = new Vector2(size.X, height);
+
+        // Return the EndObjectContainer with the child, and the inner region.
+        return new EndObjectContainer(
+            () => HeaderChildEndAction(colors.BodyColor, rounding),
+            ImGui.BeginChild("CHC_" + id, innerSize, false, WFlags.AlwaysUseWindowPadding),
+            innerSize.WithoutWinPadding()
+        );
+    }
+
+
 }

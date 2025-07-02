@@ -88,33 +88,27 @@ public static partial class CkRaii
         );
     }
 
-    /// <inheritdoc cref="LabelChildAction(string, Vector2, float, Func{Boolean}, float, float, ColorsLC, Action{ImGuiMouseButton}, ImDrawFlags)
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
         => LabelChildAction(id, size, widthSpan, label,  CkStyle.ChildRounding(), clicked, tt, dFlag);
 
-    /// <inheritdoc cref="LabelChildAction(string, Vector2, float, Func{Boolean}, float, float, ColorsLC, Action{ImGuiMouseButton}, ImDrawFlags)
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, ColorsLC col, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, ColorsLC col, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
         => LabelChildAction(id, size, widthSpan, label,  CkStyle.ChildRounding(), col, clicked, tt, dFlag);
 
-    /// <inheritdoc cref="LabelChildAction(string, Vector2, float, Func{Boolean}, float, float, ColorsLC, Action{ImGuiMouseButton}, ImDrawFlags)
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float bend, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
-        => LabelChildAction(id, size, widthSpan, label, bend, CkStyle.FrameThickness(), ColorsLC.Default, clicked, tt, dFlag);
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float rounding, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
+        => LabelChildAction(id, size, widthSpan, label, rounding, CkStyle.FrameThickness(), ColorsLC.Default, clicked, tt, dFlag);
 
-    /// <inheritdoc cref="LabelChildAction(string, Vector2, float, Func{Boolean}, float, float, ColorsLC, Action{ImGuiMouseButton}, ImDrawFlags)
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float bend, float fade, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
-        => LabelChildAction(id, size, widthSpan, label, bend, fade, ColorsLC.Default, clicked, tt, dFlag);
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float rounding, float fade, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
+        => LabelChildAction(id, size, widthSpan, label, rounding, fade, ColorsLC.Default, clicked, tt, dFlag);
 
-    /// <inheritdoc cref="LabelChildAction(string, Vector2, float, Func{Boolean}, float, float, ColorsLC, Action{ImGuiMouseButton}, ImDrawFlags)
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float rounding, ColorsLC col, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> label, float rounding, ColorsLC col, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
         => LabelChildAction(id, size, widthSpan, label, rounding, CkStyle.FrameThickness(), col, clicked, tt, dFlag);
 
-    // TODO: Lighten the load of paramaters in these calls with some split methods.
     /// <summary> 
     ///     Interactable label header within a padded child. <para/>
     ///     Please note that your label draws are not intended to be taller than ImGui.GetFrameHeight()
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. If you intend to make this scrollable, make another child inside. </remarks>
-    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> drawLabel, float rounding, float fade, ColorsLC col, Action<ImGuiMouseButton> clicked, string tt, DFlags dFlag = DFlags.None)
+    public static IEOLabelContainer LabelChildAction(string id, Vector2 size, float widthSpan, Func<bool> drawLabel, float rounding, float fade, ColorsLC col, Action<ImGuiMouseButton>? clicked, string tt, DFlags dFlag = DFlags.None)
     {
         string tooltip = tt.IsNullOrWhitespace() ? "Double Click to Interact--SEP--Right-Click to Cancel" : tt;
         ImDrawListPtr wdl = ImGui.GetWindowDrawList();
@@ -126,6 +120,7 @@ public static partial class CkRaii
         // Handle drawing the label.
         float labelHeight = ImGui.GetFrameHeight();
         float labelWidth = size.X * Math.Clamp(widthSpan, 0f, 1f);
+        bool fullWidth = widthSpan >= 1f;
         Vector2 labelSize = new(labelWidth, labelHeight);
         Vector2 clipMin = ImGui.GetCursorScreenPos();
         Vector2 clipMax = clipMin + labelSize;
@@ -141,11 +136,11 @@ public static partial class CkRaii
         var labelMin = ImGui.GetItemRectMin();
         var labelMax = ImGui.GetItemRectMax();
         var hovered = ImGui.IsMouseHoveringRect(labelMin, labelMax);
+        CkGui.AttachToolTipRect(labelMin, labelMax, tooltip);
         if (!disabled && hovered)
         {
-            CkGui.AttachToolTipRect(labelMin, labelMax, tooltip);
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) clicked?.Invoke(ImGuiMouseButton.Left);
-            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right)) clicked?.Invoke(ImGuiMouseButton.Right);
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right)) clicked?.Invoke(ImGuiMouseButton.Right);
         }
 
         // Draw the padded Child (The inner contents we actually draw in).
@@ -162,12 +157,28 @@ public static partial class CkRaii
         {
             ImGui.EndChild();
             wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col.BG, rounding, dFlag);
+            var min = ImGui.GetItemRectMin();
+            var max = ImGui.GetItemRectMax();
 
-            // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
+
+            if (!fullWidth)
+            {
+                // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
                 DFlags labelDFlags = DFlags.RoundCornersBottomRight | ((dFlag & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
-            wdl.AddRectFilled(labelMin, labelMin + labelThickness, col.Shadow, rounding, labelDFlags);
-            uint labelCol = disabled ? col.Label : hovered ? col.LabelHovered : col.Label;
-            wdl.AddRectFilled(labelMin, labelMax, labelCol, rounding, labelDFlags);
+                wdl.AddRectFilled(labelMin, labelMin + labelThickness, col.Shadow, rounding, labelDFlags);
+                uint labelCol = disabled ? col.Label : hovered ? col.LabelHovered : col.Label;
+                wdl.AddRectFilled(labelMin, labelMax, labelCol, rounding, labelDFlags);
+            }
+            else
+            {
+                // we are only drawing the labels now, so adjust our flags for them.
+                var labelFlags = dFlag & ~DFlags.RoundCornersBottom;
+                // Full-width: draw label + underline with thickness = fade
+                wdl.AddRectFilled(labelMin, labelMax, col.Label, rounding, labelFlags);
+                var underlineMin = new Vector2(min.X, labelMax.Y);
+                var underlineMax = new Vector2(max.X, labelMax.Y + fade);
+                wdl.AddRectFilled(underlineMin, underlineMax, col.Shadow);
+            }
 
             // end outer child.
             ImGui.EndChild();
@@ -179,6 +190,18 @@ public static partial class CkRaii
         );
     }
 
+    // LOOK into further later, it will help cleanup a lot of what is in this section. (for now just deal with paramater hell)
+    // Pushes overtop the previous child's MinRect and draws an interactable label.
+    //public static IEOLabelContainer LabelOnPrevChild(string id, Vector2 size, float rounding, float fade, DFlags flags)
+    //{
+    //    ImGui.PushClipRect(clipMin, clipMax, true);
+    //    ImGui.BeginGroup();
+    //    ImGui.Dummy(labelSize);
+    //    ImGui.SetCursorScreenPos(clipMin);
+    //    bool disabled = drawLabel.Invoke();
+    //    ImGui.EndGroup();
+    //    ImGui.PopClipRect();
+    //}
 
     public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
         => LabelHeaderChild(size, label, labelWidth, ImGui.GetFrameHeight(),  CkStyle.ChildRounding(), cFlags, lFlags);
