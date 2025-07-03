@@ -21,8 +21,8 @@ public class RichTextString
     private Stack<uint> _strokeColors = new();
     private bool _isValid;
     private ImFontPtr _lastFont;
-    public float _lastWrapWidth;
-
+    private float _lastWrapWidth;
+    private int _lineCount;
     private uint? CurrentStroke => _strokeColors.Count > 0 ? _strokeColors.Peek() : null;
     private string RawText => string.Concat(_payloads.OfType<TextPayload>().Select(p => p.RawText));
 
@@ -33,6 +33,8 @@ public class RichTextString
     {
         BuildPayloads(rawString);
     }
+
+    public int RichTextLineCount => _lineCount;
 
     /// <summary> Renders the combined richText for display. It is up to you to make sure the caches are valid. </summary>
     public void Render(ImFontPtr font, float wrapWidth)
@@ -95,10 +97,21 @@ public class RichTextString
         // update the font and wrap width to the new value.
         _lastFont = font;
         _lastWrapWidth = wrapWidth;
-        // Update the individual caches to respect the new font and wrap width.
+
         float currentLineWidth = 0f;
+        float previousLineWidth = 0f;
+        _lineCount = 1;
+        // Update the individual caches to respect the new font and wrap width.
         foreach (RichPayload payload in _payloads)
+        {
             payload.UpdateCache(font, wrapWidth, ref currentLineWidth);
+            // new line was triggered if the current line width is less than prev line width.
+            if (currentLineWidth < previousLineWidth)
+                _lineCount++;
+
+            previousLineWidth = currentLineWidth;
+            
+        }
     }
 
     public unsafe bool MatchesCachedState(ImFontPtr font, float wrapWidth)
@@ -111,8 +124,8 @@ public class RichTextString
         rawText = rawText.Replace("\n\n", "[para]");
         rawText = rawText.Replace("\n", "[para]");
 
-        string[] result = Regex.Split(rawText, @"(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase);
-        int[] valid = [0, 0]; // [color, stroke]
+        string[] result = CkRichText.RichTextRegex().Split(rawText); // [color, stroke]
+        int[] valid = new int[2]; // [0] = color, [1] = stroke
         var sw = new Stopwatch();
         sw.Start();
         try
@@ -131,7 +144,7 @@ public class RichTextString
                     case "[para]":
                         _payloads.Add(new NewLinePayload());
                         continue;
-                    case "[/color]":
+                    case "[/color]" or "[/rawcolor]":
                         _payloads.Add(ColorPayload.Off);
                         valid[0]--;
                         continue;
@@ -142,6 +155,17 @@ public class RichTextString
                 }
 
                 // On Switches
+                if (part.StartsWith("[rawcolor=", StringComparison.OrdinalIgnoreCase))
+                {
+                    // strip the [rawcolor= and ] from the part.
+                    string colorValue = part[10..^1];
+                    if (!uint.TryParse(colorValue, out uint color))
+                        throw new Exception($"[RichText] Invalid [rawcolor] tag value: {part}");
+                    _payloads.Add(new ColorPayload(color));
+                    valid[0]++;
+                    continue;
+                }
+
                 if (part.StartsWith("[color=", StringComparison.OrdinalIgnoreCase))
                 {
                     if (!TryParseColor(part[7..^1], out uint color))

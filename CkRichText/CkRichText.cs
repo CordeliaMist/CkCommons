@@ -2,6 +2,7 @@ using CkCommons.Gui;
 using CkCommons.Helpers;
 using Dalamud.Interface.Colors;
 using ImGuiNET;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CkCommons.RichText;
 
@@ -19,6 +20,15 @@ public static partial class CkRichText
     {
         var tooltip = $"--COL--Named Color Codes:--COL----SEP--{string.Join(", ", Enum.GetNames<XlDataUiColor>())}";
         CkGui.HelpText(tooltip, ImGuiColors.ParsedPink);
+    }
+
+    // may be prone to flickering if done mid-text edit, look into more later.
+    public static int GetRichTextLineHeight(string text, int cloneId)
+    {
+        if (!_cache.TryGetValue(new RichTextKey(cloneId, text), out var richString))
+            return 0; // No size for empty text
+        // Return the size of the rich text.
+        return richString.RichTextLineCount;
     }
 
     /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
@@ -61,4 +71,61 @@ public static partial class CkRichText
         // Render the thingy.
         richString.Render(fontPtr, wrapWidth);
     }
+
+    /// <summary>
+    ///     Helper method to strip unwanted elements of a CkRichText rawstring, if desired.
+    /// </summary>
+    public static string StripDisallowedRichTags(string input, RichTextFilter allowed)
+    {
+        // return original if string is empty.
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // account for excessive newline spam.
+        input = input.Replace("\r\n", "\n").Replace("\n\n", "[para]").Replace("\n", "[para]");
+
+        var result = new StringBuilder(input.Length);
+        var tokens = RichTextRegex().Split(input);
+
+        foreach (var t in tokens)
+        {
+            // If the token is empty, skip it.
+            if (string.IsNullOrWhiteSpace(t))
+                continue;
+
+            // if the token has [], it is a tag.
+            if (t.StartsWith("[") && t.EndsWith("]"))
+            {
+                var isAllowed = t switch
+                {
+                    "[line]" => (allowed & RichTextFilter.Line) != 0,
+                    "[para]" => (allowed & RichTextFilter.Paragraph) != 0,
+                    "[/color]" => (allowed & RichTextFilter.Color) != 0,
+                    "[/rawcolor]" => (allowed & RichTextFilter.RawColor) != 0,
+                    "[/stroke]" => (allowed & RichTextFilter.Stroke) != 0,
+                    "[/glow]" => (allowed & RichTextFilter.Glow) != 0,
+                    _ when t.StartsWith("[color=", StringComparison.OrdinalIgnoreCase) => (allowed & RichTextFilter.Color) != 0,
+                    _ when t.StartsWith("[rawcolor=", StringComparison.OrdinalIgnoreCase) => (allowed & RichTextFilter.RawColor) != 0,
+                    _ when t.StartsWith("[stroke=", StringComparison.OrdinalIgnoreCase) => (allowed & RichTextFilter.Stroke) != 0,
+                    _ when t.StartsWith("[glow=", StringComparison.OrdinalIgnoreCase) => (allowed & RichTextFilter.Glow) != 0,
+                    _ when t.StartsWith("[img=", StringComparison.OrdinalIgnoreCase) => (allowed & RichTextFilter.Images) != 0,
+                    _ => true
+                };
+                if (isAllowed)
+                    result.Append(t);
+            }
+            else
+            {
+                result.Append(t);
+            }
+        }
+        return result.ToString();
+    }
+
+
+    [GeneratedRegex(@"(\[rawcolor=(0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
+    public static partial Regex RichTextRegex();
+
+    // Compressed Version below, still untested.
+    // [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/(?:rawcolor|color|stroke|glow)\])|(\[(?:color|stroke|glow)=[0-9a-z#]+\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
 }
