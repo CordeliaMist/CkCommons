@@ -21,16 +21,17 @@ public static partial class CkRaii
 
         // Calculate the drawn header size.
         Vector2 hSize = new(labelWidth, ImGui.GetFrameHeight());
+        var headerStrokeHeight = hSize.Y + stroke;
         // If size includes header, return size, otherwise, if we should add padding, add padding, but regardless, add header height.
         var outerHeight = ((lf & LabelFlags.SizeIncludesHeader) != 0)
             ? size.Y : (lf & LabelFlags.AddPaddingToHeight) != 0
-                ? size.Y.AddWinPadY() + ImGui.GetFrameHeight() : size.Y + ImGui.GetFrameHeight();
+                ? size.Y.AddWinPadY() + headerStrokeHeight : size.Y + headerStrokeHeight;
 
         var outerSize = new Vector2(size.X, outerHeight);
-        var innerSize = outerSize.WithoutWinPadding() - new Vector2(0, hSize.Y);
+        var innerSize = outerSize.WithoutWinPadding() - new Vector2(0, headerStrokeHeight);
         // Begin the outer child.
         var success = ImGui.BeginChild($"##LabelTextChild-{text}", outerSize, false, WFlags.AlwaysUseWindowPadding);
-        ImGui.Dummy(hSize - new Vector2(ImGui.GetStyle().ItemSpacing.Y));
+        ImGui.Dummy(hSize + new Vector2(stroke - ImGui.GetStyle().ItemSpacing.Y));
         // Return the end object, closing the draw on the child.
         return new EndObjectLabelContainer(() =>
             {
@@ -67,15 +68,16 @@ public static partial class CkRaii
         // Calculate the drawn header size.
         Vector2 hSize = new(size.X, ImGui.GetFrameHeight());
         // If size includes header, return size, otherwise, if we should add padding, add padding, but regardless, add header height.
+        var headerStrokeHeight = hSize.Y + stroke;
         var outerHeight = ((lf & LabelFlags.SizeIncludesHeader) != 0)
             ? size.Y : (lf & LabelFlags.AddPaddingToHeight) != 0
-                ? size.Y.AddWinPadY() + ImGui.GetFrameHeight() : size.Y + ImGui.GetFrameHeight();
+                ? size.Y.AddWinPadY() + headerStrokeHeight : size.Y + headerStrokeHeight;
 
         var outerSize = new Vector2(size.X, outerHeight);
-        var innerSize = outerSize.WithoutWinPadding() - new Vector2(0, hSize.Y);
+        var innerSize = outerSize.WithoutWinPadding() - new Vector2(0, headerStrokeHeight);
         // Begin the outer child.
         var success = ImGui.BeginChild($"##LabelFullTextChild-{text}", outerSize, false, WFlags.AlwaysUseWindowPadding);
-        ImGui.Dummy(hSize - new Vector2(ImGui.GetStyle().ItemSpacing.Y));
+        ImGui.Dummy(hSize + new Vector2(stroke - ImGui.GetStyle().ItemSpacing.Y));
         // Return the end object, closing the draw on the child.
         return new EndObjectLabelContainer(() =>
         {
@@ -83,6 +85,8 @@ public static partial class CkRaii
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
             var wdl = ImGui.GetWindowDrawList();
+
+            wdl.AddRectFilled(min, ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
             // Determine where the label ends.
             var labelMax = new Vector2(max.X, min.Y + ImGui.GetFrameHeight());
             // we are only drawing the labels now, so adjust our flags for them.
@@ -355,6 +359,118 @@ public static partial class CkRaii
             innerSize
         );
     }
+
+
+    /// <summary> 
+    ///     Custom drawn label, that is attached to a child. <para/>
+    ///     If you intend to make this scrollable, make another child inside.
+    /// </summary>
+    /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
+    public static IEOLabelContainer ChildLabelCustom(string id, Vector2 size, Action label, float rounding, float stroke, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
+    {
+        // Begin the group that spans the outer area.
+        var wdl = ImGui.GetWindowDrawList();
+        var pos = ImGui.GetCursorScreenPos();
+        ImGui.BeginGroup();
+        // Handle drawing the label.
+        ImGui.BeginGroup();
+        label?.Invoke();
+        ImGui.EndGroup();
+        var labelMax = ImGui.GetItemRectMax();
+        var labelSize = labelMax - pos;
+        var labelStrokeHeight = labelSize.Y + stroke;
+        // If size includes header, return size, otherwise, if we should add padding, add padding, but regardless, add header height.
+        var outerHeight = ((lf & LabelFlags.SizeIncludesHeader) != 0)
+            ? size.Y : (lf & LabelFlags.AddPaddingToHeight) != 0
+                ? size.Y.AddWinPadY() + labelStrokeHeight : size.Y + labelStrokeHeight;
+
+        var outerSize = new Vector2(size.X, outerHeight);
+        ImGui.SetCursorScreenPos(pos + new Vector2(0, labelStrokeHeight));
+        bool success = ImGui.BeginChild($"##CL_CustomFullBody_{id}", outerSize, false, WFlags.AlwaysUseWindowPadding);
+        ImGui.Dummy(labelSize + new Vector2(stroke - ImGui.GetStyle().ItemSpacing.Y));
+        var innerSize = outerSize.WithoutWinPadding() - new Vector2(0, labelStrokeHeight);
+
+        // Return the end object, closing the draw on the child.
+        return new EndObjectLabelContainer(() =>
+        {
+            ImGui.EndChild();
+            var min = ImGui.GetItemRectMin();
+            var max = ImGui.GetItemRectMax();
+            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df & ~DFlags.RoundCornersTop);
+            // we are only drawing the labels now, so adjust our flags for them.
+            var labelFlags = df & ~DFlags.RoundCornersBottom;
+            // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
+            DFlags labelDFlags = DFlags.RoundCornersBottomRight | ((df & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
+            wdl.AddRectFilled(pos, labelMax + new Vector2(stroke), ColorsLC.Default.Shadow, rounding, labelDFlags);
+            wdl.AddRectFilled(pos, labelMax, ColorsLC.Default.Label, rounding, labelDFlags);
+            ImGui.EndGroup();
+        },
+            success,
+            outerSize.WithoutWinPadding(),
+            innerSize
+        );
+    }
+
+    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, ImDrawFlags, LabelFlags)"/>
+    public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
+        => ChildLabelCustomFull(id, size, CkStyle.ChildRounding(), CkStyle.FrameThickness(), label, df, lf);
+
+    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, ImDrawFlags, LabelFlags)"/>
+    public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, float rounding, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
+        => ChildLabelCustomFull(id, size, rounding, CkStyle.FrameThickness(), label, df, lf);
+
+    /// <summary> 
+    ///     Custom drawn label, that is attached to a child. <para/>
+    ///     If you intend to make this scrollable, make another child inside.
+    /// </summary>
+    /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
+    public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, float rounding, float stroke, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
+    {
+        // Begin the group that spans the outer area.
+        var wdl = ImGui.GetWindowDrawList();
+        var pos = ImGui.GetCursorScreenPos();
+        ImGui.BeginGroup();
+
+        // Handle drawing the label.
+        ImGui.BeginGroup();
+        label?.Invoke();
+        ImGui.EndGroup();
+        var labelMax = ImGui.GetItemRectMax();
+        var labelSize = labelMax - pos;
+        var labelStrokeHeight = labelSize.Y + stroke;
+        // If size includes header, return size, otherwise, if we should add padding, add padding, but regardless, add header height.
+        var outerHeight = ((lf & LabelFlags.SizeIncludesHeader) != 0)
+            ? size.Y : (lf & LabelFlags.AddPaddingToHeight) != 0
+                ? size.Y.AddWinPadY() + labelStrokeHeight : size.Y + labelStrokeHeight;
+
+        var outerSize = new Vector2(size.X, outerHeight);
+        ImGui.SetCursorScreenPos(pos + new Vector2(0, labelStrokeHeight));
+        var innerSize = outerSize - new Vector2(0, labelStrokeHeight);
+        bool success = ImGui.BeginChild($"##CL_CustomFullBody_{id}", innerSize, false, WFlags.AlwaysUseWindowPadding);
+
+        // Return the end object, closing the draw on the child.
+        return new EndObjectLabelContainer(() =>
+        {
+            ImGui.EndChild();
+            var min = ImGui.GetItemRectMin();
+            var max = ImGui.GetItemRectMax();
+            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df & ~DFlags.RoundCornersTop);
+            // we are only drawing the labels now, so adjust our flags for them.
+            var labelFlags = df & ~DFlags.RoundCornersBottom;
+            // Full-width: draw label + underline with thickness = fade
+            wdl.AddRectFilled(pos, labelMax, ColorsLC.Default.Label, rounding, labelFlags);
+            var underlineMin = new Vector2(min.X, labelMax.Y);
+            var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
+            wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            ImGui.EndGroup();
+        },
+            success,
+            outerSize.WithoutWinPadding(),
+            innerSize
+        );
+    }
+
+
 
     public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
         => LabelHeaderChild(size, label, labelWidth, ImGui.GetFrameHeight(),  CkStyle.ChildRounding(), cFlags, lFlags);
