@@ -73,8 +73,10 @@ public static partial class CkGuiUtils
         float spacingWidth = fullWidth - (hourSize + minuteSize + splitSize);
         float individualSpacing = spacingWidth / 2;
 
-        using (ImRaii.Table($"DateTimeEditor_{id}", 3, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
+        using (var t = ImRaii.Table($"DateTimeEditor_{id}", 3, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
+            if (!t) return;
+
             ImGui.TableSetupColumn("Hour", ImGuiTableColumnFlags.WidthFixed, hourSize + individualSpacing);
             ImGui.TableSetupColumn("Split", ImGuiTableColumnFlags.WidthFixed, splitSize);
             ImGui.TableSetupColumn("Minute", ImGuiTableColumnFlags.WidthFixed, minuteSize + individualSpacing);
@@ -145,8 +147,10 @@ public static partial class CkGuiUtils
         float spacingWidth = fullWidth - (h + m + s + ms);
         float individualSpacing = spacingWidth / 2;
 
-        using (ImRaii.Table($"DateTimePreview_{id}", totalColumns + 2, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
+        using (var t = ImRaii.Table($"DateTimePreview_{id}", totalColumns + 2, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
+            if (!t) return;
+
             ImGui.TableSetupColumn("SpaceLeft", ImGuiTableColumnFlags.WidthFixed, individualSpacing);
             foreach (string? match in matches)
                 switch (match)
