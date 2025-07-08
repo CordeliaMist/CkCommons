@@ -93,6 +93,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             // draw the text preview if we should.
             DrawChatInputRow(ref displayPreview);
 
+            // maybe fix this by putting a child in a child inside the chatlog and doing some layer voodoo there idk.
             if (displayPreview)
                 DrawTextPreview(previewMessage, innerWdl);
 
@@ -208,8 +209,11 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             .Push(ImGuiStyleVar.PopupBorderSize, 2f);
         using var col = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
 
-        using var _ = ImRaii.Popup($"GlobalChatMessageActions_{LastInteractedMsg.UID}");
-        DrawPopupInternal();
+        using (var popup = ImRaii.Popup($"GlobalChatMessageActions_{LastInteractedMsg.UID}"))
+        {
+            if (popup)
+                DrawPopupInternal();
+        }
     }
 
     protected abstract void DrawPopupInternal();
