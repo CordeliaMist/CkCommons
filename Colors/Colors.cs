@@ -105,6 +105,9 @@ public static class CkColors
             CkColor.VibrantPinkHovered      => 0xF3B076FB,
             CkColor.VibrantPinkPressed      => 0xC48546D7,
 
+            CkColor.CkMistressColor         => CkColor.CkMistressColor.Vec4().ToUint(),
+            CkColor.CkMistressText          => CkColor.CkMistressText.Vec4().ToUint(),
+
             CkColor.LushPinkLine            => 0xFF671ACD,
             CkColor.LushPinkButton          => 0xFF750DFF,
 

@@ -1,10 +1,13 @@
 using CkCommons.Gui;
+using CkCommons.Helpers;
 using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using ImGuiNET;
+using OtterGui.Text.Widget.Editors;
+using OtterGui.Text;
 using System.Drawing;
 using System.Globalization;
 
@@ -77,7 +80,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         => $"Sent @ {message.Timestamp.ToString("T", CultureInfo.CurrentCulture)}\n[Right-Click] View Interactions";
     protected abstract void OnMiddleClick(T message);
     protected abstract void OnSendMessage(string message);
-    public void DrawChat(Vector2 region, bool displayPreview)
+    public void DrawChat(Vector2 region, ref bool displayPreview)
     {
         // Create a windows drawlist here so we have the outermost drawlist.
         var outerWdl = ImGui.GetWindowDrawList();
@@ -87,13 +90,15 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             // Draw the chat log history.
             innerWdl = ImGui.GetWindowDrawList();
             DrawChatLog(c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing()));
-            DrawChatInput();
+            // draw the text preview if we should.
+            DrawChatInputRow(ref displayPreview);
+
+            if (displayPreview)
+                DrawTextPreview(previewMessage, innerWdl);
+
             // Attempt to handle any popups we may have had (within the same context)
             ShowPopups();
         }
-        // draw the text preview if we should.
-        if (displayPreview)
-            DrawTextPreview(previewMessage, innerWdl);
     }
 
     public void DrawChatLog(Vector2 region)
@@ -125,9 +130,10 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         CkGui.AttachToolTip(ToTooltip(message), color: CkColor.VibrantPink.Vec4());
     }
 
-    public void DrawChatInput()
+    public virtual void DrawChatInputRow(ref bool showPreview)
     {
-        var Icon = DoAutoScroll ? FAI.ArrowDownUpLock : FAI.ArrowDownUpAcrossLine;
+        using var _ = ImRaii.Group();
+
         var width = ImGui.GetContentRegionAvail().X;
 
         // Set keyboard focus to the chat input box if needed
@@ -141,37 +147,43 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             }
         }
 
-        ImGui.SetNextItemWidth(width - CkGui.IconButtonSize(Icon).X * 2 - ImGui.GetStyle().ItemInnerSpacing.X * 2);
-        ImGui.InputTextWithHint($"##ChatInput{Label}{ID}", "type here...", ref previewMessage, 400);
+        ImGui.SetNextItemWidth(width);
+        ImGui.InputTextWithHint($"##ChatInput{Label}{ID}", $"message {Label}...", ref previewMessage, 400);
 
         // Process submission Prevent losing chat focus after pressing the Enter key.
         if (ImGui.IsItemFocused() && ImGui.IsKeyPressed(ImGuiKey.Enter))
+        {
+            shouldFocusChatInput = true;
             OnSendMessage(previewMessage);
+        }
 
         // Update preview display based on input field activity
-        shouldFocusChatInput = ImGui.IsItemActive();
-
+        showPreview = ImGui.IsItemActive();
     }
 
+    private float prevValidHeight = 0f;
     private void DrawTextPreview(string message, ImDrawListPtr drawList)
     {
         // get the previous childs min and max positions.
-        var chatMin = ImGui.GetItemRectMin();
-        var chatMax = ImGui.GetItemRectMax();
+        var inputRowMin = ImGui.GetItemRectMin();
+        var inputRowSize = ImGui.GetItemRectSize();
         var padding = new Vector2(5, 5);
-        var wrapWidth = (chatMax.X - chatMin.X) - padding.X * 2;
+        var wrapWidth = inputRowSize.X - padding.X * 2;
 
         // Estimate text size with wrapping
-        var textSize = ImGui.CalcTextSize(message, wrapWidth: wrapWidth);
-        var singleLineHeight = ImGui.CalcTextSize("A").Y;
-        var lineCount = (int)Math.Ceiling(textSize.Y / singleLineHeight);
-        var boxSize = new Vector2(chatMax.X, lineCount * singleLineHeight + padding.Y * 2);
-        var boxPos = new Vector2(0, chatMax.Y - boxSize.Y);
+        var calculatedHeight = CkRichText.GetRichTextLineHeight(message, ID);
+        var finalHeight = calculatedHeight == 0 ? prevValidHeight : calculatedHeight;
+
+        if (calculatedHeight != 0)
+            prevValidHeight = finalHeight;
+
+        var boxSize = new Vector2(inputRowSize.X, ImGui.GetTextLineHeightWithSpacing() * finalHeight + padding.Y * 2);
+        var boxPos = new Vector2(inputRowMin.X, inputRowMin.Y - boxSize.Y);
 
         // Draw semi-transparent background
         drawList.AddRectFilled(boxPos, boxPos + boxSize, ImGui.GetColorU32(new Vector4(0.05f, 0.025f, 0.05f, .9f)), 5);
 
-        var startPos = new Vector2(ImGui.GetCursorScreenPos().X + padding.X, chatMax.Y - boxSize.Y + padding.Y);
+        var startPos = new Vector2(ImGui.GetCursorScreenPos().X + padding.X, inputRowMin.Y - boxSize.Y + padding.Y);
         ImGui.SetCursorScreenPos(startPos);
         CkRichText.Text(wrapWidth, message, ID);
     }

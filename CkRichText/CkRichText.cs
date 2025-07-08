@@ -123,7 +123,7 @@ public static partial class CkRichText
     }
 
 
-    [GeneratedRegex(@"(\[rawcolor=(0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(:[^\s:]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
     public static partial Regex RichTextRegex();
 
     // Compressed Version below, still untested.

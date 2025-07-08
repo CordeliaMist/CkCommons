@@ -1,6 +1,7 @@
 using CkCommons.Helpers;
 using CkCommons.Services;
 using CkCommons.Textures;
+using FFXIVClientStructs.FFXIV.Common.Lua;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using System.Buffers.Binary;
@@ -110,7 +111,6 @@ public class RichTextString
                 _lineCount++;
 
             previousLineWidth = currentLineWidth;
-            
         }
     }
 
@@ -130,10 +130,13 @@ public class RichTextString
         sw.Start();
         try
         {
+            Svc.Log.Information($"[RichText] Parsing rich text string: {rawText}");
             foreach (string part in result)
             {
                 if (string.IsNullOrWhiteSpace(part))
                     continue;
+
+                Svc.Log.Information($"[RichText] payload type was: {part}");
 
                 // off switches.
                 switch (part)
@@ -159,7 +162,14 @@ public class RichTextString
                 {
                     // strip the [rawcolor= and ] from the part.
                     string colorValue = part[10..^1];
-                    if (!uint.TryParse(colorValue, out uint color))
+
+                    // parse out normal uint or hex uint.
+                    uint color = 0;
+                    bool success = colorValue.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                        ? uint.TryParse(colorValue[2..], System.Globalization.NumberStyles.HexNumber, null, out color)
+                        : uint.TryParse(colorValue, out color);
+
+                    if (!success)
                         throw new Exception($"[RichText] Invalid [rawcolor] tag value: {part}");
                     _payloads.Add(new ColorPayload(color));
                     valid[0]++;

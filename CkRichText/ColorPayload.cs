@@ -4,18 +4,18 @@ namespace CkCommons.RichText;
 
 public class ColorPayload : RichPayload
 {
-    public uint Color { get; }
-    public ColorPayload(uint color)
+    public uint? Color { get; }
+    public ColorPayload(uint? color)
     {
         Color = color;
     }
 
-    public static ColorPayload Off => new(0);
+    public static ColorPayload Off => new(null);
 
     public void UpdateColor()
     {
-        if (Color != 0)
-            ImGui.PushStyleColor(ImGuiCol.Text, Color);
+        if (Color.HasValue)
+            ImGui.PushStyleColor(ImGuiCol.Text, Color.Value);
         else
             ImGui.PopStyleColor();
     }
