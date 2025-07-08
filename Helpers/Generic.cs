@@ -11,7 +11,10 @@ using System.Windows.Forms;
 namespace CkCommons;
 public static class Generic
 {
-    // #nullable disable
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsInRange<T>(this int idx, IReadOnlyCollection<T> collection)
+        => (uint)idx < (uint)collection.Count;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(Action a, bool suppressErrors = false)
     {
@@ -36,6 +39,20 @@ public static class Generic
         {
             if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
             return default;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task Safe(Func<Task> a, bool suppressErrors = false)
+    {
+        try
+        {
+            await a();
+        }
+        catch (Exception e)
+        {
+            if (!suppressErrors)
+                Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
         }
     }
 
