@@ -1,4 +1,6 @@
+using CkCommons.Services;
 using Dalamud.Interface.Textures.TextureWraps;
+using Dalamud.Plugin.Services;
 
 namespace CkCommons.Textures;
 /// <summary>
@@ -19,10 +21,19 @@ public class EnumTextureCache<TEnum> : IDisposable where TEnum : Enum
         foreach (var (key, path) in lookup)
         {
             if (string.IsNullOrEmpty(path))
+            {
+                Svc.Log.Warning($"[EnumTextureCache] Skipping empty path for key: {key}");
                 continue;
+            }
 
             if (TextureManager.TryRentAssetDirectoryImage(path, out var t) && t != null)
+            {
                 _cache.TryAdd(key, t);
+            }
+            else
+            {
+                Svc.Log.Warning($"[EnumTextureCache] Failed to load texture at path '{path}' for key: {key}");
+            }
         }
     }
 

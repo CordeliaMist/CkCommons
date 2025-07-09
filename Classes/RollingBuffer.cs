@@ -4,33 +4,46 @@ namespace CkCommons.Classes;
 ///     Similar to a circular buffer, except all previous data save a fraction 
 ///     is cleared each time the threshold is reached, to provide more efficient storage.
 /// </summary>
+/// <remarks> Values can be referenced due to it being array. </remarks>
 public class RollingBuffer<T>
 {
     private readonly int _threshold;
     private readonly double _retainFraction;
-    private readonly List<T> _buffer;
+    private T[] _buffer;
+    private int _count;
 
     public RollingBuffer(int threshold, double retainFraction = 0.2)
     {
         _threshold = threshold;
         _retainFraction = retainFraction;
-        _buffer = new List<T>();
+        _buffer = new T[threshold];
+        _count = 0;
     }
 
-    public int Count => _buffer.Count;
-    public T this[int index] => _buffer[index];
+    public int Count => _count;
+    public ref T this[int index] => ref _buffer[index];
     public IReadOnlyList<T> Items => _buffer;
 
     public void Add(T item)
     {
-        _buffer.Add(item);
-        if (_buffer.Count > _threshold)
+        if (_count < _threshold)
+        {
+            _buffer[_count++] = item;
+        }
+        else
         {
             int retain = (int)(_threshold * _retainFraction);
             if (retain < 1) retain = 1;
-            _buffer.RemoveRange(0, _buffer.Count - retain);
+            // Shift retained items to the front
+            Array.Copy(_buffer, _count - retain, _buffer, 0, retain);
+            _count = retain;
+            _buffer[_count++] = item;
         }
     }
 
-    public void Clear() => _buffer.Clear();
+    public void Clear()
+    {
+        Array.Clear(_buffer, 0, _count);
+        _count = 0;
+    }
 }
