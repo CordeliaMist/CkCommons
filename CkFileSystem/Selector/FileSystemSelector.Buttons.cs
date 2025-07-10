@@ -7,7 +7,7 @@ namespace CkCommons.FileSystem.Selector;
 public partial class CkFileSystemSelector<T, TStateStorage>
 {
     /// <summary> Draw necessary popups from buttons outside of pushed styles. </summary>
-    protected virtual void DrawPopups() { }
+    public virtual void DrawPopups() { }
 
     /// <summary> Protected so it can be removed. </summary>
     protected void FolderAddButton()

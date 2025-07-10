@@ -164,21 +164,53 @@ public static partial class CkGui
     public static float GetSeparatorSpacedHeight(float? height = null)
     => height + ImGui.GetStyle().ItemSpacing.Y * 4 ?? ImGui.GetStyle().ItemSpacing.Y * 5;
 
-    public static void Separator(float? height = null, float? width = null, uint? col = null)
+    public static void Separator(float? width = null, float? height = null)
     {
         ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        if(col is not null)
-            ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col ?? CkColor.FancyHeaderContrast.Uint());
     }
 
-    public static void SeparatorSpaced(float? height = null, float? width = null, uint? col = null)
+
+    public static void SeparatorColored(float? width = null, float? height = null, uint? col = null)
+    {
+        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col ?? CkColor.FancyHeaderContrast.Uint());
+    }
+
+    public static void SeparatorSpaced(float? height = null, float? width = null)
     {
         ImGui.Spacing();
         ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        if (col is not null)
-            ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col.Value);
         ImGui.Spacing();
     }
+
+    public static void SeparatorSpacedColored(float? height = null, float? width = null, uint? col = null)
+    {
+        ImGui.Spacing();
+        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col ?? CkColor.FancyHeaderContrast.Uint());
+        ImGui.Spacing();
+    }
+
+    public static void VerticalSeparator(float? width = null, uint? col = null, float? height = null)
+    {
+        float lineWidth = width ?? 1f;         
+        var spacing = ImGui.GetStyle().ItemSpacing.X;
+        ImGui.SameLine(0, lineWidth + spacing * 2);
+
+        // get lineHeight after so if it has to grab GetContentRegionAvail().Y it grabs the full height.
+        float lineHeight = height ?? ImGui.GetContentRegionAvail().Y;
+        var drawList = ImGui.GetWindowDrawList();
+        var pos = ImGui.GetCursorScreenPos();
+        var top = new Vector2(pos.X - spacing, pos.Y);
+
+        drawList.AddLine(top, top + new Vector2(0, lineHeight), col ?? ImGui.GetColorU32(ImGuiCol.Border), lineWidth);
+    }
+
+    public static void TextLineVerticalSeparator(float? width = null, uint? col = null)
+        => VerticalSeparator(width, col, ImGui.GetTextLineHeight());
+
+    public static void FrameVerticalSeparator(float? width = null, uint? col = null)
+        => VerticalSeparator(width, col, ImGui.GetFrameHeight());
 
     /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
