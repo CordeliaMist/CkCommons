@@ -24,7 +24,7 @@ public class RollingBuffer<T>
     public ref T this[int index] => ref _buffer[index];
     public IReadOnlyList<T> Items => _buffer;
 
-    public void Add(T item)
+    public void PushBack(T item)
     {
         if (_count < _threshold)
         {
@@ -38,6 +38,31 @@ public class RollingBuffer<T>
             Array.Copy(_buffer, _count - retain, _buffer, 0, retain);
             _count = retain;
             _buffer[_count++] = item;
+        }
+    }
+
+    public void PushFront(T item)
+    {
+        if (_count < _threshold)
+        {
+            // Shift existing elements one position right to free up index 0
+            if (_count > 0)
+                Array.Copy(_buffer, 0, _buffer, 1, _count);
+
+            _buffer[0] = item;
+            _count++;
+        }
+        else
+        {
+            int retain = (int)(_threshold * _retainFraction);
+            if (retain < 1) retain = 1;
+
+            _count = retain;
+            // Shift retained elements to the right to free index 0 for new item
+            Array.Copy(_buffer, 0, _buffer, 1, retain);
+
+            _buffer[0] = item;
+            _count++;
         }
     }
 

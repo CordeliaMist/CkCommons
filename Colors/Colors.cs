@@ -14,8 +14,10 @@ public enum CkColor
     CkMistressText,
     
     LushPinkLine,
+    LushPinkLineDisabled,
     LushPinkButton,
-    
+    LushPinkButtonDisabled,
+
     RemoteBg,
     RemoteBgDark,
     RemoteLines,
@@ -57,43 +59,45 @@ public static class CkColors
     public static Vector4 Vec4(this CkColor color)
         => color switch
         {
-            CkColor.VibrantPink         => new Vector4(0.977f, 0.380f, 0.640f, 0.914f),
-            CkColor.VibrantPinkHovered  => new Vector4(0.986f, 0.464f, 0.691f, 0.955f),
-            CkColor.VibrantPinkPressed  => new Vector4(0.846f, 0.276f, 0.523f, 0.769f),
+            CkColor.VibrantPink             => new Vector4(0.977f, 0.380f, 0.640f, 0.914f),
+            CkColor.VibrantPinkHovered      => new Vector4(0.986f, 0.464f, 0.691f, 0.955f),
+            CkColor.VibrantPinkPressed      => new Vector4(0.846f, 0.276f, 0.523f, 0.769f),
 
-            CkColor.CkMistressColor     => new Vector4(0.886f, 0.407f, 0.658f, 1.000f),
-            CkColor.CkMistressText      => new Vector4(1.000f, 0.711f, 0.843f, 1.000f),
+            CkColor.CkMistressColor         => new Vector4(0.886f, 0.407f, 0.658f, 1.000f),
+            CkColor.CkMistressText          => new Vector4(1.000f, 0.711f, 0.843f, 1.000f),
 
-            CkColor.LushPinkLine        => new Vector4(0.806f, 0.102f, 0.407f, 1.000f),
-            CkColor.LushPinkButton      => new Vector4(1.000f, 0.051f, 0.462f, 1.000f),
+            CkColor.LushPinkLine            => new Vector4(0.806f, 0.102f, 0.407f, 1.000f),
+            CkColor.LushPinkLineDisabled    => new Vector4(0.806f, 0.102f, 0.407f, 0.500f),
+            CkColor.LushPinkButton          => new Vector4(1.000f, 0.051f, 0.462f, 1.000f),
+            CkColor.LushPinkButtonDisabled  => new Vector4(1.000f, 0.051f, 0.462f, 0.500f),
 
-            CkColor.RemoteBg            => new Vector4(0.122f, 0.122f, 0.161f, 1.000f),
-            CkColor.RemoteBgDark        => new Vector4(0.090f, 0.090f, 0.122f, 1.000f),
-            CkColor.RemoteLines         => new Vector4(0.404f, 0.404f, 0.404f, 1.000f),
+            CkColor.RemoteBg                => new Vector4(0.122f, 0.122f, 0.161f, 1.000f),
+            CkColor.RemoteBgDark            => new Vector4(0.090f, 0.090f, 0.122f, 1.000f),
+            CkColor.RemoteLines             => new Vector4(0.404f, 0.404f, 0.404f, 1.000f),
 
-            CkColor.ButtonDrag          => new Vector4(0.097f, 0.097f, 0.097f, 0.930f),
+            CkColor.ButtonDrag              => new Vector4(0.097f, 0.097f, 0.097f, 0.930f),
 
-            CkColor.SideButton          => new Vector4(0.451f, 0.451f, 0.451f, 1.000f),
-            CkColor.SideButtonBG        => new Vector4(0.451f, 0.451f, 0.451f, 0.250f),
+            CkColor.SideButton              => new Vector4(0.451f, 0.451f, 0.451f, 1.000f),
+            CkColor.SideButtonBG            => new Vector4(0.451f, 0.451f, 0.451f, 0.250f),
 
             // UI Editors.
-            CkColor.FancyHeader         => new Vector4(0.579f, 0.170f, 0.359f, 0.828f),
-            CkColor.FancyHeaderContrast => new Vector4(0.100f, 0.022f, 0.022f, 0.299f),
-            CkColor.ElementHeader       => new Vector4(1.000f, 0.181f, 0.715f, 0.825f),
-            CkColor.ElementSplit        => new Vector4(0.180f, 0.180f, 0.180f, 1.000f),
-            CkColor.ElementBG           => new Vector4(1.000f, 0.742f, 0.910f, 0.416f),
+            CkColor.FancyHeader             => new Vector4(0.579f, 0.170f, 0.359f, 0.828f),
+            CkColor.FancyHeaderContrast     => new Vector4(0.100f, 0.022f, 0.022f, 0.299f),
+            CkColor.ElementHeader           => new Vector4(1.000f, 0.181f, 0.715f, 0.825f),
+            CkColor.ElementSplit            => new Vector4(0.180f, 0.180f, 0.180f, 1.000f),
+            CkColor.ElementBG               => new Vector4(1.000f, 0.742f, 0.910f, 0.416f),
             
-            CkColor.FolderExpanded      => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
-            CkColor.FolderCollapsed     => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
-            CkColor.FolderLine          => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
+            CkColor.FolderExpanded          => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
+            CkColor.FolderCollapsed         => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
+            CkColor.FolderLine              => new Vector4(0.753f, 0.941f, 1.000f, 1.000f),
             
-            CkColor.FavoriteStarOn      => new Vector4(0.816f, 0.816f, 0.251f, 1.000f),
-            CkColor.FavoriteStarHovered => new Vector4(0.816f, 0.251f, 0.816f, 1.000f),
-            CkColor.FavoriteStarOff     => new Vector4(0.502f, 0.502f, 0.502f, 0.125f),
+            CkColor.FavoriteStarOn          => new Vector4(0.816f, 0.816f, 0.251f, 1.000f),
+            CkColor.FavoriteStarHovered     => new Vector4(0.816f, 0.251f, 0.816f, 1.000f),
+            CkColor.FavoriteStarOff         => new Vector4(0.502f, 0.502f, 0.502f, 0.125f),
             
-            CkColor.TriStateCheck       => new Vector4(0.000f, 0.816f, 0.000f, 1.000f),
-            CkColor.TriStateCross       => new Vector4(0.816f, 0.000f, 0.000f, 1.000f),
-            CkColor.TriStateNeutral     => new Vector4(0.816f, 0.816f, 0.816f, 1.000f),
+            CkColor.TriStateCheck           => new Vector4(0.000f, 0.816f, 0.000f, 1.000f),
+            CkColor.TriStateCross           => new Vector4(0.816f, 0.000f, 0.000f, 1.000f),
+            CkColor.TriStateNeutral         => new Vector4(0.816f, 0.816f, 0.816f, 1.000f),
 
             _ => Vector4.Zero,
         };

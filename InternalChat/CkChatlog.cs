@@ -1,14 +1,10 @@
+using CkCommons.Classes;
 using CkCommons.Gui;
-using CkCommons.Helpers;
 using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using ImGuiNET;
-using OtterGui.Text.Widget.Editors;
-using OtterGui.Text;
-using System.Drawing;
 using System.Globalization;
 
 namespace CkCommons.Chat;
@@ -16,7 +12,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
 {
     protected readonly int ID;
     protected readonly string Label;
-    protected CkChatlogBuffer<T> Messages;
+    protected CircularBuffer<T> Messages;
     protected Dictionary<string, Vector4> UserColors = new();
     protected T? LastInteractedMsg = null;
     protected List<string> SilenceList = new();
@@ -29,7 +25,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     {
         ID = chatlogId;
         Label = label;
-        Messages = new CkChatlogBuffer<T>(capacity);
+        Messages = new CircularBuffer<T>(capacity);
         DoAutoScroll = true;
         ShouldScrollToBottom = true;
     }
