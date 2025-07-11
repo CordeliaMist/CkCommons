@@ -22,6 +22,10 @@ public static class Generic
         {
             a();
         }
+        catch (TaskCanceledException tce)
+        {
+            if (!suppressErrors) Svc.Log.Warning($"Task was cancelled: {tce.Message}");
+        }
         catch (Exception e)
         {
             if (!suppressErrors) Svc.Log.Error($"{e.Message}\n{e.StackTrace ?? ""}");
@@ -34,6 +38,11 @@ public static class Generic
         try
         {
             return a();
+        }
+        catch (TaskCanceledException tce)
+        {
+            if (!suppressErrors) Svc.Log.Warning($"Task was cancelled: {tce.Message}");
+            return default;
         }
         catch (Exception e)
         {
@@ -49,6 +58,10 @@ public static class Generic
         {
             await a();
         }
+        catch (TaskCanceledException tce)
+        {
+            if (!suppressErrors) Svc.Log.Warning($"Task was cancelled: {tce.Message}");
+        }
         catch (Exception e)
         {
             if (!suppressErrors)
@@ -62,6 +75,11 @@ public static class Generic
         try
         {
             return await a();
+        }
+        catch (TaskCanceledException tce)
+        {
+            if (!suppressErrors) Svc.Log.Warning($"Task was cancelled: {tce.Message}");
+            return default;
         }
         catch (Exception e)
         {
