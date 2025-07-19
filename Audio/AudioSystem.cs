@@ -7,12 +7,12 @@
 
 namespace CkCommons.Audio;
 
-//public enum OutputType
-//{
-//    DirectSound,
-//    Asio,
-//    Wasapi
-//}
+public enum OutputType
+{
+    DirectSound,
+    Asio,
+    Wasapi
+}
 
 ///// <summary>
 /////     As much as i would have REALLY PREFERED to work with the native game audio's SCD files, 
@@ -35,7 +35,7 @@ namespace CkCommons.Audio;
 
 //    private static readonly Dictionary<string, CachedSound> _soundCache = new();
 //    private static ConcurrentDictionary<string, SoundInstance> _activeMixerSounds = new();
-    
+
 //    public static IReadOnlyDictionary<Guid, string> DirectSoundAudioDevices => _directOutAudioDevices;
 //    public static IReadOnlyList<string> AsioAudioDevices => _asioAudioDevices;
 //    public static IReadOnlyDictionary<string, string> WasapiAudioDevices => _wasapiAudioDevices;
