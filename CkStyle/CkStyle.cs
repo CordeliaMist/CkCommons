@@ -26,6 +26,7 @@ public static partial class CkStyle
     public static float TwoRowHeight() => ImGui.GetFrameHeightWithSpacing() + ImGui.GetFrameHeight();
 
     public static float HeaderHeight() => ImGui.GetFrameHeight() + 2 * ImGuiHelpers.GlobalScale;
+    public static float ListItemRounding() => 5f * ImGuiHelpers.GlobalScale;
     public static float ChildRounding() => ImGui.GetStyle().FrameRounding * 1.25f;
     public static float ChildRoundingLarge() => ImGui.GetStyle().FrameRounding * 1.75f;
     public static float HeaderRounding() => ImGui.GetStyle().FrameRounding * 2f;

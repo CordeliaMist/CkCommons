@@ -1,6 +1,6 @@
 using CkCommons.Gui;
 using CkCommons.RichText;
-using CkCommons.Services;
+using CkCommons;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;

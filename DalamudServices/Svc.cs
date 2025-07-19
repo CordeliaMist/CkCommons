@@ -1,12 +1,11 @@
-﻿using Dalamud.Game;
+using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CkCommons.Services;
+namespace CkCommons;
 #nullable disable
 
 /// <summary>

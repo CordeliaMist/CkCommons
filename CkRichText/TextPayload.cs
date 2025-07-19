@@ -41,7 +41,7 @@ public class TextPayload : RichPayload
             }
         }
     }
-    public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
     {
         if (curLineWidth != 0f)
             _isInline = true;
@@ -108,6 +108,7 @@ public class TextPayload : RichPayload
 
         _splitCache = lines.ToArray();
         curLineWidth = lines.Count > 0 ? lines[^1].width : 0f;
+        return lines.Count - 1;
     }
 
     private static void TextOutlined(string text, uint strokeColor)

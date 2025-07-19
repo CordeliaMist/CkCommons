@@ -1,11 +1,12 @@
 using CkCommons.Helpers;
-using CkCommons.Services;
+using CkCommons;
 using CkCommons.Textures;
 using FFXIVClientStructs.FFXIV.Common.Lua;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using Dalamud.Interface.Utility.Raii;
 
 namespace CkCommons.RichText;
 
@@ -40,6 +41,7 @@ public class RichTextString
     /// <summary> Renders the combined richText for display. It is up to you to make sure the caches are valid. </summary>
     public void Render(ImFontPtr font, float wrapWidth)
     {
+        using var _ = ImRaii.Group();
         // if there is a missmatch with the font pointer and wrapwidth, recalculate.
         if (!MatchesCachedState(font, wrapWidth))
         {
@@ -105,11 +107,8 @@ public class RichTextString
         // Update the individual caches to respect the new font and wrap width.
         foreach (RichPayload payload in _payloads)
         {
-            payload.UpdateCache(font, wrapWidth, ref currentLineWidth);
-            // new line was triggered if the current line width is less than prev line width.
-            if (currentLineWidth < previousLineWidth)
-                _lineCount++;
-
+            _lineCount += payload.UpdateCache(font, wrapWidth, ref currentLineWidth);
+            // update the previous width.
             previousLineWidth = currentLineWidth;
         }
     }

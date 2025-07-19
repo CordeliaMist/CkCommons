@@ -1,4 +1,4 @@
-using CkCommons.Services;
+using CkCommons;
 using Dalamud.Interface;
 using ImGuiNET;
 using OtterGui.Text.Widget;

@@ -13,13 +13,14 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     protected readonly int ID;
     protected readonly string Label;
     protected CircularBuffer<T> Messages;
-    protected Dictionary<string, Vector4> UserColors = new();
+    protected ConcurrentDictionary<string, Vector4> UserColors = new();
     protected T? LastInteractedMsg = null;
     protected List<string> SilenceList = new();
     
-    protected int unreadSinceScroll = 0;
+    protected static int unreadSinceScroll = 0;
     protected string previewMessage = string.Empty;
     protected bool shouldFocusChatInput = false;
+    protected float prevValidHeight = 0f;
 
     public CkChatlog(int chatlogId, string label, int capacity)
     {
@@ -65,7 +66,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             brightness = (r + g + b) / 3.0f;
             color = new Vector4(r, g, b, 1.0f);
 
-        } while (brightness < 0.55f || UserColors.ContainsValue(color)); // Adjust threshold as needed (e.g., 0.7 for lighter colors)
+        } while (brightness < 0.55f || UserColors.Values.Any(c => c == color)); // Adjust threshold as needed (e.g., 0.7 for lighter colors)
         UserColors[message.UID] = color;
         return color;
     }
@@ -76,36 +77,34 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         => $"Sent @ {message.Timestamp.ToString("T", CultureInfo.CurrentCulture)}\n[Right-Click] View Interactions";
     protected abstract void OnMiddleClick(T message);
     protected abstract void OnSendMessage(string message);
-    public void DrawChat(Vector2 region, ref bool displayPreview)
+    public void DrawChat(Vector2 region)
     {
         // Create a windows drawlist here so we have the outermost drawlist.
-        var outerWdl = ImGui.GetWindowDrawList();
-        ImDrawListPtr innerWdl; // capture the inner drawlist.
+        Vector2 inputMin;
+
         using (var c = CkRaii.Child($"##GlobalChatLogFrame-{Label}", region))
-        {
-            // Draw the chat log history.
-            innerWdl = ImGui.GetWindowDrawList();
-            DrawChatLog(c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing()));
-            // draw the text preview if we should.
-            DrawChatInputRow(ref displayPreview);
+        {   
+            var chatlogSize = c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing());
+            // temporarily cleave the pushcliprect so that the chatlog confines to it.
+            DrawChatLog(chatlogSize);
 
-            // maybe fix this by putting a child in a child inside the chatlog and doing some layer voodoo there idk.
-            if (displayPreview)
-                DrawTextPreview(previewMessage, innerWdl);
-
-            // Attempt to handle any popups we may have had (within the same context)
-            ShowPopups();
+            DrawChatInputRow();
+            inputMin = ImGui.GetItemRectMin();
         }
+
+        // Handle post chatlog drawing addons.
+        DrawPostChatLog(inputMin);
     }
 
-    public void DrawChatLog(Vector2 region)
+    public void DrawChatLog(Vector2 region, WFlags flags = WFlags.NoScrollbar)
     {
-        using var _ = ImRaii.Child($"##GlobalChatLogHistory-{Label}", region);
-
+        using var _ = CkRaii.Child($"##GlobalChatLog-{Label}", region, flags);
         var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
         var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, region.X);
 
         HandleAutoScroll();
+        // Attempt to handle any popups we may have had (within the same context)
+        ShowPopups();
     }
 
     private void DrawChatMessage(T message, float width)
@@ -119,7 +118,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             LastInteractedMsg = message;
-            ImGui.OpenPopup($"GlobalChatMessageActions_{message.UID}");
+            ImGui.OpenPopup($"CkChatMessageActions_{message.UID}");
         }
         // Optional Middle click function.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Middle))
@@ -127,21 +126,16 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         CkGui.AttachToolTip(ToTooltip(message), color: CkColor.VibrantPink.Vec4());
     }
 
-    public virtual void DrawChatInputRow(ref bool showPreview)
+    public virtual void DrawChatInputRow()
     {
         using var _ = ImRaii.Group();
 
         var width = ImGui.GetContentRegionAvail().X;
 
-        // Set keyboard focus to the chat input box if needed
-        if (shouldFocusChatInput)
+        if (shouldFocusChatInput && ImGui.IsWindowFocused())
         {
-            // if we currently are focusing the window this is present on, set the keyboard focus.
-            if (ImGui.IsWindowFocused())
-            {
-                ImGui.SetKeyboardFocusHere(0);
-                shouldFocusChatInput = false;
-            }
+            ImGui.SetKeyboardFocusHere(0);
+            shouldFocusChatInput = false;
         }
 
         ImGui.SetNextItemWidth(width);
@@ -153,36 +147,52 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             shouldFocusChatInput = true;
             OnSendMessage(previewMessage);
         }
-
-        // Update preview display based on input field activity
-        showPreview = ImGui.IsItemActive();
     }
 
-    private float prevValidHeight = 0f;
-    private void DrawTextPreview(string message, ImDrawListPtr drawList)
+    protected virtual void DrawPostChatLog(Vector2 inputPosMin)
     {
-        // get the previous childs min and max positions.
-        var inputRowMin = ImGui.GetItemRectMin();
-        var inputRowSize = ImGui.GetItemRectSize();
-        var padding = new Vector2(5, 5);
-        var wrapWidth = inputRowSize.X - padding.X * 2;
+        // Preview Text padding area
+        using var style = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(5));
+        // if we should show the preview, do so.
+        if (!string.IsNullOrWhiteSpace(previewMessage))
+            DrawTextPreview(previewMessage, inputPosMin);
+    }
 
-        // Estimate text size with wrapping
-        var calculatedHeight = CkRichText.GetRichTextLineHeight(message, ID);
-        var finalHeight = calculatedHeight == 0 ? prevValidHeight : calculatedHeight;
+    protected void DrawTextPreview(string message, Vector2 textInputMinPos)
+    {
+        // we need to firstly get the calculated height of the CkRichText message.
+        var fetchedHeight = CkRichText.GetRichTextLineHeight(message, ID);
 
-        if (calculatedHeight != 0)
+        // if it is between frames calculating, for 1 drawframe the value can be 0.
+        // This occurs because when we type a new character for our input string, we
+        // technically have a new message, so it has to be regenerated and re-cached.
+        // to account for this, a backup value is used.
+        var finalHeight = fetchedHeight == 0 ? prevValidHeight : fetchedHeight;
+
+        // update the cached height if non-zero.
+        if (fetchedHeight != 0)
             prevValidHeight = finalHeight;
 
-        var boxSize = new Vector2(inputRowSize.X, ImGui.GetTextLineHeightWithSpacing() * finalHeight + padding.Y * 2);
-        var boxPos = new Vector2(inputRowMin.X, inputRowMin.Y - boxSize.Y);
+        // set the next position of the window to be the 
 
-        // Draw semi-transparent background
-        drawList.AddRectFilled(boxPos, boxPos + boxSize, ImGui.GetColorU32(new Vector4(0.05f, 0.025f, 0.05f, .9f)), 5);
+        var winHeight = (ImGui.GetTextLineHeightWithSpacing() * finalHeight) - ImGui.GetStyle().ItemSpacing.Y;
+        var winPos = textInputMinPos - new Vector2(0, winHeight.AddWinPadY());
 
-        var startPos = new Vector2(ImGui.GetCursorScreenPos().X + padding.X, inputRowMin.Y - boxSize.Y + padding.Y);
-        ImGui.SetCursorScreenPos(startPos);
-        CkRichText.Text(wrapWidth, message, ID);
+        ImGui.SetNextWindowPos(winPos);
+        using (var c = CkRaii.ChildPaddedW("##InputPreview", ImGui.GetContentRegionAvail().X, winHeight))
+        {
+            // This inside window drawlist layer is the same Z-Depth as the chatlog,
+            // and drawn after, so it will be rendered above. Giving the child a bg
+            // color will prevent it from being layered correctly, and must be drawn
+            // inside of the child for full effect.
+            var wdl = ImGui.GetWindowDrawList();
+            wdl.PushClipRect(winPos, winPos + c.InnerRegion.WithWinPadding(), false);
+            wdl.AddRectFilled(winPos, winPos + c.InnerRegion.WithWinPadding(), 0xCC000000, 5, ImDrawFlags.RoundCornersAll);
+            wdl.AddRect(winPos, winPos + c.InnerRegion.WithWinPadding(), ImGuiColors.ParsedGold.ToUint(), 5, ImDrawFlags.RoundCornersAll);
+            wdl.PopClipRect();
+            CkRichText.Text(message, ID);
+        }
+
     }
 
     private void HandleAutoScroll()
@@ -205,7 +215,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             .Push(ImGuiStyleVar.PopupBorderSize, 2f);
         using var col = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
 
-        using (var popup = ImRaii.Popup($"GlobalChatMessageActions_{LastInteractedMsg.UID}"))
+        using (var popup = ImRaii.Popup($"CkChatMessageActions_{LastInteractedMsg.UID}"))
         {
             if (popup)
                 DrawPopupInternal();

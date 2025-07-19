@@ -1,5 +1,5 @@
 using CkCommons.Gui;
-using CkCommons.Services;
+using CkCommons;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;

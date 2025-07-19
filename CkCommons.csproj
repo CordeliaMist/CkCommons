@@ -52,8 +52,10 @@
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
         <!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
-		
-		<Reference Include="ImGui.NET">
+        <!--For Internal Audio Channel Management to interface with the game until we can get direct scd edit access.-->
+        <PackageReference Include="NAudio" Version="2.2.1" />
+
+        <Reference Include="ImGui.NET">
 			<HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
 			<Private>False</Private>
 		</Reference>

@@ -16,6 +16,9 @@ public abstract class RichPayload
     ///     Updates the _splitCache with the given <see cref="ImFontPtr"/> and <paramref name="wrapWidth"/>.
     ///     Calculation begins on the line's start width of <paramref name="startWidth"/>.
     /// </summary>
-    /// <returns> The width of the last line in the split cache, or 0 if no lines were created. </returns>
-    public abstract void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth);
+    /// <param name="font"> The font used to draw this out, allowing for it to work with any font or any size. </param>
+    /// <param name="wrapWidth"> the wrap width that the cached item should abide by. </param>
+    /// <param name="curLineWidth"> the current width of the line the item is being drawn on. Less than full wrap width. </param>
+    /// <returns> the number of lines to be added </returns>
+    public abstract int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth);
 }

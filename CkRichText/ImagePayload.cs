@@ -1,4 +1,4 @@
-using CkCommons.Services;
+using CkCommons;
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System.IO;
@@ -28,13 +28,22 @@ public class ImagePayload : RichPayload
             ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight())); // Fallback to dummy if texture is invalid.
     }
 
-    public override void UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
     {
         if (curLineWidth != 0f)
             _isInline = true;
 
         // assert the new curLineWidth
         float newLineWidth = curLineWidth + ImGui.GetTextLineHeight();
-        curLineWidth = newLineWidth > wrapWidth ? 0 : newLineWidth;
+        if (newLineWidth > wrapWidth)
+        {
+            curLineWidth = 0f;
+            return 1;
+        }
+        else
+        {
+            curLineWidth = newLineWidth;
+            return 0;
+        }
     }
 }

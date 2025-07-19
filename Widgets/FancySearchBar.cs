@@ -54,7 +54,7 @@ public class FancySearchBar
         // the return value
         var localSearchStr = str;
 
-        using (ImRaii.PushColor(ImGuiCol.FrameBg, 0x000000))
+        using (ImRaii.PushColor(ImGuiCol.FrameBg, 0))
         {
             var flags = ImGuiInputTextFlags.NoHorizontalScroll | ImGuiInputTextFlags.NoUndoRedo | ImGuiInputTextFlags.CallbackAlways;
             ret = ImGui.InputText("##" + id, ref localSearchStr, textLen, flags, (data) =>

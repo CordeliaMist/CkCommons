@@ -9,6 +9,45 @@ namespace CkCommons.Gui.Utility;
 // Mimics the penumbra mod groups from penumbra mod selection.
 public static partial class CkGuiUtils
 {
+    /// <summary>
+    ///     Draws a stylized progress bar with rounded corners, outlined text, and customizable size, color, and label.
+    /// </summary>
+    /// <param name="progress">Progress value from 0.0 to 1.0.</param>
+    /// <param name="size">Total size of the bar. Height should usually match font height.</param>
+    /// <param name="text">Optional label text. If null, a percentage will be shown.</param>
+    /// <param name="fillColor">The color to fill the progress with.</param>
+    /// <param name="rounding">Optional rounding radius. Default is 25f.</param>
+    public static void DrawProgressBar(Vector2 size, string text, float progress, uint? fillColor = null, float rounding = 25f)
+    {
+        // Clamp progress.
+        progress = Math.Clamp(progress, 0f, 1f);
+
+        var drawList = ImGui.GetWindowDrawList();
+        var cursorStart = ImGui.GetCursorScreenPos();
+        var textSize = ImGui.CalcTextSize(text);
+        var fillCol = fillColor.HasValue ? fillColor.Value : CkColor.VibrantPink.Uint();
+
+        // Bg Layers.
+        var bgStart = cursorStart;
+        var bgEnd = bgStart + size;
+        drawList.AddRectFilled(bgStart - Vector2.One, bgEnd + Vector2.One, CkGui.Color(0, 0, 0, 100), rounding, ImDrawFlags.RoundCornersAll); // Shadow
+        drawList.AddRectFilled(bgStart, bgEnd, CkGui.Color(0, 0, 0, 100), rounding, ImDrawFlags.RoundCornersAll);                          // Background
+
+        // Progress Bar
+        if (progress > 0.025f)
+        {
+            var fillEnd = new Vector2(bgStart.X + size.X * progress, bgEnd.Y);
+            drawList.AddRectFilled(bgStart, fillEnd, fillCol, rounding, ImDrawFlags.RoundCornersAll);
+        }
+
+        // Centered text
+        var textPos = bgStart + new Vector2((size.X - textSize.X) / 2f, (size.Y - textSize.Y) / 2f);
+        drawList.OutlinedFont(text, textPos, CkGui.Color(255, 255, 255, 255), CkGui.Color(53, 24, 39, 255), 1);
+
+        // Reserve space so ImGui continues correctly
+        ImGui.Dummy(size);
+    }
+
     public static void FramedEditDisplay(string id, float width, bool inEdit, string curLabel,
         Action<float> drawAct, uint editorBg = 0, float? height = null)
     {

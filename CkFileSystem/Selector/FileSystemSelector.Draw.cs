@@ -1,9 +1,8 @@
-using CkCommons.Services;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OtterGui.Text;
-using System;
 
 namespace CkCommons.FileSystem.Selector;
 
@@ -233,7 +232,8 @@ public partial class CkFileSystemSelector<T, TStateStorage>
                         _jumpToSelection = null;
                     }
 
-                    using (var clipper = ImUtf8.ListClipper(_state.Count, ImGui.GetTextLineHeightWithSpacing()))
+                    // originally had GetTextLineHeightWithSpacing() but it caused issues with scrolling on clipped lists.
+                    using (var clipper = ImUtf8.ListClipper(_state.Count))
                     {
                         while (clipper.Step())
                         {

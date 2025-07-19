@@ -1,4 +1,4 @@
-using CkCommons.Services;
+using CkCommons;
 using SixLabors.ImageSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;

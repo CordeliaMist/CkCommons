@@ -1,4 +1,4 @@
-using CkCommons.Services;
+using CkCommons;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Plugin.Services;
 

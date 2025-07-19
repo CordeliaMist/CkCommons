@@ -60,16 +60,6 @@ public abstract class IconTabBar<ITab> where ITab : Enum
                     xPost with { Y = xPost.Y + buttonSize.Y + spacing.Y, X = xPost.X - spacing.X },
                     ImGui.GetColorU32(ImGuiCol.Separator), 2f);
             }
-
-            //if (tab.TargetTab is MainMenuTabs.SelectedTab.GlobalChat)
-            //{
-            //    if (DiscoverService.NewMessages > 0)
-            //    {
-            //        var messageCountPosition = new Vector2(x.X + buttonSize.X / 2, x.Y - spacing.Y);
-            //        var messageText = DiscoverService.NewMessages > 99 ? "99+" : DiscoverService.NewMessages.ToString();
-            //        ImGui.GetWindowDrawList().OutlinedFont(messageText, messageCountPosition, ImGui.ColorConvertFloat4ToU32(ImGuiColors.ParsedGold), 0xFF000000, 1);
-            //    }
-            //}
         }
         CkGui.AttachToolTip(tab.Tooltip);
 

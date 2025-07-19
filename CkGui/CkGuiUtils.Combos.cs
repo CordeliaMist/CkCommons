@@ -1,3 +1,5 @@
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using static CkCommons.GameDataHelp;
@@ -5,6 +7,59 @@ using static CkCommons.GameDataHelp;
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
 {
+
+    /// <summary> Variant of CkGuiUtil's Enum combo, that can spawn a combo box from an icon button. </summary>
+    /// <returns> if a new value was selected. </returns>
+    public static bool IconEnumCombo<T>(FAI icon, T current, out T newValue, bool disabled, Func<T, string>? toString = null, 
+        string? id = null, bool inPopup = false, int skip = 0) where T : struct, Enum
+        => IconEnumCombo(icon, current, out newValue, Enum.GetValues<T>().Skip(skip), disabled, toString, id, inPopup);
+
+    /// <summary> Variant of CkGuiUtil's Enum combo, that can spawn a combo box from an icon button. </summary>
+    /// <returns> if a new value was selected. </returns>
+    public static bool IconEnumCombo<T>(FAI icon, T current, out T newValue, IEnumerable<T> options, bool disabled, 
+        Func<T, string>? toString = null, string? id = null, bool inPopup = false) where T : struct, Enum
+    {
+        var identifier = id ?? icon.ToIconString();
+        string popupId = $"##EnumIconPopup_{identifier}";
+
+        // Render the icon as a button.
+        if (CkGui.IconButton(icon, null, identifier, disabled, inPopup))
+            ImGui.OpenPopup(popupId);
+        // reset to None if right-clicked.
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            newValue = options.FirstOrDefault();
+            return true;
+        }
+
+        // only push style if popup is going to be visible
+        if (ImGui.IsPopupOpen(popupId))
+        {
+            ImGui.SetNextWindowPos(ImGui.GetItemRectMin() with { Y = ImGui.GetItemRectMax().Y });
+            using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
+                .Push(ImGuiStyleVar.WindowRounding, 4f).Push(ImGuiStyleVar.PopupBorderSize, 1);
+            using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+            using var popup = ImRaii.Popup(popupId);
+            if (popup)
+            {
+                foreach (var data in options)
+                {
+                    string name = toString?.Invoke(data) ?? data.ToString();
+                    if (ImGui.Selectable(name, data.Equals(current)))
+                    {
+                        newValue = data;
+                        ImGui.CloseCurrentPopup();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        newValue = current;
+        return false;
+    }
+
+
     /// <summary> Yanked variant of GenericEnumCombo from ImGui, with a custom display text when not found.
     /// <para> Can specify enum values to skip at start or end and gives all those enum values as options. </para>
     /// </summary>
@@ -29,7 +84,7 @@ public static partial class CkGuiUtils
                 foreach (T data in options)
                 {
                     string name = toString?.Invoke(data) ?? data.ToString();
-                    if (name.Length == 0 || !ImGui.Selectable(name, data.Equals(current)) || data.Equals(current))
+                    if (name.Length == 0 || !ImGui.Selectable(name, data.Equals(current)))
                         continue;
 
                     newValue = data;
@@ -109,6 +164,38 @@ public static partial class CkGuiUtils
                 newValue = data;
                 return true;
             }
+
+        newValue = current;
+        return false;
+    }
+
+    public static bool GuidCombo(string label, float width, Guid current, out Guid newValue, IEnumerable<Guid> options,
+    Func<Guid, string>? toString = null, string defaultText = "Select Item...", CFlags flags = CFlags.None)
+    {
+        ImGui.SetNextItemWidth(width);
+        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        using (var combo = ImRaii.Combo(label, previewText, flags))
+        {
+            if (combo)
+            {
+                foreach (var option in options)
+                {
+                    string display = toString?.Invoke(option) ?? option.ToString();
+                    if (display.Length == 0 || !ImGui.Selectable(display, option == current) || option == current)
+                        continue;
+
+                    newValue = option;
+                    return true;
+                }
+            }
+        }
+
+        // Reset to first option if right-clicked
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            newValue = options.FirstOrDefault();
+            return true;
+        }
 
         newValue = current;
         return false;

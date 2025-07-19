@@ -160,8 +160,8 @@ public static partial class CkRaii
             wdl.AddText(min + new Vector2(offset, (labelSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
         },
             success,
-            outerSize.WithoutWinPadding(),
-            innerSize
+            outerSize.WithoutWinPadding(), // these should be flipped.
+            innerSize // these should be flipped (too late to deal with this)
         );
     }
 
@@ -193,7 +193,7 @@ public static partial class CkRaii
         var success = ImGui.BeginChild($"##ChildLabelButton-{text}", outerSize, false, WFlags.AlwaysUseWindowPadding);
         ImGui.Dummy(labelSize + new Vector2(stroke - ImGui.GetStyle().ItemSpacing.Y));
         
-        var labelMin = ImGui.GetCursorScreenPos();
+        var labelMin = ImGui.GetItemRectMin();
         var labelMax = labelMin + labelSize;
         var hovered = ImGui.IsMouseHoveringRect(labelMin, labelMax);
         if (hovered)
@@ -211,13 +211,18 @@ public static partial class CkRaii
             wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
+
+            var labelMax = new Vector2(max.X, min.Y + labelSize.Y);
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // Full-width: draw label + underline with thickness = fade
-            wdl.AddRectFilled(labelMin, labelMax, ColorsLC.Default.Label, rounding, labelFlags);
+            uint labelCol = hovered ? ColorsLC.Default.LabelHovered : ColorsLC.Default.Label;
+            wdl.AddRectFilled(min, labelMax, labelCol, rounding, labelFlags);
             var underlineMin = new Vector2(min.X, labelMax.Y);
             var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
             wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            // add the text, centered to the height of the header, left aligned.
+            wdl.AddText(min + new Vector2(offset, (labelSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
         },
             success,
             outerSize.WithoutWinPadding(),
