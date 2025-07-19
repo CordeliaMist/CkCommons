@@ -5,7 +5,7 @@
 //using NAudio.Wave.SampleProviders;
 //using System.IO;
 
-//namespace CkCommons.Audio;
+namespace CkCommons.Audio;
 
 //public enum OutputType
 //{
