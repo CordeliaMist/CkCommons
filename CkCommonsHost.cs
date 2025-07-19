@@ -1,4 +1,3 @@
-using CkCommons.Audio;
 using CkCommons.RichText;
 using CkCommons.Textures;
 using Dalamud.Plugin;
