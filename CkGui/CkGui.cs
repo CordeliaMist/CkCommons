@@ -212,17 +212,22 @@ public static partial class CkGui
     public static void FrameVerticalSeparator(float? width = null, uint? col = null)
         => VerticalSeparator(width, col, ImGui.GetFrameHeight());
 
+    public static bool IconButtonColored(FAI icon, uint col, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
+        => IconButtonInternal(icon, height, id, disabled, inPopup, col);
+
     /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
+        => IconButtonInternal(icon, height, id, disabled, inPopup);
+    private static bool IconButtonInternal(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false, uint? color = null)
     {
-        using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
         int num = 0;
         if (inPopup)
         {
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f));
             num++;
         }
-
+        var txtCol = color ?? ImGui.GetColorU32(ImGuiCol.Text);
         string text = icon.ToIconString();
 
         ImGui.PushID((id == null) ? icon.ToIconString() : id + icon.ToIconString());
@@ -237,7 +242,7 @@ public static partial class CkGui
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
             cursorScreenPos.Y + (height ?? ImGui.GetFrameHeight()) / 2f - (vector.Y / 2f));
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), text);
+            windowDrawList.AddText(pos, txtCol, text);
         ImGui.PopID();
 
         if (num > 0)
@@ -339,22 +344,27 @@ public static partial class CkGui
             disabled);
     }
 
-    private static bool IconInputTextInternal(string id, FAI icon, string label, string hint, ref string inputStr,
-        uint maxLength, Vector4? defaultColor = null, float? width = null, bool disabled = false)
+    private static bool IconInputTextInternal(FAI icon, string label, string hint, ref string inputStr,
+        uint maxLength, Vector4? color = null, float? width = null, bool disabled = false)
     {
         using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
         int num = 0;
         // Disable if issues, tends to be culpret
-        if (defaultColor.HasValue)
+        if (color.HasValue)
         {
-            ImGui.PushStyleColor(ImGuiCol.FrameBg, defaultColor.Value);
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, color.Value);
             num++;
         }
 
-        ImGui.PushID(id);
+        ITFlags flags = ITFlags.EnterReturnsTrue | (disabled ? ITFlags.ReadOnly : ITFlags.None);
+
+        string id = label + "##" + icon.ToIconString();
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(icon.ToIconString());
+
+        ImGui.PushID(id);
+
         Vector2 vector2 = ImGui.CalcTextSize(label);
         ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
         Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
@@ -363,7 +373,7 @@ public static partial class CkGui
         float frameHeight = ImGui.GetFrameHeight();
         ImGui.SetCursorPosX(vector.X + ImGui.GetStyle().FramePadding.X * 2f);
         ImGui.SetNextItemWidth(x - vector.X - num2 * 4); // idk why this works, it probably doesnt on different scaling. Idfk. Look into later.
-        bool result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, ImGuiInputTextFlags.EnterReturnsTrue);
+        bool result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, flags);
 
         Vector2 pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
@@ -378,10 +388,10 @@ public static partial class CkGui
         return result && !disabled;
     }
 
-    public static bool IconInputText(string id, FAI icon, string label, string hint, ref string inputStr,
+    public static bool IconInputText(FAI icon, string label, string hint, ref string inputStr,
         uint maxLength, float? width = null, bool isInPopup = false, bool disabled = false)
     {
-        return IconInputTextInternal(id, icon, label, hint, ref inputStr, maxLength,
+        return IconInputTextInternal(icon, label, hint, ref inputStr, maxLength,
             isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.1f) : null,
             width <= 0 ? null : width,
             disabled);
