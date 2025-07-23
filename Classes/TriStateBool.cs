@@ -87,7 +87,7 @@ public readonly struct TriStateBool : IEquatable<TriStateBool>, IEquatable<bool?
     public static bool operator ==(TriStateBool left, TriStateBool right)
         => left.Equals(right);
     public static bool operator !=(TriStateBool left, TriStateBool right)
-        => left.Equals(right);
+        => !left.Equals(right);
 
     // Equality Operators
     public bool Equals(TriStateBool other)
@@ -114,7 +114,7 @@ public readonly struct TriStateBool : IEquatable<TriStateBool>, IEquatable<bool?
     public static TriStateBool FromJObject(JToken? token)
     {
         if (token is null || token.Value<string>() is not { } tokenValue)
-            throw new ArgumentNullException(nameof(token), "Token cannot be null or empty");
+            return TriStateBool.Null;
 
         return tokenValue.ToLowerInvariant() switch
         {
