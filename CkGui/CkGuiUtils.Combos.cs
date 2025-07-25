@@ -2,6 +2,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
+using OtterGui;
 using static CkCommons.GameDataHelp;
 
 namespace CkCommons.Gui.Utility;
@@ -58,7 +59,6 @@ public static partial class CkGuiUtils
         newValue = current;
         return false;
     }
-
 
     /// <summary> Yanked variant of GenericEnumCombo from ImGui, with a custom display text when not found.
     /// <para> Can specify enum values to skip at start or end and gives all those enum values as options. </para>

@@ -26,6 +26,7 @@ public static unsafe class PlayerData
     public static IntPtr ObjectAddress => Svc.ClientState.LocalPlayer?.Address ?? IntPtr.Zero;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public unsafe static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
+    public static bool Interactable => Available && Object.IsTargetable;
     public static ulong ContentId => Svc.ClientState.LocalContentId;
     public static ulong ContendIdInstanced => Control.Instance()->LocalPlayer->ContentId;
     public static StatusList Status => Object?.StatusList;
@@ -88,6 +89,8 @@ public static unsafe class PlayerData
     public static bool IsJumping => Available && (Svc.Condition[ConditionFlag.Jumping] || Svc.Condition[ConditionFlag.Jumping61] || Character->IsJumping());
     public static bool IsDead => Svc.Condition[ConditionFlag.Unconscious];
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
+    public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
+    public static bool IsAnimationLocked => AnimationLock > 0;
 
     public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
     public static float DistanceTo(Vector2 other) => Vector2.Distance(new Vector2(Position.X, Position.Z), other);

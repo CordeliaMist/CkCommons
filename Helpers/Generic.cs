@@ -15,6 +15,18 @@ public static class Generic
     public static bool IsInRange<T>(this int idx, IReadOnlyCollection<T> collection)
         => (uint)idx < (uint)collection.Count;
 
+    public static T SafelySelect<T>(this IReadOnlyList<T> list, int index)
+    {
+        // if the list is null, return the default value of T
+        if (list is null)
+            return default!;
+        // if the list is out of range, return the default.
+        if (index < 0 || index >= list.Count)
+            return default!;
+        // otherwise, return the item at the index.
+        return list[index];
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(Action a, bool suppressErrors = false)
     {

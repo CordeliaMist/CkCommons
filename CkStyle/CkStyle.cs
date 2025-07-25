@@ -9,7 +9,7 @@ public static partial class CkStyle
 
     public static float GetFrameRowsHeight(uint rows)
         => rows == 0 ? ImGui.GetFrameHeight()
-        : ImGui.GetFrameHeightWithSpacing() * (rows - 1) + ImGui.GetFrameHeight();
+        : ImGui.GetFrameHeightWithSpacing() * rows - ImGui.GetStyle().ItemSpacing.Y;
 
 
     // Size Helpers

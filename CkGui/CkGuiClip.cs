@@ -93,4 +93,42 @@ public static class CkGuiClip
         return ~num;
     }
 
+    public static int ClippedDrawSetHeight<T>(IEnumerable<T> data, int skips, float height, Action<T, float, float> draw, float? width = null)
+    {
+        using IEnumerator<T> enumerator = data.GetEnumerator();
+        bool flag = false;
+        int num = 0;
+        float usedWidth = width ?? ImGui.GetContentRegionAvail().X;
+        while (enumerator.MoveNext())
+        {
+            if (num >= skips)
+            {
+                using ImRaii.IEndObject endObject = ImRaii.Group();
+                draw(enumerator.Current, usedWidth, height);
+                endObject.Dispose();
+                if (!ImGui.IsItemVisible())
+                {
+                    if (flag)
+                    {
+                        int num2 = 0;
+                        while (enumerator.MoveNext())
+                        {
+                            num2++;
+                        }
+
+                        return num2;
+                    }
+                }
+                else
+                {
+                    flag = true;
+                }
+            }
+
+            num++;
+        }
+
+        return ~num;
+    }
+
 }
