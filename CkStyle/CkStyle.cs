@@ -31,4 +31,5 @@ public static partial class CkStyle
     public static float ChildRoundingLarge() => ImGui.GetStyle().FrameRounding * 1.75f;
     public static float HeaderRounding() => ImGui.GetStyle().FrameRounding * 2f;
     public static float FrameThickness() => ImGui.GetStyle().WindowPadding.X / 2;
+    public static float ThinThickness() => 2f * ImGuiHelpers.GlobalScale;
 }
