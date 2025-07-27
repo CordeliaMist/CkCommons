@@ -36,7 +36,7 @@ public static partial class CkRaii
         var linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
         // Draw the header.
-        wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, DFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, colors.SplitColor, lineH);
         Vector2 textStart = HeaderTextOffset(size.X, ImGui.GetFrameHeight(), ImGui.CalcTextSize(text).X, flags);
         wdl.AddText(min + textStart, ImGui.GetColorU32(ImGuiCol.Text), text);
@@ -54,7 +54,7 @@ public static partial class CkRaii
         return new EndObjectContainer(() =>
             {
                 ImGui.EndChild();
-                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, DFlags.RoundCornersBottom);
                 ImGui.EndGroup();
             },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
@@ -83,7 +83,7 @@ public static partial class CkRaii
         Vector2 max = min + headerSize;
         Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
-        wdl.AddRectFilled(min, max, CkColor.ElementHeader.Uint(), rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddRectFilled(min, max, CkColor.ElementHeader.Uint(), rounding, DFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, CkColor.ElementSplit.Uint(), lineH);
 
         // Text & Icon Alignment
@@ -114,7 +114,7 @@ public static partial class CkRaii
         return new EndObjectContainer(() =>
             {
                 ImGui.EndChild();
-                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, DFlags.RoundCornersBottom);
                 ImGui.EndGroup();
             },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
@@ -138,7 +138,7 @@ public static partial class CkRaii
         Vector2 max = min + headerSize;
         Vector2 linePos = min + new Vector2(0, ImGui.GetFrameHeight());
 
-        wdl.AddRectFilled(min, max, HeaderChildColors.Default.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddRectFilled(min, max, HeaderChildColors.Default.HeaderColor, rounding, DFlags.RoundCornersTop);
         wdl.AddLine(linePos, linePos with { X = max.X }, HeaderChildColors.Default.SplitColor, lineH);
 
         // Text & Icon Alignment
@@ -173,7 +173,7 @@ public static partial class CkRaii
         return new EndObjectContainer(() =>
             {
                 ImGui.EndChild();
-                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, DFlags.RoundCornersBottom);
                 ImGui.EndGroup();
             },
             ImGui.BeginChild("CHC_" + text, innerSize, false, WFlags.AlwaysUseWindowPadding),
@@ -184,7 +184,7 @@ public static partial class CkRaii
     private static void HeaderChildEndAction(uint bgCol, float rounding)
     {
         ImGui.EndChild();
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, ImDrawFlags.RoundCornersBottom);
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, DFlags.RoundCornersBottom);
         ImGui.EndGroup();
     }
 
@@ -215,7 +215,7 @@ public static partial class CkRaii
         float headerHeight = headerMax.Y - headerMin.Y;
 
         // Background/line drawing AFTER measuring header
-        wdl.AddRectFilled(headerMin, headerMax, HeaderChildColors.Default.HeaderColor, rounding, ImDrawFlags.RoundCornersTop);
+        wdl.AddRectFilled(headerMin, headerMax, HeaderChildColors.Default.HeaderColor, rounding, DFlags.RoundCornersTop);
         wdl.AddLine(new Vector2(headerMin.X, headerMax.Y), new Vector2(headerMax.X, headerMax.Y), HeaderChildColors.Default.SplitColor, 2f);
 
         // get the height for the body child, this should be based on our flags.
@@ -227,7 +227,7 @@ public static partial class CkRaii
         return new EndObjectContainer(() =>
             {
                 ImGui.EndChild();
-                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, ImDrawFlags.RoundCornersBottom);
+                ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), HeaderChildColors.Default.BodyColor, rounding, DFlags.RoundCornersBottom);
                 ImGui.EndGroup();
             },
             ImGui.BeginChild("CHC_" + id, innerSize, false, WFlags.AlwaysUseWindowPadding),

@@ -68,14 +68,16 @@ public static class CkGuiEx
         drawList.AddText(textPos, fontColor, text);
     }
 
-    public static void OutlinedFontScaled(this ImDrawListPtr drawlist, ImFontPtr fontPtr, float size, Vector2 pos, string text, uint col, uint outline, int thickness)
+    public static void OutlinedFontScaled(this ImDrawListPtr drawlist, ImFontPtr fontPtr, float fontSize, float scale, Vector2 pos, string text, uint col, uint outline, int thickness)
     {
+        var size = fontSize * scale;
+        var stroke = (thickness * scale);
         int quality = thickness * 2;
         for (int i = 0; i < quality; i++)
         {
             float angle = (2 * MathF.PI / quality) * i;
-            float offsetX = MathF.Cos(angle) * thickness;
-            float offsetY = MathF.Sin(angle) * thickness;
+            float offsetX = MathF.Cos(angle) * stroke;
+            float offsetY = MathF.Sin(angle) * stroke;
             drawlist.AddText(fontPtr, size, new Vector2(pos.X + offsetX, pos.Y + offsetY), outline, text);
         }
 

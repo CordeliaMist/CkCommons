@@ -32,7 +32,7 @@ public static partial class CkRaii
         var linePos = min + new Vector2(leftWidth, 0);
 
         // Draw the child background with the element header color.
-        wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, ImDrawFlags.RoundCornersLeft);
+        wdl.AddRectFilled(min, max, colors.HeaderColor, rounding, DFlags.RoundCornersLeft);
         // Draw the divider line down the middle.
         wdl.AddLine(linePos, linePos with { Y = max.Y }, colors.SplitColor, 2);
         var textStart = new Vector2(ImGui.GetStyle().FramePadding.X, (height - ImGui.GetTextLineHeight()) / 2);
@@ -49,7 +49,7 @@ public static partial class CkRaii
     private static void DDHCEndAction(uint bgCol, float rounding)
     {
         ImGui.EndChild();
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, ImDrawFlags.RoundCornersRight);
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, DFlags.RoundCornersRight);
         ImGui.EndGroup();
     }
 }

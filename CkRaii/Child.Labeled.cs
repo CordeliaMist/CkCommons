@@ -416,11 +416,11 @@ public static partial class CkRaii
         );
     }
 
-    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, ImDrawFlags, LabelFlags)"/>
+    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, DFlags, LabelFlags)"/>
     public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
         => ChildLabelCustomFull(id, size, CkStyle.ChildRounding(), CkStyle.FrameThickness(), label, df, lf);
 
-    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, ImDrawFlags, LabelFlags)"/>
+    /// <inheritdoc cref="ChildLabelCustomFull(string, Vector2, float, float, Action, DFlags, LabelFlags)"/>
     public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, float rounding, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
         => ChildLabelCustomFull(id, size, rounding, CkStyle.FrameThickness(), label, df, lf);
 

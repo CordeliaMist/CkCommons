@@ -43,7 +43,7 @@ public class CkHeader
         wdl.PushClipRect(expandedMin, expandedMax, false);
 
         // Draw the base header, and the left region positions.
-        wdl.AddRectFilled(expandedMin, expandedMin + paddedSize, color, 0, ImDrawFlags.None);
+        wdl.AddRectFilled(expandedMin, expandedMin + paddedSize, color, 0, DFlags.None);
         var topLeftPos = minPos + new Vector2(outerXOffset, winPadding.Y);
         var botLeftPos = topLeftPos + new Vector2(0, paddedSize.Y);
         var botRegionH = maxPos.Y - botLeftPos.Y - winPadding.Y;

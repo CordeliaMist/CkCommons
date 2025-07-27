@@ -27,6 +27,7 @@ public static unsafe class PlayerData
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public unsafe static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
+    public static Vector3 PositionInstanced => Control.Instance()->LocalPlayer->Position;
     public static ulong ContentId => Svc.ClientState.LocalContentId;
     public static ulong ContendIdInstanced => Control.Instance()->LocalPlayer->ContentId;
     public static StatusList Status => Object?.StatusList;
@@ -40,6 +41,7 @@ public static unsafe class PlayerData
     public static string NameWithWorldInstanced => NameInstanced + "@" + HomeWorldInstanced;
     public static string GetNameWithWorld(this IPlayerCharacter pc) => pc is null ? string.Empty : (pc.Name.ToString() + "@" + pc.HomeWorld.Value.Name.ToString());
     public static uint CurrentWorldId => Object?.CurrentWorld.RowId ?? 0;
+    public static ushort CurrentWorldIdInstanced => Control.Instance()->LocalPlayer->CurrentWorld;
     public static string CurrentWorld => Object?.CurrentWorld.Value.Name.ToString() ?? string.Empty;
     public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldId)?.DataCenter.ValueNullable?.Name.ToString();
     public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldId)?.DataCenter.ValueNullable?.Name.ToString();

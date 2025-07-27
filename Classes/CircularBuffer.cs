@@ -1,5 +1,5 @@
 namespace CkCommons.Classes;
-
+#nullable disable
 /// <summary>
 ///     Circular buffer that maintains a fixed size. <para/>
 ///     Yoinked from NightmareXIV's ECommons project, as it efficiently helps with datastreaming.
@@ -169,25 +169,6 @@ public class CircularBuffer<T> : IEnumerable<T>
         _end = 0;
         _size = 0;
         Array.Clear(_buffer, 0, _buffer.Length);
-    }
-
-    /// <summary> Converts all elements into an array format for retrieval. 
-    /// Copies the buffer contents to an array, according to the logical
-    /// contents of the buffer (i.e. independent of the internal 
-    /// order/contents)
-    /// </summary>
-    /// <returns>A new array with a copy of the buffer contents.</returns>
-    public T[] ToArray()
-    {
-        var newArray = new T[Size];
-        var newArrayOffset = 0;
-        var segments = ToArraySegments();
-        foreach (var segment in segments)
-        {
-            Array.Copy(segment.Array, segment.Offset, newArray, newArrayOffset, segment.Count);
-            newArrayOffset += segment.Count;
-        }
-        return newArray;
     }
 
     /// <summary>

@@ -39,4 +39,13 @@ public enum LabelFlags : byte
     /// <summary> Means any container should append WindowPadding.Y * 2 to the size parameter. </summary>
     /// <remarks> Useful for when you want to pass in an internal height you know of. </remarks>
     AddPaddingToHeight = 0x02,
+
+    /// <summary> When we want to padd the inner child's contents. </summary>
+    /// <remarks> Might remove later if we cave to adding WFlags. </remarks>
+    PadInnerChild = 0x04,
+
+    /// <summary> Squish the Height to the available content region height remaining for the body if possible. </summary>
+    ResizeHeightToAvailable = 0x08,
+
+    PadWithInnerRegion = AddPaddingToHeight | PadInnerChild,
 }

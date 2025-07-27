@@ -30,14 +30,14 @@ public static partial class CkGuiUtils
         // Bg Layers.
         var bgStart = cursorStart;
         var bgEnd = bgStart + size;
-        drawList.AddRectFilled(bgStart - Vector2.One, bgEnd + Vector2.One, CkGui.Color(0, 0, 0, 100), rounding, ImDrawFlags.RoundCornersAll); // Shadow
-        drawList.AddRectFilled(bgStart, bgEnd, CkGui.Color(0, 0, 0, 100), rounding, ImDrawFlags.RoundCornersAll);                          // Background
+        drawList.AddRectFilled(bgStart - Vector2.One, bgEnd + Vector2.One, CkGui.Color(0, 0, 0, 100), rounding, DFlags.RoundCornersAll); // Shadow
+        drawList.AddRectFilled(bgStart, bgEnd, CkGui.Color(0, 0, 0, 100), rounding, DFlags.RoundCornersAll);                          // Background
 
         // Progress Bar
         if (progress > 0.025f)
         {
             var fillEnd = new Vector2(bgStart.X + size.X * progress, bgEnd.Y);
-            drawList.AddRectFilled(bgStart, fillEnd, fillCol, rounding, ImDrawFlags.RoundCornersAll);
+            drawList.AddRectFilled(bgStart, fillEnd, fillCol, rounding, DFlags.RoundCornersAll);
         }
 
         // Centered text

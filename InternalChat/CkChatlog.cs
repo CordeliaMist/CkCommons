@@ -187,8 +187,8 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             // inside of the child for full effect.
             var wdl = ImGui.GetWindowDrawList();
             wdl.PushClipRect(winPos, winPos + c.InnerRegion.WithWinPadding(), false);
-            wdl.AddRectFilled(winPos, winPos + c.InnerRegion.WithWinPadding(), 0xCC000000, 5, ImDrawFlags.RoundCornersAll);
-            wdl.AddRect(winPos, winPos + c.InnerRegion.WithWinPadding(), ImGuiColors.ParsedGold.ToUint(), 5, ImDrawFlags.RoundCornersAll);
+            wdl.AddRectFilled(winPos, winPos + c.InnerRegion.WithWinPadding(), 0xCC000000, 5, DFlags.RoundCornersAll);
+            wdl.AddRect(winPos, winPos + c.InnerRegion.WithWinPadding(), ImGuiColors.ParsedGold.ToUint(), 5, DFlags.RoundCornersAll);
             wdl.PopClipRect();
             CkRichText.Text(message, ID);
         }
