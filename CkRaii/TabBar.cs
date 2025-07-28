@@ -1,4 +1,5 @@
 using CkCommons.Widgets;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using System.Drawing;
@@ -47,7 +48,7 @@ public static partial class CkRaii
             ImGui.EndGroup();
             // border frame it.
             ImGui.GetWindowDrawList().AddRect(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), 
-                col, rounding, DFlags.RoundCornersAll, 1.5f);
+                col, rounding, DFlags.RoundCornersAll, 1.5f * ImGuiHelpers.GlobalScale);
         }, success, innerSize);
     }
 }

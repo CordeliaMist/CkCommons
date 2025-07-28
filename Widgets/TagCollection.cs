@@ -1,10 +1,15 @@
 using CkCommons.Gui;
 using CkCommons.Helpers;
 using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OtterGui.Extensions;
+using OtterGui.Text;
+using System.Windows.Forms;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
+using static FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentButton.Delegates;
 
 namespace CkCommons.Widgets;
 
@@ -113,7 +118,7 @@ public class TagCollection
         }
     }
 
-    public bool DrawHelpButtons(string csvString, out string updatedCsvString, bool showSort)
+    public bool DrawHelpButtons(Vector2 botRight, string csvString, out string updatedCsvString, bool showSort)
     {
         bool change = false;
 
@@ -121,24 +126,25 @@ public class TagCollection
         UpdateOrSetLatest(csvString);
 
         // do the draws.
-        Vector2 pos = ImGui.GetCursorPos();
-        Vector2 available = ImGui.GetContentRegionAvail();
-        Vector2 bottomRightPos = pos + available;
-        float width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
-        Vector2 iconSize = new Vector2(width, ImGui.GetFrameHeight());
+        var iconSize = new Vector2(ImGui.GetFrameHeight());
+        var spacingX = ImGui.GetStyle().ItemInnerSpacing.X * .5f;
+        float width = showSort ? iconSize.X * 2 + spacingX : iconSize.X;
+        var iconsSize = new Vector2(width, iconSize.Y);
         // Move and draw the icons.
-        ImGui.SetCursorPos(bottomRightPos - iconSize);
+        var newPos = botRight - iconsSize;
+        ImGui.SetCursorScreenPos(newPos);
         if (showSort)
         {
-            if (CkGui.IconButton(FontAwesomeIcon.SortAlphaDown, inPopup: true))
+            var hovered = ImGui.IsMouseHoveringRect(newPos, newPos + iconSize);
+            CkGui.FramedIconText(FontAwesomeIcon.SortAlphaDown, ImGui.GetColorU32(hovered ? ImGuiCol.ButtonHovered : ImGuiCol.Text));
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left) && hovered)
             {
                 _latestStringTags.Sort();
                 change = true;
             }
             CkGui.AttachToolTip("Sort Tags Alphabetically");
+            ImGui.SameLine();
         }
-
-        ImGui.SameLine();
         CkGui.HelpText(HELP_TEXT, CkColor.VibrantPink.Uint());
 
         updatedCsvString = string.Join(", ", _latestStringTags);
@@ -153,25 +159,26 @@ public class TagCollection
         UpdateOrSetLatest(tags);
 
         // do the draws.
-        Vector2 pos = ImGui.GetCursorPos();
-        Vector2 available = ImGui.GetContentRegionAvail();
-        Vector2 bottomRightPos = pos + available;
-        float width = showSort ? ImGui.GetFrameHeight() * 2 + ImGui.GetStyle().ItemSpacing.X : ImGui.GetFrameHeight();
-        Vector2 iconSize = new Vector2(width, ImGui.GetFrameHeight());
+        var bottomRightPos = ImGui.GetCursorPos() + ImGui.GetContentRegionAvail();
+        var iconSize = new Vector2(ImGui.GetFrameHeight());
+        float width = iconSize.X * (showSort ? 2 : 1);
+        var iconsSize = new Vector2(iconSize.X * (showSort ? 2 : 1), iconSize.Y);
         // Move and draw the icons.
-        ImGui.SetCursorPos(bottomRightPos - iconSize);
+        var newPos = bottomRightPos - iconsSize;
+        ImGui.SetCursorPos(newPos);
         if(showSort)
         {
-            if (CkGui.IconButton(FontAwesomeIcon.SortAlphaDown, inPopup: true))
+            CkGui.FramedHoverIconText(FontAwesomeIcon.SortAlphaDown, CkColor.VibrantPinkHovered.Uint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
                 _latestStringTags.Sort();
                 change = true;
             }
             CkGui.AttachToolTip("Sort Tags Alphabetically");
+            ImGui.SameLine(0, 0);
         }
-
-        ImGui.SameLine();
-        CkGui.HelpText(HELP_TEXT, CkColor.VibrantPink.Uint());
+        CkGui.FramedHoverIconText(FAI.QuestionCircle, ImGuiColors.TankBlue.ToUint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
+        CkGui.AttachToolTip(HELP_TEXT, color: CkColor.VibrantPink.Vec4());
 
         updatedTags = _latestStringTags;
         return change;

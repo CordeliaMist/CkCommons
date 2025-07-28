@@ -2,26 +2,21 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OtterGui;
+using OtterGui.Text;
 using static CkCommons.GameDataHelp;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
 {
-
-    /// <summary> Variant of CkGuiUtil's Enum combo, that can spawn a combo box from an icon button. </summary>
-    /// <returns> if a new value was selected. </returns>
     public static bool IconEnumCombo<T>(FAI icon, T current, out T newValue, bool disabled, Func<T, string>? toString = null, 
         string? id = null, bool inPopup = false, int skip = 0) where T : struct, Enum
         => IconEnumCombo(icon, current, out newValue, Enum.GetValues<T>().Skip(skip), disabled, toString, id, inPopup);
 
-    /// <summary> Variant of CkGuiUtil's Enum combo, that can spawn a combo box from an icon button. </summary>
-    /// <returns> if a new value was selected. </returns>
     public static bool IconEnumCombo<T>(FAI icon, T current, out T newValue, IEnumerable<T> options, bool disabled, 
         Func<T, string>? toString = null, string? id = null, bool inPopup = false) where T : struct, Enum
     {
         var identifier = id ?? icon.ToIconString();
-        string popupId = $"##EnumIconPopup_{identifier}";
+        var popupId = $"##EnumIconPopup_{identifier}";
 
         // Render the icon as a button.
         if (CkGui.IconButton(icon, null, identifier, disabled, inPopup))
@@ -45,7 +40,7 @@ public static partial class CkGuiUtils
             {
                 foreach (var data in options)
                 {
-                    string name = toString?.Invoke(data) ?? data.ToString();
+                    var name = toString?.Invoke(data) ?? data.ToString();
                     if (ImGui.Selectable(name, data.Equals(current)))
                     {
                         newValue = data;
@@ -76,14 +71,14 @@ public static partial class CkGuiUtils
         string defaultText = "Select Item..", CFlags flags = CFlags.None) where T : struct, Enum
     {
         ImGui.SetNextItemWidth(width);
-        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        var previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
         using (var combo = ImRaii.Combo(label, previewText, flags))
         {
             if (combo)
             {
-                foreach (T data in options)
+                foreach (var data in options)
                 {
-                    string name = toString?.Invoke(data) ?? data.ToString();
+                    var name = toString?.Invoke(data) ?? data.ToString();
                     if (name.Length == 0 || !ImGui.Selectable(name, data.Equals(current)))
                         continue;
 
@@ -107,8 +102,8 @@ public static partial class CkGuiUtils
     public static bool LayerIdxCombo(string label, float width, int curIdx, out int newIdx, int items, bool showAny = false, CFlags flags = CFlags.None)
     {
         ImGui.SetNextItemWidth(width);
-        bool inRange = curIdx >= 0 && curIdx < items;
-        string previewText = inRange ? $"Layer {curIdx + 1}" : "Any Layer";
+        var inRange = curIdx >= 0 && curIdx < items;
+        var previewText = inRange ? $"Layer {curIdx + 1}" : "Any Layer";
         using (var c = ImRaii.Combo(label, previewText, flags))
         {
             if (c)
@@ -123,9 +118,9 @@ public static partial class CkGuiUtils
                     }
                 }
                 // Remaining layers.
-                for (int i = 0; i < items; i++)
+                for (var i = 0; i < items; i++)
                 {
-                    string name = $"Layer {i + 1}";
+                    var name = $"Layer {i + 1}";
                     if (!ImGui.Selectable(name, i == curIdx) || i == curIdx)
                         continue;
 
@@ -137,7 +132,7 @@ public static partial class CkGuiUtils
         // reset to None if right-clicked.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
-            newIdx = -1;
+            newIdx = showAny ? - 1 : 0;
             return true;
         }
 
@@ -153,10 +148,10 @@ public static partial class CkGuiUtils
         IEnumerable<string> options, string defaultText = "Select Item...")
     {
         ImGui.SetNextItemWidth(width);
-        string previewText = options.Contains(current) ? current.ToString() : defaultText;
+        var previewText = options.Contains(current) ? current.ToString() : defaultText;
         using var combo = ImRaii.Combo(label, previewText);
         if (combo)
-            foreach (string data in options)
+            foreach (var data in options)
             {
                 if (data.Length == 0 || !ImGui.Selectable(data, data.Equals(current)) || data.Equals(current))
                     continue;
@@ -173,14 +168,14 @@ public static partial class CkGuiUtils
     Func<Guid, string>? toString = null, string defaultText = "Select Item...", CFlags flags = CFlags.None)
     {
         ImGui.SetNextItemWidth(width);
-        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        var previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
         using (var combo = ImRaii.Combo(label, previewText, flags))
         {
             if (combo)
             {
                 foreach (var option in options)
                 {
-                    string display = toString?.Invoke(option) ?? option.ToString();
+                    var display = toString?.Invoke(option) ?? option.ToString();
                     if (display.Length == 0 || !ImGui.Selectable(display, option == current) || option == current)
                         continue;
 
@@ -205,14 +200,14 @@ public static partial class CkGuiUtils
         Func<int, string>? toString = null, string defaultText = "Select Item...", CFlags flags = CFlags.None)
     {
         ImGui.SetNextItemWidth(width);
-        string previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
+        var previewText = options.Contains(current) ? (toString?.Invoke(current) ?? current.ToString()) : defaultText;
         using (var combo = ImRaii.Combo(label, previewText, flags))
         {
             if (combo)
             {
-                foreach (int option in options)
+                foreach (var option in options)
                 {
-                    string display = toString?.Invoke(option) ?? option.ToString();
+                    var display = toString?.Invoke(option) ?? option.ToString();
                     if (display.Length == 0 || !ImGui.Selectable(display, option == current) || option == current)
                         continue;
 

@@ -134,11 +134,15 @@ public static class CkColors
             CkColor.FolderCollapsed         => 0xFFFFF0C0,
             CkColor.FolderLine              => 0xFF40D0D0,
 
+            CkColor.FavoriteStarOn          => CkColor.FavoriteStarOn.Vec4().ToUint(),
+            CkColor.FavoriteStarHovered     => CkColor.FavoriteStarHovered.Vec4().ToUint(),
+            CkColor.FavoriteStarOff         => CkColor.FavoriteStarOff.Vec4().ToUint(),
+
             CkColor.TriStateCheck           => 0xFFD040D0,
             CkColor.TriStateCross           => 0x20808080,
             CkColor.TriStateNeutral         => 0xFF00D000,
 
-            CkColor.IconCheckOn             => 0xFF0000D0,
+            CkColor.IconCheckOn             => 0xFF00D000,
             CkColor.IconCheckOff            => 0xFFD0D0D0,
             _                               => 0x00000000,
         };
