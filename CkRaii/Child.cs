@@ -20,25 +20,25 @@ public static partial class CkRaii
     /// <summary> ImRaii.Child alternative with bgCol and rounding support. </summary>
     /// <remarks> The IEndObject returned is a EndObjectContainer, holding the inner content region size. </remarks>
     public static IEOContainer Child(string id, Vector2 size, uint bgCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
-        => FramedChild(id, size, bgCol, rounding, 0, dFlags, wFlags);
+        => FramedChild(id, size, bgCol, 0, rounding, dFlags, wFlags);
 
 
 
-    /// <inheritdoc cref="FramedChild(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
-    public static IEOContainer FramedChild(string id, uint bgCol, float thickness = 0, uint? frameCol = null, DFlags dFlags = DFlags.None)
-        => FramedChild(id, ImGui.GetContentRegionAvail(), bgCol, CkStyle.ChildRounding(), thickness, frameCol, dFlags, WFlags.None);
-
-    /// <inheritdoc cref="FramedChild(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
-    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, uint? frameCol = null, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
-        => FramedChild(id, size, bgCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), frameCol, dFlags, wFlags);
+    /// <inheritdoc cref="FramedChild(string, Vector2, uint, uint, float, float, DFlags, WFlags)"/>/>
+    public static IEOContainer FramedChild(string id, uint bgCol, uint frameCol, float thickness = 0, DFlags dFlags = DFlags.None)
+        => FramedChild(id, ImGui.GetContentRegionAvail(), bgCol, frameCol, CkStyle.ChildRounding(), thickness, dFlags, WFlags.None);
 
     /// <inheritdoc cref="FramedChild(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
-    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, float thickness, uint? frameCol = null, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
-        => FramedChild(id, size, bgCol, CkStyle.ChildRounding(), thickness, frameCol, dFlags, wFlags);
+    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, uint frameCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
+        => FramedChild(id, size, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags);
+
+    /// <inheritdoc cref="FramedChild(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
+    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, uint frameCol, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
+        => FramedChild(id, size, bgCol, frameCol, CkStyle.ChildRounding(), thickness, dFlags, wFlags);
 
     /// <summary> ImRaii.Child alternative with bgCol and rounding support. (Supports frames) </summary>
     /// <remarks> The IEndObject returned is a EndObjectContainer, holding the inner content region size. </remarks>
-    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, float rounding, float thickness, uint? frameCol = null, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
+    public static IEOContainer FramedChild(string id, Vector2 size, uint bgCol, uint frameCol, float rounding, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
     {
         var success = ImGui.BeginChild(id, size, false, wFlags);
         var innerSize = (wFlags & WFlags.AlwaysUseWindowPadding) != 0 ? size.WithoutWinPadding() : size;
@@ -53,7 +53,7 @@ public static partial class CkRaii
                 ImGui.GetWindowDrawList().AddRectFilled(min, max, bgCol, rounding, dFlags);
             // Draw out the frame.
             if (thickness is not 0)
-                ImGui.GetWindowDrawList().AddRect(min, max, frameCol.HasValue ? frameCol.Value : bgCol, rounding, dFlags, thickness);
+                ImGui.GetWindowDrawList().AddRect(min, max, frameCol, rounding, dFlags, thickness);
         }, success, innerSize);
     }
 }
