@@ -63,17 +63,17 @@ public static partial class CkRaii
     }
 
     /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, float, string, HeaderFlags)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
+    public static IEOContainer ButtonHeaderChild(string text, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
         => ButtonHeaderChild(text, ImGui.GetContentRegionAvail(), act, CkStyle.HeaderRounding(), tt, flags);
 
 
     /// <inheritdoc cref="ButtonHeaderChild(string, Vector2, Action, float, string, HeaderFlags)"/>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
+    public static IEOContainer ButtonHeaderChild(string text, Vector2 size, Action act, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
         => ButtonHeaderChild(text, size, act, CkStyle.HeaderRounding(), tt, flags);
 
     /// <summary> Interactable Button Header that has a child body. </summary>
     /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
-    public static ImRaii.IEndObject ButtonHeaderChild(string text, Vector2 size, Action act, float rounding, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
+    public static IEOContainer ButtonHeaderChild(string text, Vector2 size, Action act, float rounding, string? tt = null, HeaderFlags flags = HeaderFlags.AlignCenter)
     {
         ImGui.BeginGroup();
         ImDrawListPtr wdl = ImGui.GetWindowDrawList();
@@ -122,12 +122,12 @@ public static partial class CkRaii
         );
     }
 
-    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
+    public static IEOContainer IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
         => IconButtonHeaderChild(text, icon, size, act, CkStyle.HeaderRounding(), flags, tt);
 
     /// <summary> Interactable Button Header that has a child body. </summary>
     /// <remarks> WindowPadding is always applied. Size passed in should be the size of the inner child space after padding. </remarks>
-    public static ImRaii.IEndObject IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
+    public static IEOContainer IconButtonHeaderChild(string text, FAI icon, Vector2 size, Action act, float rounding, HeaderFlags flags = HeaderFlags.AlignCenter, string tt = "")
     {
         ImGui.BeginGroup();
 
@@ -180,14 +180,6 @@ public static partial class CkRaii
             innerSize.WithoutWinPadding()
         );
     }
-
-    private static void HeaderChildEndAction(uint bgCol, float rounding)
-    {
-        ImGui.EndChild();
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), bgCol, rounding, DFlags.RoundCornersBottom);
-        ImGui.EndGroup();
-    }
-
 
     public static IEOContainer CustomHeaderChild(string id, Action act, HeaderFlags hf = HeaderFlags.AddPaddingToHeight, DFlags df = DFlags.None)
         => CustomHeaderChild(id, ImGui.GetContentRegionAvail(), act, CkStyle.HeaderRounding(), hf, df);

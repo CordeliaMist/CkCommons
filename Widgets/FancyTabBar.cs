@@ -36,8 +36,15 @@ public static class FancyTabBar
     // If this ever REALLY becomes an issue we can switch to an array with ID-type casting. But for now, this is fine.
     private static readonly Dictionary<string, IFancyTab?> _selectedStorage = new();
 
-    //public static bool DrawBar(string id, [NotNullWhen(true)] out IFancyTab? selected, params IFancyTab[] tabs)
-     //   => DrawBar(id, ImGui.GetContentRegionAvail().X, Height * .65f, CkColor.VibrantPink.Uint(), CkColor.VibrantPinkHovered.Uint(), CkColor.ElementSplit.Uint(), out selected, tabs);
+    public static void SelectTab(string id, IFancyTab toSelect, params IFancyTab[] tabs)
+    {
+        // do not select if the ID does not exist.
+        if (!_selectedStorage.ContainsKey(id))
+            return;
+        // Select it and set it.
+        if (tabs.Contains(toSelect))
+            _selectedStorage[id] = toSelect;
+    }
 
     /// <summary> This WILL end with the cursorpos at the point you can draw the content region at. </summary>
     /// <returns> If a new tab was selected that is different from the last frame selection. </returns>

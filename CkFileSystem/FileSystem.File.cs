@@ -145,4 +145,65 @@ public partial class CkFileSystem<T>
         Changed?.Invoke(FileSystemChangeType.Reload, Root, null, null);
         return changes;
     }
+
+    /// <summary>
+    ///     Load a given FileSystem from pre-cached folder route addresses and pathings over the conventional file reading.
+    /// </summary>
+    protected bool Load(Dictionary<string, string> data, string[] emptyFolders, IEnumerable<T> objects, Func<T, string> toId, Func<T, string> toName)
+    {
+        IdCounter = 1;
+        Root.Children.Clear();
+        bool changes = false;
+        try
+        {
+            foreach (T value in objects)
+            {
+                string identifier = toId(value);
+                // If the data has a path in the filesystem, create all necessary folders and set the leaf.
+                if (data.TryGetValue(identifier, out string? path))
+                {
+                    data.Remove(identifier);
+                    string[] split = path.SplitDirectories();
+                    (Result result, Folder folder) = CreateAllFolders(split[..^1]);
+                    if (result is not Result.Success and not Result.SuccessNothingDone)
+                    {
+                        changes = true;
+                        continue;
+                    }
+
+                    Leaf leaf = new Leaf(folder, split[^1], value, IdCounter++);
+                    while (SetChild(folder, leaf, out _) == Result.ItemExists)
+                    {
+                        leaf.SetName(leaf.Name.IncrementDuplicate());
+                        changes = true;
+                    }
+                }
+                else
+                {
+                    // Add a new leaf using the given toName function.
+                    Leaf leaf = new Leaf(Root, toName(value), value, IdCounter++);
+                    while (SetChild(Root, leaf, out _) == Result.ItemExists)
+                    {
+                        leaf.SetName(leaf.Name.IncrementDuplicate());
+                        changes = true;
+                    }
+                }
+            }
+
+            // Add all empty folders.
+            foreach (string[]? split in emptyFolders.Select(folder => folder.SplitDirectories()))
+            {
+                (Result result, Folder _) = CreateAllFolders(split);
+                if (result is not Result.Success and not Result.SuccessNothingDone)
+                    changes = true;
+            }
+        }
+        catch
+        {
+            changes = true;
+        }
+
+        Changed?.Invoke(FileSystemChangeType.Reload, Root, null, null);
+        return changes;
+    }
 }
