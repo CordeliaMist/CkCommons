@@ -183,7 +183,7 @@ public class ItemSelectorBox<T>
     public void DrawSelectorChildBox(string id, Vector2 region, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName)
     {
         using var _ = ImRaii.PushId(id);
-        using var child = CkRaii.Child(id, region, WFlags.NoScrollbar);
+        using var child = CkRaii.Child(id, region, wFlags: WFlags.NoScrollbar);
 
         var color = ImGui.GetColorU32(ImGuiCol.Button);
         using var s = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });

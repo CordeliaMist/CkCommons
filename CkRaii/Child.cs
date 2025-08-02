@@ -10,12 +10,12 @@ public static partial class CkRaii
         => new EndUnconditionally(() => ImGui.EndChild(), ImGui.BeginChild(id));
 
     /// <inheritdoc cref="OtterGui.Text.EndObjects.Child"/>"
-    public static IEOContainer Child(string id, Vector2 size, WFlags flags = WFlags.None)
-        => Child(id, size, 0, CkStyle.ChildRounding(), DFlags.None, flags);
+    public static IEOContainer Child(string id, Vector2 size, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
+        => Child(id, size, 0, CkStyle.ChildRounding(), dFlags, wFlags);
 
     /// <inheritdoc cref="OtterGui.Text.EndObjects.Child"/>"
-    public static IEOContainer Child(string id, Vector2 size, uint bgCol, WFlags flags = WFlags.None)
-        => Child(id, size, bgCol, CkStyle.ChildRounding(), DFlags.None, flags);
+    public static IEOContainer Child(string id, Vector2 size, uint bgCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
+        => Child(id, size, bgCol, CkStyle.ChildRounding(), dFlags, wFlags);
 
     /// <summary> ImRaii.Child alternative with bgCol and rounding support. </summary>
     /// <remarks> The IEndObject returned is a EndObjectContainer, holding the inner content region size. </remarks>

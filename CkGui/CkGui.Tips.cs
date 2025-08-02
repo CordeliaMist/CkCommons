@@ -39,23 +39,28 @@ public static partial class CkGui
 
     public static void ToolTipInternal(string text, float borderSize = 1f, Vector4? color = null)
     {
-        using ImRaii.Style s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
+        using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, borderSize);
-        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+        using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
 
         ImGui.BeginTooltip();
-        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
 
+        WrappedTooltipText(text, 35f, color);
+
+        ImGui.EndTooltip();
+    }
+
+    public static void WrappedTooltipText(string text, float wrapWidth, Vector4? color = null)
+    {
+        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
         // Split the text by regex.
         string[] tokens = TooltipTokenRegex.Split(text);
-
         // if there were no tokens, just print the text unformatted
         if (tokens.Length <= 1)
         {
             ImGui.TextUnformatted(text);
             ImGui.PopTextWrapPos();
-            ImGui.EndTooltip();
             return;
         }
 
@@ -67,17 +72,9 @@ public static partial class CkGui
         {
             switch(token)
             {
-                case TipSep:
-                    ImGui.Separator();
-                    break;
-
-                case TipNL:
-                    ImGui.NewLine();
-                    break;
-
-                case TipCol:
-                    useColor = !useColor;
-                    break;
+                case TipSep: ImGui.Separator(); break;
+                case TipNL: ImGui.NewLine(); break;
+                case TipCol: useColor = !useColor; break;
 
                 default:
                     if (string.IsNullOrEmpty(token))
@@ -97,7 +94,6 @@ public static partial class CkGui
         }
 
         ImGui.PopTextWrapPos();
-        ImGui.EndTooltip();
     }
 
     public static void HelpText(string helpText, bool inner = false, uint? offColor = null)

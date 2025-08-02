@@ -316,6 +316,19 @@ public static partial class CkGui
         ImGui.GetWindowDrawList().AddText(iconPosition, color ?? ImGui.GetColorU32(ImGuiCol.Text), text);
     }
 
+    public static void HoverIconText(FAI icon, uint hoverCol, uint? color = null)
+    {
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
+        var region = new Vector2(ImGui.GetTextLineHeight());
+        var col = color ?? ImGui.GetColorU32(ImGuiCol.Text);
+        // Get the text size.
+        Vector2 pos = ImGui.GetCursorScreenPos();
+        ImGui.Dummy(region);
+        if (ImGui.IsItemHovered())
+            col = hoverCol;
+        ImGui.GetWindowDrawList().AddText(pos, col, icon.ToIconString());
+    }
+
     public static void FramedHoverIconText(FAI icon, uint hoverCol, uint? color = null)
     {
         var region = new Vector2(ImGui.GetFrameHeight());

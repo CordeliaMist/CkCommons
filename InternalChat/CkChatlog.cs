@@ -98,7 +98,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
 
     public void DrawChatLog(Vector2 region, WFlags flags = WFlags.NoScrollbar)
     {
-        using var _ = CkRaii.Child($"##GlobalChatLog-{Label}", region, flags);
+        using var _ = CkRaii.Child($"##GlobalChatLog-{Label}", region, wFlags: flags);
         var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
         var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, region.X);
 
