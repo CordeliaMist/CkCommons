@@ -194,6 +194,50 @@ public static partial class CkGui
         TextWrapped(text);
     }
 
+    public static void TextWrappedTooltipFormat(string text, float wrapWidth, Vector4? color = null)
+    {
+        ImGui.PushTextWrapPos(wrapWidth);
+        // Split the text by regex.
+        string[] tokens = TooltipTokenRegex.Split(text);
+        // if there were no tokens, just print the text unformatted
+        if (tokens.Length <= 1)
+        {
+            ImGui.TextUnformatted(text);
+            ImGui.PopTextWrapPos();
+            return;
+        }
+
+        // Otherwise, parse it!
+        bool useColor = false;
+        bool firstLineSegment = true;
+
+        foreach (string token in tokens)
+        {
+            switch (token)
+            {
+                case TipSep: ImGui.Separator(); break;
+                case TipNL: ImGui.NewLine(); break;
+                case TipCol: useColor = !useColor; break;
+
+                default:
+                    if (string.IsNullOrEmpty(token))
+                        continue; // Skip empty tokens
+
+                    if (!firstLineSegment)
+                        ImGui.SameLine(0, 0);
+
+                    if (useColor && color.HasValue)
+                        ColorText(token, color.Value);
+                    else
+                        ImGui.TextUnformatted(token);
+
+                    firstLineSegment = false;
+                    break;
+            }
+        }
+        ImGui.PopTextWrapPos();
+    }
+
     /// <summary> Helper function to draw the outlined font in ImGui. </summary>
     public static void OutlinedFont(string text, Vector4 fontColor, Vector4 outlineColor, int thickness)
     {
