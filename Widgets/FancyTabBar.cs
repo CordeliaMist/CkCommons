@@ -1,5 +1,5 @@
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGuiInternal.Structs;
 using System.Diagnostics.CodeAnalysis;
 
@@ -112,16 +112,16 @@ public static class FancyTabBar
                 var radLarge = Rounding;
                 var radSmall = BarHeight - radLarge;
                 // Calculations made in order of point.
-                var leftCircleLower = new ImVec2(tabRect.MinX - BarHeight, tabRect.MaxY - radSmall);
-                var leftCircleUpper = new ImVec2(tabRect.MinX, tabRect.MaxY - radSmall);
-                var rightCircleUpper = new ImVec2(tabRect.MaxX, tabRect.MaxY - radSmall);
-                var rightCircleLower = new ImVec2(tabRect.MaxX + BarHeight, tabRect.MaxY - radSmall);
+                var leftCircleLower = new ImVec2(tabRect.Min.X - BarHeight, tabRect.Max.Y - radSmall);
+                var leftCircleUpper = new ImVec2(tabRect.Min.X, tabRect.Max.Y - radSmall);
+                var rightCircleUpper = new ImVec2(tabRect.Max.X, tabRect.Max.Y - radSmall);
+                var rightCircleLower = new ImVec2(tabRect.Max.X + BarHeight, tabRect.Max.Y - radSmall);
 
                 // We need to start in bottom center because in order for ANY inverse curves to process it must have LoS to the origin point.
                 var bottomCenter = tabRect.Max - new ImVec2(tabRegion.X / 2, 0);
                 wdl.PathClear();
                 wdl.PathLineTo(bottomCenter); // Bottom Center (Origin)
-                if (first) wdl.PathLineTo(new ImVec2(tabRect.MinX - radLarge, tabRect.MaxY)); // Bottom Left inward Arc (First Frame only)
+                if (first) wdl.PathLineTo(new ImVec2(tabRect.Min.X - radLarge, tabRect.Max.Y)); // Bottom Left inward Arc (First Frame only)
                 else wdl.PathArcTo(leftCircleLower, radSmall, float.Pi / 2, 0); // Bottom Left inward Arc (Normal Frames)
                 wdl.PathArcTo(leftCircleUpper, radLarge, float.Pi, 3 * float.Pi / 2); // Top Left outward Arc
                 wdl.PathArcTo(rightCircleUpper, radLarge, 3 * float.Pi / 2, 2 * float.Pi); // Top Right outward Arc
@@ -138,7 +138,7 @@ public static class FancyTabBar
             }
 
             // Draw aligned to the frame padding, centered, the text.
-            var textPos = new ImVec2(tabRect.MinX, tabRect.MinY + (tabRegion.Y - textSize.Y) / 2);
+            var textPos = new ImVec2(tabRect.Min.X, tabRect.Min.Y + (tabRegion.Y - textSize.Y) / 2);
             ImGui.GetWindowDrawList().AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), label);
 
             return clicked;

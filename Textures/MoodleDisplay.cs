@@ -6,7 +6,7 @@ using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace CkCommons.Textures;
 
@@ -36,7 +36,7 @@ public static class MoodleDisplay
     public static void DrawMoodleIcon(int iconId, int stacks, Vector2 size)
     {
         if (Svc.Texture.GetFromGameIcon(new GameIconLookup((uint)(iconId + stacks - 1))).GetWrapOrDefault() is { } wrap)
-            ImGui.Image(wrap.ImGuiHandle, size);
+            ImGui.Image(wrap.Handle, size);
         else
             ImGui.Dummy(size);
     }

@@ -3,7 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui;
 using OtterGui.Text;
 using System.Runtime.CompilerServices;
@@ -313,7 +313,7 @@ public static partial class CkGui
                 width += fontPtr.GetDistanceAdjustmentForPair(prevChar.Value, current) * scale;
 
             ImFontGlyphPtr glyph = fontPtr.FindGlyph(current);
-            if (glyph.NativePtr is null)
+            if (glyph.Handle is null)
                 continue;
 
             width += glyph.AdvanceX * scale;
@@ -431,7 +431,7 @@ public static partial class CkGui
         using var _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width);
-        var changed = ImGui.InputTextWithHint(label, hint, ref input, (uint)length, flags);
+        var changed = ImGui.InputTextWithHint(label, hint, ref input, length, flags);
         ImGui.SetCursorScreenPos(ImGui.GetItemRectMax() - new Vector2(ImGui.GetFrameHeight()));
         //ImGui.SameLine(ImGui.GetItemRectSize().X - ImGui.GetFrameHeight());
         FramedIconText(icon, ImGui.GetColorU32(ImGuiCol.TextDisabled));
@@ -444,7 +444,7 @@ public static partial class CkGui
         using var _ = ImRaii.Group();
         // Draw input text with hint below.
         ImGui.SetNextItemWidth(width - ImGui.GetFrameHeight() - ImGui.GetStyle().ItemInnerSpacing.X);
-        var changed = ImGui.InputTextWithHint(id, hint, ref input, (uint)length, flags);
+        var changed = ImGui.InputTextWithHint(id, hint, ref input, length, flags);
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         FramedIconText(icon, ImGui.GetColorU32(ImGuiCol.TextDisabled));
         return changed;

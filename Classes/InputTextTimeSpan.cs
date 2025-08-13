@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using CkCommons.Helpers;
 
 namespace CkCommons.Classes;

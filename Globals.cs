@@ -7,11 +7,11 @@ global using System.Numerics;
 global using System.Text;
 global using System.Text.RegularExpressions;
 
-global using CFlags = ImGuiNET.ImGuiComboFlags;
-global using DFlags = ImGuiNET.ImDrawFlags;
+global using CFlags = Dalamud.Bindings.ImGui.ImGuiComboFlags;
+global using DFlags = Dalamud.Bindings.ImGui.ImDrawFlags;
 global using FAI = Dalamud.Interface.FontAwesomeIcon;
-global using ITFlags = ImGuiNET.ImGuiInputTextFlags;
-global using WFlags = ImGuiNET.ImGuiWindowFlags;
+global using ITFlags = Dalamud.Bindings.ImGui.ImGuiInputTextFlags;
+global using WFlags = Dalamud.Bindings.ImGui.ImGuiWindowFlags;
 
 global using MoodlesStatusInfo = (
     System.Guid GUID,

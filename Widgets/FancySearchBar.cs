@@ -1,7 +1,7 @@
 using CkCommons.Gui;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui.Text;
 
 namespace CkCommons.Widgets;
@@ -9,7 +9,7 @@ namespace CkCommons.Widgets;
 public class FancySearchBar
 {
     // WIP - At the moment the clear text does not appear to do much, unsure why currently. Look into how otter clears text probably.
-    public unsafe static bool Draw(string id, float width, string tt, ref string str, uint textLen, float rWidth = 0f, Action? rButtons = null)
+    public unsafe static bool Draw(string id, float width, string tt, ref string str, int textLen, float rWidth = 0f, Action? rButtons = null)
     {
         var needsFocus = false;
         var height = ImGui.GetTextLineHeight() + (ImGui.GetStyle().FramePadding.Y * 2);
@@ -64,12 +64,12 @@ public class FancySearchBar
                     needsClear = false;
                     localSearchStr = string.Empty;
                     // clear the search input buffer
-                    data->BufTextLen = 0;
-                    data->BufSize = 0;
-                    data->CursorPos = 0;
-                    data->SelectionStart = 0;
-                    data->SelectionEnd = 0;
-                    data->BufDirty = 1;
+                    data.BufTextLen = 0;
+                    data.BufSize = 0;
+                    data.CursorPos = 0;
+                    data.SelectionStart = 0;
+                    data.SelectionEnd = 0;
+                    data.BufDirty = true;
                 }
                 return 1;
             });

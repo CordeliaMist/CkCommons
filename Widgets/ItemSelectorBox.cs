@@ -4,7 +4,7 @@ using CkCommons.Raii;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui.Extensions;
 
 namespace CkCommons.Widgets;

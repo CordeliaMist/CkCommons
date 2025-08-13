@@ -2,7 +2,7 @@ using CkCommons.Helpers;
 using CkCommons;
 using CkCommons.Textures;
 using FFXIVClientStructs.FFXIV.Common.Lua;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using System.Buffers.Binary;
 using System.Diagnostics;
@@ -114,7 +114,7 @@ public class RichTextString
     }
 
     public unsafe bool MatchesCachedState(ImFontPtr font, float wrapWidth)
-        => _lastFont.NativePtr == font.NativePtr && _lastWrapWidth == wrapWidth;
+        => _lastFont.Handle == font.Handle && _lastWrapWidth == wrapWidth;
 
     public void BuildPayloads(string rawText)
     {

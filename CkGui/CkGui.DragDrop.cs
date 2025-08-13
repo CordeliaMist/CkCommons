@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Runtime.CompilerServices;
 
 namespace CkCommons.Gui;
@@ -8,10 +8,13 @@ namespace CkCommons.Gui;
 public static partial class CkGui
 {
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
-    public static unsafe void SetDragDropPayload<T>(string type, T data, ImGuiCond condition = 0) where T : unmanaged
+    public static unsafe void SetDragDropPayload<T>(ImU8String type, T data, ImGuiCond condition = 0) where T : unmanaged
     {
-        void* ptr = Unsafe.AsPointer(ref data);
-        ImGui.SetDragDropPayload(type, new IntPtr(ptr), (uint)Unsafe.SizeOf<T>(), condition);
+        fixed (byte* typePtr = &type.GetPinnableNullTerminatedReference())
+        {
+            void* ptr = Unsafe.AsPointer(ref data);
+            ImGuiNative.SetDragDropPayload(typePtr, ptr, (uint)Unsafe.SizeOf<T>(), condition);
+        }
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None) where T : unmanaged
@@ -21,15 +24,16 @@ public static partial class CkGui
         return payloadPtr != null;
     }
 
-    public static unsafe void SetDragDropPayload(string type, string data, ImGuiCond condition = 0)
+    public static unsafe void SetDragDropPayload(ImU8String type, string data, ImGuiCond condition = 0)
     {
+        fixed (byte* typePtr = &type.GetPinnableNullTerminatedReference())
         fixed (char* chars = data)
         {
             int byteCount = Encoding.Default.GetByteCount(data);
-            byte* bytes = stackalloc byte[byteCount];
+            byte* bytes = stackalloc byte[byteCount]; 
             Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
 
-            ImGui.SetDragDropPayload(type, new IntPtr(bytes), (uint)byteCount, condition);
+            ImGuiNative.SetDragDropPayload(typePtr, bytes, (uint)byteCount, condition);
         }
     }
 

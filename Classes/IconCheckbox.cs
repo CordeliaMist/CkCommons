@@ -1,6 +1,6 @@
 using CkCommons;
 using Dalamud.Interface;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui.Text.Widget;
 
 namespace CkCommons.Classes;

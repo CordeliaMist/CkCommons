@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Runtime.InteropServices;
 
 namespace CkCommons.Widgets;

@@ -1,7 +1,7 @@
 using CkCommons.Widgets;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Drawing;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 
