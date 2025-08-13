@@ -1,7 +1,7 @@
 using CkCommons.Gui;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui.Text;
 
 namespace CkCommons.Raii;

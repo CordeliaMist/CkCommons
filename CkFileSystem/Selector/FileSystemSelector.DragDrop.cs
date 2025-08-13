@@ -1,5 +1,5 @@
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui;
 
 namespace CkCommons.FileSystem.Selector;
@@ -17,11 +17,11 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     private void DragDropSource(CkFileSystem<T>.IPath path)
     {
         // might regret that flag but we will see.
-        using var _ = ImRaii.DragDropSource(ImGuiDragDropFlags.SourceAllowNullID);
+        using var _ = ImRaii.DragDropSource(ImGuiDragDropFlags.SourceAllowNullId);
         if (!_)
             return;
 
-        ImGui.SetDragDropPayload(MoveLabel, nint.Zero, 0);
+        ImGui.SetDragDropPayload(MoveLabel, ReadOnlySpan<byte>.Empty, 0);
         _movedPathsDragDrop = MoveList(path);
         ImGui.TextUnformatted(_movedPathsDragDropCache.Count == 1
             ? $"Moving {_movedPathsDragDropCache.Keys.First()}..."

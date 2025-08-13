@@ -1,7 +1,7 @@
 using CkCommons.Gui;
 using CkCommons.Helpers;
 using Dalamud.Interface.Colors;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CkCommons.RichText;

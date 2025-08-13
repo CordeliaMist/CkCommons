@@ -1,6 +1,6 @@
 using CkCommons;
 using Dalamud.Interface.Textures.TextureWraps;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.IO;
 
 namespace CkCommons.RichText;
@@ -23,7 +23,7 @@ public class ImagePayload : RichPayload
 
         // draw based on texture validity.
         if (Svc.Texture.GetFromFile(_path).GetWrapOrDefault() is { } valid)
-            ImGui.Image(valid.ImGuiHandle, new Vector2(ImGui.GetTextLineHeight()));
+            ImGui.Image(valid.Handle, new Vector2(ImGui.GetTextLineHeight()));
         else
             ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight())); // Fallback to dummy if texture is invalid.
     }

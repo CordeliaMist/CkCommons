@@ -2,7 +2,7 @@ using CkCommons;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils

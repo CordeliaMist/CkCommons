@@ -3,7 +3,7 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Runtime.CompilerServices;
 
 namespace CkCommons.Widgets;
@@ -54,7 +54,7 @@ public abstract class ImageTabBar<ITab> where ITab : Enum
             {
                 var topLeft = x + padding;
                 var bottomRight = x + buttonSize - padding;
-                drawList.AddImage(wrap.ImGuiHandle, topLeft, bottomRight, Vector2.Zero, Vector2.One, CkGui.Color(Vector4.One));
+                drawList.AddImage(wrap.Handle, topLeft, bottomRight, Vector2.Zero, Vector2.One, CkGui.Color(Vector4.One));
             }
 
             if (EqualityComparer<ITab>.Default.Equals(TabSelection, tab.TargetTab))

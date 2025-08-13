@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Runtime.InteropServices;
 
 namespace CkCommons.Gui.Utility;
@@ -116,7 +116,7 @@ public static partial class CkGuiUtils
         return 0;
     }
 
-    public unsafe static bool InputTextWrapMultiline(string id, ref string text, uint maxLength = 500, int lineHeight = 2, float? width = null)
+    public unsafe static bool InputTextWrapMultiline(string id, ref string text, int maxLength = 500, int lineHeight = 2, float? width = null)
     {
         float wrapWidth = width ?? ImGui.GetContentRegionAvail().X; // Determine wrap width
 

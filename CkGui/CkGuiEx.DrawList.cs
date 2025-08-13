@@ -1,5 +1,5 @@
 using Dalamud.Interface.Textures.TextureWraps;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace CkCommons.Gui;
 
@@ -20,7 +20,7 @@ public static class CkGuiEx
     {
         // Ensure the wrap is valid for drawing.
         if (wrap is { } valid)
-            wdl.AddImageRounded(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, tint, rounding);
+            wdl.AddImageRounded(valid.Handle, pos, pos + size, Vector2.Zero, Vector2.One, tint, rounding);
         CkGui.AttachToolTipRect(pos, pos + size, tt);
     }
 
@@ -29,28 +29,28 @@ public static class CkGuiEx
     {
         // Ensure the wrap is valid for drawing.
         if (wrap is { } valid)
-            wdl.AddImageRounded(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, 0xFFFFFFFF, rounding);
+            wdl.AddImageRounded(valid.Handle, pos, pos + size, Vector2.Zero, Vector2.One, 0xFFFFFFFF, rounding);
         CkGui.AttachToolTipRect(pos, pos + size, tt);
     }
 
     public static void AddDalamudImage(this ImDrawListPtr wdl, IDalamudTextureWrap? wrap, Vector2 pos, Vector2 size, string tt = "")
     {
         if (wrap is { } valid)
-            wdl.AddImage(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, 0xFFFFFFFF);
+            wdl.AddImage(valid.Handle, pos, pos + size, Vector2.Zero, Vector2.One, 0xFFFFFFFF);
         CkGui.AttachToolTipRect(pos, pos + size, tt);
     }
 
     public static void AddDalamudImage(this ImDrawListPtr wdl, IDalamudTextureWrap? wrap, Vector2 pos, Vector2 size, uint tint, string tt = "")
     {
         if (wrap is { } valid)
-            wdl.AddImage(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, tint);
+            wdl.AddImage(valid.Handle, pos, pos + size, Vector2.Zero, Vector2.One, tint);
         CkGui.AttachToolTipRect(pos, pos + size, tt);
     }
 
     public static void AddDalamudImage(this ImDrawListPtr wdl, IDalamudTextureWrap? wrap, Vector2 pos, Vector2 size, Vector4 tint, string tt = "")
     {
         if (wrap is { } valid)
-            wdl.AddImage(valid.ImGuiHandle, pos, pos + size, Vector2.Zero, Vector2.One, CkGui.Color(tint));
+            wdl.AddImage(valid.Handle, pos, pos + size, Vector2.Zero, Vector2.One, CkGui.Color(tint));
         CkGui.AttachToolTipRect(pos, pos + size, tt);
     }
 

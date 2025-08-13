@@ -4,7 +4,7 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterGui.Text;
 
 // ImGuiLineCentered is taken from:
@@ -139,7 +139,7 @@ public static partial class CkGui
         ImGui.SetCursorPosY(InitialPos.Y + heightDiff / 2);
         ImGuiLineCentered($"###CenterImage{ID}", () =>
         {
-            ImGui.Image(image.ImGuiHandle, imageSize, Vector2.Zero, Vector2.One, buttonColor);
+            ImGui.Image(image.Handle, imageSize, Vector2.Zero, Vector2.One, buttonColor);
         });
         ImGui.PopID();
         // return the result
@@ -392,7 +392,7 @@ public static partial class CkGui
     }
 
     private static bool IconInputTextInternal(FAI icon, string label, string hint, ref string inputStr,
-        uint maxLength, Vector4? color = null, float? width = null, bool disabled = false)
+        int maxLength, Vector4? color = null, float? width = null, bool disabled = false)
     {
         using ImRaii.Style dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
         int num = 0;
@@ -436,7 +436,7 @@ public static partial class CkGui
     }
 
     public static bool IconInputText(FAI icon, string label, string hint, ref string inputStr,
-        uint maxLength, float? width = null, bool isInPopup = false, bool disabled = false)
+        int maxLength, float? width = null, bool isInPopup = false, bool disabled = false)
     {
         return IconInputTextInternal(icon, label, hint, ref inputStr, maxLength,
             isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.1f) : null,
