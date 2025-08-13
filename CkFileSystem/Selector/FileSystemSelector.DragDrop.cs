@@ -21,7 +21,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
         if (!_)
             return;
 
-        ImGui.SetDragDropPayload(MoveLabel, ReadOnlySpan<byte>.Empty, 0);
+        ImGui.SetDragDropPayload(MoveLabel, null, 0);
         _movedPathsDragDrop = MoveList(path);
         ImGui.TextUnformatted(_movedPathsDragDropCache.Count == 1
             ? $"Moving {_movedPathsDragDropCache.Keys.First()}..."

@@ -1,5 +1,6 @@
 using Dalamud.Bindings.ImGui;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace CkCommons.Gui;
 #nullable disable
@@ -8,13 +9,10 @@ namespace CkCommons.Gui;
 public static partial class CkGui
 {
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
-    public static unsafe void SetDragDropPayload<T>(ImU8String type, T data, ImGuiCond condition = 0) where T : unmanaged
+    public static unsafe void SetDragDropPayload<T>(ImU8String type, T data, ImGuiCond cond = 0) where T : unmanaged
     {
-        fixed (byte* typePtr = &type.GetPinnableNullTerminatedReference())
-        {
-            void* ptr = Unsafe.AsPointer(ref data);
-            ImGuiNative.SetDragDropPayload(typePtr, ptr, (uint)Unsafe.SizeOf<T>(), condition);
-        }
+        var span = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref data, 1));
+        ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None) where T : unmanaged
@@ -24,17 +22,12 @@ public static partial class CkGui
         return payloadPtr != null;
     }
 
-    public static unsafe void SetDragDropPayload(ImU8String type, string data, ImGuiCond condition = 0)
+    public static unsafe void SetDragDropPayload(ImU8String type, string data, ImGuiCond cond = 0)
     {
-        fixed (byte* typePtr = &type.GetPinnableNullTerminatedReference())
-        fixed (char* chars = data)
-        {
-            int byteCount = Encoding.Default.GetByteCount(data);
-            byte* bytes = stackalloc byte[byteCount]; 
-            Encoding.Default.GetBytes(chars, data.Length, bytes, byteCount);
-
-            ImGuiNative.SetDragDropPayload(typePtr, bytes, (uint)byteCount, condition);
-        }
+        Span<byte> utf8Bytes = stackalloc byte[Encoding.UTF8.GetByteCount(data)];
+        Encoding.UTF8.GetBytes(data, utf8Bytes);
+        ReadOnlySpan<byte> span = utf8Bytes;
+        ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload(string type, out string payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None)

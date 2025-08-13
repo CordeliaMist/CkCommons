@@ -51,13 +51,13 @@ public static unsafe class PlayerData
     public static bool IsInHomeWorld => Available ? Object!.HomeWorld.RowId == Object!.CurrentWorld.RowId : false;
     public static bool IsInHomeDC => Available ? Object!.CurrentWorld.Value.DataCenter.RowId == Object!.HomeWorld.Value.DataCenter.RowId : false;
     public static unsafe bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId is not 0; // alternative method from IDutyState
-    public static unsafe bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary is true;
+    public static unsafe bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
     public static bool IsInGPose => GameMain.IsInGPose();
 
     public static uint Health => Available ? Object!.CurrentHp : 0;
     public static int Level => Object?.Level ?? 0;
-    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced == true;
+    public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int UnsyncedLevel => GetUnsyncedLevel(JobId);
     public static int GetUnsyncedLevel(uint job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(job).Value.ExpArrayIndex];

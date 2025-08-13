@@ -54,15 +54,5 @@
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
         <!--For Internal Audio Channel Management to interface with the game until we can get direct scd edit access.-->
         <PackageReference Include="NAudio" Version="2.2.1" />
-
-		<Reference Include="ImGuiScene">
-			<HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="InteropGenerator.Runtime">
-			<HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-        <PackageReference Include="PInvoke.User32" Version="0.7.124" />
 	</ItemGroup>
 </Project>

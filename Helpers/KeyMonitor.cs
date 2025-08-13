@@ -1,11 +1,14 @@
-using PInvoke;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace CkCommons.Helpers;
 
 /// <summary> A class for all of the UI helpers, including basic functions for drawing repetative yet unique design elements </summary>
-public static class KeyMonitor
+public static partial class KeyMonitor
 {
+    [LibraryImport("user32")]
+    internal static partial short GetAsyncKeyState(int nVirtKey);
+
     /// <summary>
     /// Checks to see if a key is pressed
     /// </summary>
@@ -15,7 +18,7 @@ public static class KeyMonitor
         if (vKey is 0)
             return false;
 
-        return IsBitSet(User32.GetAsyncKeyState(vKey), 15);
+        return IsBitSet(GetAsyncKeyState(vKey), 15);
     }
 
     // see if the key bit is set
