@@ -1,4 +1,5 @@
 using CkCommons;
+using Dalamud.Hooking;
 using SixLabors.ImageSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -26,6 +27,36 @@ public static class Generic
         // otherwise, return the item at the index.
         return list[index];
     }
+
+    public static void SafeEnable<T>(this Hook<T>? hook) where T : Delegate
+    {
+        if (hook is null || hook.IsEnabled)
+            return;
+        // hook can be enabled.
+        hook.Enable();
+    }
+
+    public static void SafeDisable<T>(this Hook<T>? hook) where T : Delegate
+    {
+        if (hook is null || !hook.IsEnabled)
+            return;
+        // hook can be disabled.
+        hook.Disable();
+    }
+
+    public static void SafeDispose<T>(this Hook<T>? hook) where T : Delegate
+    {
+        if (hook is null || hook.IsDisposed) // already disposed.
+            return;
+
+        // Disable first if it can be.
+        if (hook.IsEnabled)
+            hook.Disable();
+
+        // Dispose the hook.
+        hook.Dispose();
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Safe(Action a, bool suppressErrors = false)
