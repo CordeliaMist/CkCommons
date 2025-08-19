@@ -20,7 +20,7 @@ public static partial class CkRaii
     /// <summary> ImRaii.Child alternative with bgCol and rounding support. </summary>
     /// <remarks> The IEndObject returned is a EndObjectContainer, holding the inner content region size. </remarks>
     public static IEOContainer Child(string id, Vector2 size, uint bgCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
-        => FramedChild(id, size, bgCol, 0, rounding, dFlags, wFlags);
+        => FramedChild(id, size, bgCol, 0, rounding, 0, dFlags, wFlags);
 
 
 
