@@ -1,6 +1,7 @@
 using Dalamud.Game.ClientState.Aetherytes;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using Aetheryte = Lumina.Excel.Sheets.Aetheryte;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
@@ -22,7 +23,6 @@ public static class PlayerContent
             return $"{TerritoryID} | {t?.ContentFinderCondition.ValueNullable?.Name.ToString() ?? (t?.PlaceName.ValueNullable?.Name.ToString())}";
         }
     }
-
     public static unsafe uint TerritoryIdInstanced => GameMain.Instance()->CurrentTerritoryTypeId;
     public static uint Territory => Svc.ClientState.TerritoryType;
     public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);

@@ -474,7 +474,7 @@ public static partial class CkGui
     public static void BooleanToColoredIcon(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
         if (inline)
-            ImGui.SameLine();
+            ImUtf8.SameLineInner();
 
         if (value)
             using (ImRaii.PushColor(ImGuiCol.Text, (colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue)) FramedIconText(trueIcon);
