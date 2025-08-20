@@ -1,7 +1,6 @@
 using Dalamud.Game.ClientState.Aetherytes;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using Aetheryte = Lumina.Excel.Sheets.Aetheryte;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
