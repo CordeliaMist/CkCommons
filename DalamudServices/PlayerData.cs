@@ -56,6 +56,7 @@ public static unsafe class PlayerData
     public static bool IsInGPose => GameMain.IsInGPose();
 
     public static uint Health => Available ? Object!.CurrentHp : 0;
+    public static uint HealthInstanced => Control.Instance()->LocalPlayer->Health;
     public static int Level => Object?.Level ?? 0;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
