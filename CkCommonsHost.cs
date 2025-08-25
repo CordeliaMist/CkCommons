@@ -7,6 +7,17 @@ using System.Reflection;
 namespace CkCommons;
 #nullable disable
 
+[Flags]
+public enum CkLogFilter
+{
+    None = 0,
+    AudioSystem = 1 << 0,
+    RichText = 1 << 1,
+
+    All = AudioSystem | RichText
+}
+
+
 /// <summary>
 ///     The main hoster for CkCommons. <see cref="Init(IDalamudPluginInterface, IDalamudPlugin)"/> must
 ///     be called during your <see cref="IDalamudPlugin"/> entry point. <para/>
@@ -22,7 +33,7 @@ public static class CkCommonsHost
     /// <summary>
     ///     CkCommons sections that use <see cref="IDalamudPlugin"/> accessors WON'T WORK calling this on plugin entry.
     /// </summary>
-    public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance)
+    public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, CkLogFilter logFilter = CkLogFilter.All)
     {
         Instance = instance;
         Svc.Init(pluginInterface);
@@ -32,7 +43,7 @@ public static class CkCommonsHost
             $"and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}.");
 
         // AudioSystem.Init();
-        CkRichText.Init();
+        CkRichText.Init(logFilter.HasFlag(CkLogFilter.RichText));
     }
 
     public static void CheckForObfuscation()

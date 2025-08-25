@@ -45,7 +45,8 @@ public class RichTextString
         // if there is a missmatch with the font pointer and wrapwidth, recalculate.
         if (!MatchesCachedState(font, wrapWidth))
         {
-            Svc.Log.Information($"[RichText] Recalculating caches for font {font.GetDebugName()} and wrap width {wrapWidth}.");
+            if (CkRichText.DoLogging)
+                Svc.Log.Information($"[RichText] Recalculating caches for font {font.GetDebugName()} and wrap width {wrapWidth}.");
             UpdateCaches(font, wrapWidth);
         }
 
@@ -96,7 +97,8 @@ public class RichTextString
     // must be manually invoked after construction.
     public unsafe void UpdateCaches(ImFontPtr font, float wrapWidth)
     {
-        Svc.Log.Information($"[RichText] Recalculating caches for font {font.GetDebugName()} and wrap width {wrapWidth}.");
+        if (CkRichText.DoLogging)
+            Svc.Log.Information($"[RichText] Recalculating caches for font {font.GetDebugName()} and wrap width {wrapWidth}.");
         // update the font and wrap width to the new value.
         _lastFont = font;
         _lastWrapWidth = wrapWidth;
@@ -129,13 +131,16 @@ public class RichTextString
         sw.Start();
         try
         {
-            Svc.Log.Information($"[RichText] Parsing rich text string: {rawText}");
+            if (CkRichText.DoLogging)
+                Svc.Log.Information($"[RichText] Parsing rich text string: {rawText}");
+            
             foreach (string part in result)
             {
                 if (string.IsNullOrWhiteSpace(part))
                     continue;
 
-                Svc.Log.Information($"[RichText] payload type was: {part}");
+                if (CkRichText.DoLogging)
+                    Svc.Log.Information($"[RichText] payload type was: {part}");
 
                 // off switches.
                 switch (part)
@@ -244,7 +249,8 @@ public class RichTextString
         finally
         {
             sw.Stop();
-            Svc.Log.Information($"[RichText] Parsed {_payloads.Count} payloads in {sw.ElapsedMilliseconds}ms. Colors: {valid[0]}, Strokes: {valid[1]}");
+            if (CkRichText.DoLogging)
+                Svc.Log.Information($"[RichText] Parsed {_payloads.Count} payloads in {sw.ElapsedMilliseconds}ms. Colors: {valid[0]}, Strokes: {valid[1]}");
         }
     }
 

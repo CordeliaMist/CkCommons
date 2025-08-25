@@ -29,6 +29,8 @@ public static partial class CkRichText
     private static CancellationTokenSource _cleanupCts = new();
     private static Task? _cleanupTask;
 
+    public static bool DoLogging { get; private set; } = false;
+
     public static void DefineEmoteResolver(Func<string, IDalamudTextureWrap?> resolver)
     {
         EmoteResolver = resolver;
@@ -40,9 +42,10 @@ public static partial class CkRichText
         _accessedKeys.Clear();
     }
 
-    internal static void Init()
+    internal static void Init(bool doLogging)
     {
         // Token should be already made.
+        DoLogging = doLogging;
         _cleanupTask = CleanupLoop(_cleanupCts.Token);
     }
 
