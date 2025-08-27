@@ -3,7 +3,7 @@ public static class GameDataHelp
 {
     public static readonly Dictionary<ResidentialAetheryteKind, string> ResidentialNames = new()
     {
-        [ResidentialAetheryteKind.Gridania] = "Lavender Beds",
+        [ResidentialAetheryteKind.Gridania] = "Lav. Beds",
         [ResidentialAetheryteKind.Limsa] = "Mist",
         [ResidentialAetheryteKind.Uldah] = "Goblet",
         [ResidentialAetheryteKind.Kugane] = "Shirogane",
@@ -23,8 +23,6 @@ public static class GameDataHelp
 
     public enum PropertyType
     {
-        House, Apartment
+        House, Apartment, PrivateChambers
     }
-
-
 }
