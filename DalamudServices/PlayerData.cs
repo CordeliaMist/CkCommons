@@ -94,7 +94,7 @@ public static unsafe class PlayerData
     public static bool Revivable => IsDead && AgentRevive.Instance()->ReviveState != 0;
     public static float AnimationLock => *(float*)((nint)ActionManager.Instance() + 8);
     public static bool IsAnimationLocked => AnimationLock > 0;
-
+    public static float DistanceToInstanced(Vector3 other) => Vector3.Distance(PositionInstanced, other);
     public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
     public static float DistanceTo(Vector2 other) => Vector2.Distance(new Vector2(Position.X, Position.Z), other);
     public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);
