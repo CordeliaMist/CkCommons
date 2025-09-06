@@ -1,5 +1,7 @@
 using Dalamud.Bindings.ImGui;
+using OtterGui.Text.EndObjects;
 using System.Runtime.InteropServices;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
 
 namespace CkCommons.Widgets;
 
@@ -7,7 +9,7 @@ namespace CkCommons.Widgets;
 /// <remarks> Contains functions for icon row display, filters, and more. </remarks>
 public class CkHeader
 {
-    /// <summary> Stores the position of a draw region, and its size. </summary>
+    /// <summary> Stores the position of a draw region, and its size. </summary> 
     [StructLayout(LayoutKind.Sequential)]
     public readonly record struct DrawRegion(float PosX, float PosY, float SizeX, float SizeY)
     {
@@ -19,13 +21,13 @@ public class CkHeader
         { }
     }
 
-    /// <summary> A struct to contain the upper and lower PosSize regions for a CkHeader drawn window. </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public readonly record struct DrawRegions(DrawRegion Top, DrawRegion Bottom);
-
     /// <summary> A struct to contain the 4 corner PosSize regions for a CkHeader drawn window. </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly record struct QuadDrawRegions(DrawRegion TopLeft, DrawRegion TopRight, DrawRegion BotLeft, DrawRegion BotRight);
+    public readonly record struct QuadDrawRegions(DrawRegion TopLeft, DrawRegion TopRight, DrawRegion BotLeft, DrawRegion BotRight)
+    {
+        public Vector2 TopSize => TopRight.Max - TopLeft.Pos;
+        public Vector2 BotSize => BotRight.Max - BotLeft.Pos;
+    }
 
     /// <summary> Helper function that draws a flat header title past the window padding to the window edge. </summary>
     public static QuadDrawRegions Flat(uint color, Vector2 innerSize, float leftWidth, float splitWidth)
@@ -35,9 +37,9 @@ public class CkHeader
         var winClipX = ImGui.GetWindowContentRegionMin().X / 2;
         var minPos = wdl.GetClipRectMin();
         var maxPos = wdl.GetClipRectMax();
+
         var outerXOffset = Math.Abs(winClipX - winPadding.X);
         var paddedSize = innerSize + winPadding * 2;
-
         var expandedMin = minPos - new Vector2(winClipX, 0); // Extend the min boundary to include the padding
         var expandedMax = maxPos + new Vector2(winClipX, 0); // Extend the max boundary to include the padding
         wdl.PushClipRect(expandedMin, expandedMax, false);
@@ -61,12 +63,18 @@ public class CkHeader
         var botLeft = new DrawRegion(botLeftPos, new Vector2(leftWidth, botRegionH));
         var topRight = new DrawRegion(topRightPos, new Vector2(maxPos.X - outerXOffset - topRightPos.X, innerSize.Y));
         var botRight = new DrawRegion(botRightPos, new Vector2(maxPos.X - outerXOffset - botRightPos.X, botRegionH));
+
+        // Use for debugging purposes.
+        //wdl.AddRect(topLeft.Pos, topLeft.Max, 0xFFFFFFFF);
+        //wdl.AddRect(topRight.Pos, topRight.Max, 0xFFFFFFFF);
+        //wdl.AddRect(botLeft.Pos, botLeft.Max, 0xFFFFFFFF);
+        //wdl.AddRect(botRight.Pos, botRight.Max, 0xFFFFFFFF);
+
         return new(topLeft, topRight, botLeft, botRight);
     }
 
     /// <summary> Draws a flat-header beyond window padding with inverted rounded curves at the bottom. </summary>
-    /// <remarks> This will ALWAYS span the width of the content region entirely. </remarks>
-    public static DrawRegions FlatWithBends(uint color, float height, float curveRadius)
+    public static QuadDrawRegions FlatWithBends(uint color, float height, float splitW, float radius)
     {
         var wdl = ImGui.GetWindowDrawList();
         var winPadding = ImGui.GetStyle().WindowPadding;
@@ -80,41 +88,59 @@ public class CkHeader
         wdl.PushClipRect(expandedMin, expandedMax, false);
 
         // Get necessary positions.
+        var clipOffset = new Vector2(outerXOffset, winPadding.Y);
         var paddedHeight = height + winPadding.Y * 2;
-        var midpoint = (maxPos.X - minPos.X) / 2;
-        var topLeftContentPos = minPos + new Vector2(outerXOffset, winPadding.Y);
-        var botLeftContentPos = topLeftContentPos + new Vector2(0, paddedHeight);
-        var topRightPos = expandedMax with { Y = expandedMin.Y };
-        var circleLeftCenter = expandedMin + new Vector2(curveRadius, paddedHeight + curveRadius);
-        var circleRightCenter = topRightPos + new Vector2(-curveRadius, paddedHeight + curveRadius);
+        var fullWidth = maxPos.X - minPos.X;
+        var contentWidthInner = fullWidth - clipOffset.X * 2;
+        var dividerSpace = splitW is 0 ? 0 : splitW + winPadding.X * 2;
+
+        var contentPosTL = minPos + clipOffset;
+        var contentPosBL = contentPosTL + new Vector2(0, paddedHeight);
+        var topSizeInner = new Vector2((contentWidthInner - dividerSpace) / 2, height);
+        var botSizeInner = new Vector2(topSizeInner.X, maxPos.Y - winPadding.Y - contentPosBL.Y);
+
+        var expandedPosTR = expandedMax with { Y = expandedMin.Y };
+        var circleLeftCenter = expandedMin + new Vector2(radius, paddedHeight + radius);
+        var circleRightCenter = expandedPosTR + new Vector2(-radius, paddedHeight + radius);
+        var midpoint = fullWidth / 2;
 
         // Draw the left convex shape.
         wdl.PathClear();
         wdl.PathLineTo(expandedMin);
-        wdl.PathArcTo(circleLeftCenter, curveRadius, float.Pi, 3 * float.Pi / 2);
+        wdl.PathArcTo(circleLeftCenter, radius, float.Pi, 3 * float.Pi / 2);
         wdl.PathLineTo(expandedMin + new Vector2(midpoint, paddedHeight));
         wdl.PathLineTo(expandedMin + new Vector2(midpoint, 0));
         wdl.PathFillConvex(color);
 
         // Draw the right convex shape.
         wdl.PathClear();
-        wdl.PathLineTo(topRightPos);
-        wdl.PathArcTo(circleRightCenter, curveRadius, 2 * float.Pi, 3 * float.Pi / 2);
+        wdl.PathLineTo(expandedPosTR);
+        wdl.PathArcTo(circleRightCenter, radius, 2 * float.Pi, 3 * float.Pi / 2);
         wdl.PathLineTo(expandedMin + new Vector2(midpoint, paddedHeight));
         wdl.PathLineTo(expandedMin + new Vector2(midpoint, 0));
         wdl.PathFillConvex(color);
 
         wdl.PopClipRect();
 
-        // prepare exports.
-        var topContent = new DrawRegion(topLeftContentPos, new Vector2(maxPos.X - minPos.X, height));
-        var botContent = new DrawRegion(botLeftContentPos, (maxPos - new Vector2(outerXOffset, winPadding.Y)) - botLeftContentPos);
-        return new DrawRegions(topContent, botContent);
+        var topLeft = new DrawRegion(contentPosTL, topSizeInner);
+        var topRight = new DrawRegion(topLeft.Pos with { X = topLeft.PosX + topSizeInner.X + dividerSpace }, topSizeInner);
+        var botLeft = new DrawRegion(contentPosBL, botSizeInner);
+        var botRight = new DrawRegion(topRight.Pos with { Y = botLeft.PosY }, botSizeInner);
+
+        // Use for debugging purposes.
+        //wdl.AddRect(topLeft.Pos, topLeft.Max, 0xFFFFFFFF);
+        //wdl.AddRect(topRight.Pos, topRight.Max, 0xFFFFFFFF);
+        //wdl.AddRect(botLeft.Pos, botLeft.Max, 0xFFFFFFFF);
+        //wdl.AddRect(botRight.Pos, botRight.Max, 0xFFFFFFFF);
+        //var splitPos = botLeft.Pos + new Vector2(topSizeInner.X + winPadding.X, 0);
+        //wdl.AddRect(splitPos, new Vector2(splitPos.X + splitW, expandedMax.Y - winPadding.Y), 0xFF0000FF);
+
+        return new(topLeft, topRight, botLeft, botRight);
     }
 
 
     /// <summary> A helper function that draws out the fancy curved header (not to be used for restraint sets) </summary>
-    public static QuadDrawRegions FancyCurve(uint col, float searchHeight, float splitWidth, float iconBarWidth, bool showSplit = true)
+    public static QuadDrawRegions FancyCurve(uint col, float leftH, float splitW, float rightW, float curveRadius, bool showSplit = true)
     {
         // Grab the window padding that is currently set.
         var wdl = ImGui.GetWindowDrawList();
@@ -124,45 +150,40 @@ public class CkHeader
         var maxPos = wdl.GetClipRectMax();
         var outerXOffset = Math.Abs(winClipX - winPadding.X);
 
-        var leftSizeInner = new Vector2((maxPos.X - minPos.X) - iconBarWidth - splitWidth, searchHeight);
+        var fullWidth = maxPos.X - minPos.X;
+        var fullWidthInner = fullWidth - outerXOffset * 2;
+        var dividerSpace = splitW is 0 ? 0 : splitW + winPadding.X * 2;
+        var topLeftSizeInner = new Vector2(fullWidthInner - rightW - dividerSpace, leftH);
+        var topRightSizeInner = new Vector2(rightW, topLeftSizeInner.Y + splitW * 2);
 
-        var paddedLeftSize = leftSizeInner + winPadding * 2;
-        var curveRadius = splitWidth / 2;
+        var paddedLeftSize = topLeftSizeInner + winPadding * 2;
         var clippedOffset = new Vector2(outerXOffset, winPadding.Y);
 
-        var expandedMin = minPos - new Vector2(winPadding.X / 2, 0); // Extend the min boundary to include the padding
-        var expandedMax = maxPos + new Vector2(winPadding.X / 2, 0); // Extend the max boundary to include the padding
+        // Extend the min boundary to include the padding
+        var expandedMin = minPos - new Vector2(winPadding.X / 2, 0);
+        var expandedMax = maxPos + new Vector2(winPadding.X / 2, 0);
         wdl.PushClipRect(expandedMin, expandedMax, false);
 
-        wdl.PathClear();
-        // top right
-        wdl.PathLineTo(expandedMax with { Y = expandedMin.Y });
-        // top left.
-        wdl.PathLineTo(expandedMin);
-        // bottom left.
-        var pointTwoPos = expandedMin + new Vector2(0, paddedLeftSize.Y);
-        wdl.PathLineTo(pointTwoPos);
+        wdl.PathClear(); // top right
+        wdl.PathLineTo(expandedMax with { Y = expandedMin.Y }); // top left
+        wdl.PathLineTo(expandedMin); // bottom left
+        wdl.PathLineTo(expandedMin + new Vector2(0, paddedLeftSize.Y)); // to first curve
 
-        var topLeftContentPos = minPos + clippedOffset;
-        var botLeftContentPos = topLeftContentPos + new Vector2(0, paddedLeftSize.Y);
-        var botContentH = maxPos.Y - winPadding.Y - botLeftContentPos.Y;
+        var contentPosTL = minPos + clippedOffset;
+        var contentPosBL = contentPosTL + new Vector2(0, paddedLeftSize.Y);
+        var contentPosTR = contentPosTL + new Vector2(topLeftSizeInner.X + dividerSpace, 0);
+        var contentPosBR = contentPosTR + new Vector2(0, topRightSizeInner.Y + splitW + winPadding.Y);
 
-        //var pointThreePos = pointTwoPos + new Vector2(leftSize.X - splitWidth / 2, 0);
-        var circleOneCenter = expandedMin + paddedLeftSize + new Vector2(-curveRadius, curveRadius);
-        var circleTwoCenter = circleOneCenter + new Vector2(splitWidth, 0);
-
-        // define the midpoint positions, and also our right positions after we know the divider.
-        var splitPos = botLeftContentPos + new Vector2(leftSizeInner.X + winPadding.X, 0);
-        var topRightContentPos = new Vector2(splitPos.X + curveRadius + winPadding.X, topLeftContentPos.Y);
-        var botRightContentPos = topRightContentPos + new Vector2(0, leftSizeInner.Y + splitWidth + winPadding.Y + curveRadius);
+        var circleOneCenter = expandedMin + paddedLeftSize + new Vector2(-splitW, splitW);
+        var circleTwoCenter = circleOneCenter + new Vector2(splitW * 2, 0);
 
         // left center curve.
-        wdl.PathArcTo(circleOneCenter, curveRadius, -float.Pi / 2, 0, 16);
-        wdl.PathArcTo(circleTwoCenter, curveRadius, float.Pi, float.Pi / 2, 16);
+        wdl.PathArcTo(circleOneCenter, splitW, -float.Pi / 2, 0, 16);
+        wdl.PathArcTo(circleTwoCenter, splitW, float.Pi, float.Pi / 2, 16);
 
         // bottom right curve.
-        var circleThreeCenter = new Vector2(expandedMax.X - splitWidth, pointTwoPos.Y + splitWidth*2);
-        wdl.PathArcTo(circleThreeCenter, splitWidth, -float.Pi / 2, 0);
+        var circleThreeCenter = new Vector2(expandedMax.X - curveRadius, circleTwoCenter.Y + splitW + curveRadius);
+        wdl.PathArcTo(circleThreeCenter, curveRadius, -float.Pi / 2, 0);
         wdl.PathLineTo(expandedMax with { Y = expandedMin.Y });
         wdl.PathFillConvex(col);
 
@@ -171,30 +192,30 @@ public class CkHeader
         {
             // clear the path.
             wdl.PathClear();
-            var circleFourCenter = circleTwoCenter + new Vector2(0, curveRadius);
-            var originPoint = new Vector2(circleOneCenter.X + curveRadius, expandedMax.Y - winPadding.Y);
+            var circleFourCenter = circleTwoCenter + new Vector2(0, splitW);
+            var originPoint = new Vector2(circleOneCenter.X + splitW, expandedMax.Y - winPadding.Y);
             // bottom left
             wdl.PathLineTo(originPoint);
-            wdl.PathArcTo(circleFourCenter, curveRadius, float.Pi, float.Pi / 2);
+            wdl.PathArcTo(circleFourCenter, splitW, float.Pi, float.Pi / 2);
             // bottom right
-            wdl.PathLineTo(originPoint + new Vector2(curveRadius, 0));
+            wdl.PathLineTo(originPoint + new Vector2(splitW, 0));
             wdl.PathFillConvex(col);
         }
 
         wdl.PopClipRect();
 
-        // we need to return the content region struct, so create our end result content regions below.
-        var topLeft = new DrawRegion(topLeftContentPos, leftSizeInner);
-        var botLeft = new DrawRegion(botLeftContentPos, new Vector2(leftSizeInner.X, botContentH));
+        var topLeft = new DrawRegion(contentPosTL, topLeftSizeInner);
+        var botLeft = new DrawRegion(contentPosBL, new Vector2(topLeftSizeInner.X, maxPos.Y - winPadding.Y - contentPosBL.Y));
+        var topRight = new DrawRegion(contentPosTR, topRightSizeInner);
+        var botRight = new DrawRegion(contentPosBR, new Vector2(topRightSizeInner.X, maxPos.Y - winPadding.Y - contentPosBR.Y));
 
-        // For when in editing mode to make things appear more aligned.
-        var rightShift = showSplit ? Vector2.Zero : new Vector2(splitWidth / 2, 0);
-
-        var topRightSize = new Vector2(maxPos.X - outerXOffset - topRightContentPos.X, leftSizeInner.Y + splitWidth);
-        var topRight = new DrawRegion(topRightContentPos - rightShift, topRightSize + rightShift);
-
-        var botRightSize = maxPos - clippedOffset - botRightContentPos;
-        var botRight = new DrawRegion(botRightContentPos - rightShift, botRightSize + rightShift);
+        // Use for debugging purposes.
+        //wdl.AddRect(topLeft.Pos, topLeft.Max, 0x77FFFFFF);
+        //wdl.AddRect(topRight.Pos, topRight.Max, 0x77FFFFFF);
+        //wdl.AddRect(botLeft.Pos, botLeft.Max, 0x77FFFFFF);
+        //wdl.AddRect(botRight.Pos, botRight.Max, 0x77FFFFFF);
+        //var splitPos = contentPosTR - new Vector2(winPadding.X + splitW, 0);
+        //wdl.AddRect(splitPos, new Vector2(splitPos.X + splitW, expandedMax.Y - winPadding.Y), 0x770000FF);
 
         return new(topLeft, topRight, botLeft, botRight);
     }

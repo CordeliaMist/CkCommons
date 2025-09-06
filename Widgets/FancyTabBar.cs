@@ -2,6 +2,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
 using OtterGuiInternal.Structs;
 using System.Diagnostics.CodeAnalysis;
+using CkCommons.Gui;
 
 namespace CkCommons.Widgets;
 
@@ -13,6 +14,9 @@ public interface IFancyTab
 
     /// <summary> The tooltip displayed when you hover this tab item. Can use CkGui Encoding. </summary>
     public string Tooltip { get; }
+
+    // Maybe add this if nessisary
+    // public string TooltipDisabled { get; }
 
     /// <summary> If the tab should be currently disabled or not. </summary>
     public bool   Disabled { get; }
@@ -51,7 +55,7 @@ public static class FancyTabBar
     public static bool DrawBar(string id, float width, float rounding, uint col, uint hoverCol, uint contrastCol, [NotNullWhen(true)] out IFancyTab? selected, params IFancyTab[] tabs)
     {
         if (!_selectedStorage.ContainsKey(id))
-            _selectedStorage[id] = tabs.FirstOrDefault();
+            _selectedStorage[id] = tabs.FirstOrDefault(x => x.Disabled is false);
 
         selected = _selectedStorage[id];
         var firstTab = true;
@@ -74,7 +78,7 @@ public static class FancyTabBar
                 // We pass in the drawlist from inside if the selected, and outside if not.
                 // This means the layers are drawn such that all `wdl` items are drawn first, with `childWdl` drawn on top of it.
                 // (This occurs due to being a nested child.) (Allowing us to manipulate blending from different draw lists)
-                if (DrawTab(tab.Label, isSelected ? childWdl : wdl, isSelected, tab.Disabled, firstTab))
+                if (DrawTab(isSelected ? childWdl : wdl, isSelected, firstTab, tab))
                     selected = tab;
                 // provide spacing for the curves to be drawn.
                 ImGui.SameLine(0, BarHeight);
@@ -94,16 +98,19 @@ public static class FancyTabBar
 
         return stateChanged;
 
-        bool DrawTab(string label, ImDrawListPtr wdl, bool selected, bool disabled, bool first)
+        bool DrawTab(ImDrawListPtr wdl, bool selected, bool first, IFancyTab tab)
         {
             using var group = ImRaii.Group();
-            var textSize = ImGui.CalcTextSize(label);
+            var textSize = ImGui.CalcTextSize(tab.Label);
             var tabRegion = new ImVec2(textSize.X, BarHeight);
 
             // Draw an invisible button to capture the click.
-            var clicked = ImGui.InvisibleButton("##TabItem" + label, tabRegion);
+            var clicked = ImGui.InvisibleButton("##TabItem" + tab.Label, tabRegion);
             var tabRect = new ImRect(ImGui.GetItemRectMin(), ImGui.GetItemRectMax());
-            var hovered = !disabled && ImGui.IsMouseHoveringRect(tabRect.Min, tabRect.Max);
+            var hovered = ImGui.IsMouseHoveringRect(tabRect.Min, tabRect.Max);
+            
+            if (hovered && !string.IsNullOrEmpty(tab.Tooltip))
+                CkGui.ToolTipInternal(tab.Tooltip);
 
             // Only draw the frame if it is hovered or selected.
             if (selected || hovered)
@@ -139,9 +146,9 @@ public static class FancyTabBar
 
             // Draw aligned to the frame padding, centered, the text.
             var textPos = new ImVec2(tabRect.Min.X, tabRect.Min.Y + (tabRegion.Y - textSize.Y) / 2);
-            ImGui.GetWindowDrawList().AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), label);
+            ImGui.GetWindowDrawList().AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), tab.Label);
 
-            return clicked;
+            return clicked && !tab.Disabled;
         }
     }
 }

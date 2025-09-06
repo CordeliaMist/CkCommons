@@ -52,7 +52,7 @@ public static partial class CkGui
 
     public static void ToolTipInternal(string text, Vector4? color = null)
     {
-        using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
+        using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 6f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, 1f);
         using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
