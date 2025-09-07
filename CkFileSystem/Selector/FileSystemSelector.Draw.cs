@@ -31,8 +31,8 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     /// <returns> The minimum and maximum points of the drawn item. </returns>
     private (Vector2, Vector2) DrawLeaf(CkFileSystem<T>.Leaf leaf, in TStateStorage state)
     {
-        DrawLeaf(leaf, state, leaf == SelectedLeaf || SelectedPaths.Contains(leaf));
-        if(ImGui.IsItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+        var clicked = DrawLeaf(leaf, state, leaf == SelectedLeaf || SelectedPaths.Contains(leaf));
+        if (clicked)
             Select(leaf, state, ImGui.GetIO().KeyCtrl, ImGui.GetIO().KeyShift);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
@@ -145,15 +145,15 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     private (Vector2, Vector2) DrawFolder(CkFileSystem<T>.Folder folder)
     {
         var selected = SelectedPaths.Contains(folder);
-        DrawFolder(folder, selected);
-        if (ImGui.IsItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+        var clicked = DrawFolder(folder, selected);
+        if (clicked)
         {
             // update the state, then add or remove the descendants.
             folder.UpdateState(!folder.State);
             AddOrRemoveDescendants(folder);
         }
 
-        if (AllowMultipleSelection && ImGui.IsItemClicked(ImGuiMouseButton.Left) && ImGui.GetIO().KeyCtrl)
+        if (AllowMultipleSelection && clicked && ImGui.GetIO().KeyCtrl)
             Select(folder, default, true, false);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))

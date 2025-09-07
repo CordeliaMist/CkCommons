@@ -149,12 +149,14 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
     /// <param name="folder"> The folder to draw. </param>
     /// <param name="selected"> If the folder is selected. (This does NOT mean if it's expanded or not. </param>
     /// <remarks> Everything here is wrapped in a group. </remarks>
-    protected virtual void DrawFolderInner(CkFileSystem<T>.Folder folder, bool selected)
+    /// <returns> If the item was clicked for selection. </returns>
+    protected virtual bool DrawFolderInner(CkFileSystem<T>.Folder folder, bool selected)
     {
         // must be a valid drag drop source, so use invisible button.
         ImGui.InvisibleButton("##CkFileSystem-folder-button", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetFrameHeightWithSpacing()));
         Vector2 rectMin = ImGui.GetItemRectMin();
         Vector2 rectMax = ImGui.GetItemRectMax();
+        var clicked = ImGui.IsItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Left);
         uint bgColor = ImGui.IsItemHovered() ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : CkGui.Color(new Vector4(0.3f, 0.3f, 0.3f, 0.5f));
         ImGui.GetWindowDrawList().AddRectFilled(rectMin, rectMax, bgColor, 5);
         ImGui.GetWindowDrawList().AddRect(rectMin, rectMax, FolderLineColor, 5);
@@ -163,15 +165,16 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
         ImGui.SetCursorScreenPos(rectMin with { X = rectMin.X + ImGuiHelpers.GlobalScale * 2 });
         CkGui.FramedIconText(folder.State ? FAI.FolderOpen : FAI.FolderClosed);
         CkGui.TextFrameAlignedInline(folder.Name);
+        return clicked;
     }
 
-    protected void DrawFolder(CkFileSystem<T>.Folder folder, bool selected)
+    protected bool DrawFolder(CkFileSystem<T>.Folder folder, bool selected)
     {
-        using ImRaii.Id id = ImRaii.PushId($"CkFileSystem-Folder-{folder.Identifier}");
-        using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, folder.State ? ExpandedFolderColor : CollapsedFolderColor);
-        using ImRaii.IEndObject group = ImRaii.Group();
-
-        DrawFolderInner(folder, selected);
+        using var id = ImRaii.PushId($"CkFileSystem-Folder-{folder.Identifier}");
+        using var color = ImRaii.PushColor(ImGuiCol.Text, folder.State ? ExpandedFolderColor : CollapsedFolderColor);
+        using var group = ImRaii.Group();
+        var ret = DrawFolderInner(folder, selected);
+        return ret;
     }
 
     /// <summary> Customization point: Should always create any interactable item. Item will be monitored for selection. </summary>
@@ -179,17 +182,20 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
     /// <param name="state"> The state storage for the leaf. </param>
     /// <param name="selected"> Whether the leaf is currently selected. </param>
     /// <remarks> Can add additional icons or buttons if wanted. Everything drawn in here is wrapped in a group. </remarks>
-    protected virtual void DrawLeafInner(CkFileSystem<T>.Leaf leaf, in TStateStorage state, bool selected)
+    /// <returns> If the item was clicked for selection. </returns>
+    protected virtual bool DrawLeafInner(CkFileSystem<T>.Leaf leaf, in TStateStorage state, bool selected)
     {
         ImGui.Selectable("○" + leaf.Name.Replace("%", "%%"), selected, ImGuiSelectableFlags.None);
+        return ImGui.IsItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Left);
     }
 
-    protected void DrawLeaf(CkFileSystem<T>.Leaf leaf, in TStateStorage state, bool selected)
+    protected bool DrawLeaf(CkFileSystem<T>.Leaf leaf, in TStateStorage state, bool selected)
     {
         // Can add custom color application in any override.
-        using ImRaii.Id id = ImRaii.PushId($"CKFS-Leaf-{leaf.Identifier}");
-        using ImRaii.IEndObject group = ImRaii.Group();
-        DrawLeafInner(leaf, state, selected);
+        using var id = ImRaii.PushId($"CKFS-Leaf-{leaf.Identifier}");
+        using var group = ImRaii.Group();
+        var ret = DrawLeafInner(leaf, state, selected);
+        return ret;
     }
 
 
