@@ -1,34 +1,21 @@
 using CkCommons;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using OtterGui.Text;
-
-// ImGuiLineCentered is taken from:
-// https://github.com/PunishXIV/PunishLib/blob/8cea907683c36fd0f9edbe700301a59f59b6c78e/PunishLib/ImGuiMethods/ImGuiEx.cs
+using OtterGuiInternal;
+using System.Windows.Forms;
 
 namespace CkCommons.Gui;
 
 // Primary Partial Class
 public static partial class CkGui
 {
-    private static readonly Dictionary<string, float> CenteredLineWidths = new();
-    private static void ImGuiLineCentered(string id, Action func)
-    {
-        if (CenteredLineWidths.TryGetValue(id, out float dims))
-        {
-            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
-        }
-        float oldCur = ImGui.GetCursorPosX();
-        func();
-        ImGui.SameLine(0, 0);
-        CenteredLineWidths[id] = ImGui.GetCursorPosX() - oldCur;
-        ImGui.NewLine(); // Use NewLine to finalize the line instead of Dummy
-    }
-
     /// <summary> A helper function for centering the next displayed window. </summary>
     /// <param name="width"> The width of the window. </param>
     /// <param name="height"> The height of the window. </param>
@@ -110,41 +97,7 @@ public static partial class CkGui
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
-    public static float CalcCheckboxWidth(string? label = null)
-        => label is null ? ImGui.GetFrameHeight() : ImGui.CalcTextSize(label).X + ImGui.GetStyle().ItemInnerSpacing.X + ImGui.GetFrameHeight();
-
     public static float GetWindowContentRegionWidth() => ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
-
-    public static bool DrawScaledCenterButtonImage(string ID, Vector2 buttonSize, Vector4 buttonColor,
-        Vector2 imageSize, IDalamudTextureWrap image)
-    {
-        // push ID for the function
-        ImGui.PushID(ID);
-        // grab the current cursor position
-        Vector2 InitialPos = ImGui.GetCursorPos();
-        // calculate the difference in height between the button and the image
-        float heightDiff = buttonSize.Y - imageSize.Y;
-        // draw out the button centered
-        if (CenteredLineWidths.TryGetValue(ID, out float dims))
-        {
-            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X / 2 - dims / 2);
-        }
-        float oldCur = ImGui.GetCursorPosX();
-        bool result = ImGui.Button(string.Empty, buttonSize);
-        //_logger.LogTrace("Result of button: {result}", result);
-        ImGui.SameLine(0, 0);
-        CenteredLineWidths[ID] = ImGui.GetCursorPosX() - oldCur;
-        ImGui.Dummy(Vector2.Zero);
-        // now go back up to the initial position, then step down by the height difference/2
-        ImGui.SetCursorPosY(InitialPos.Y + heightDiff / 2);
-        ImGuiLineCentered($"###CenterImage{ID}", () =>
-        {
-            ImGui.Image(image.Handle, imageSize, Vector2.Zero, Vector2.One, buttonColor);
-        });
-        ImGui.PopID();
-        // return the result
-        return result;
-    }
 
     public static void InlineSpacing()
     {
@@ -211,6 +164,51 @@ public static partial class CkGui
 
     public static void FrameVerticalSeparator(float? width = null, uint? col = null)
         => VerticalSeparator(width, col, ImGui.GetFrameHeight());
+
+    // A 'small button' that is not a button. Alternatively could use some disabled trickery,
+    // but this saves the extra render data with buttons.
+    // If using a disabled small button is more benificial than this, do that instead.
+    public static void TagLabelText(string text, uint? labelCol = null)
+    {
+        var col = labelCol ?? ImGui.GetColorU32(ImGuiCol.Button);
+        var size = ImGui.CalcTextSize(text);
+        var style = ImGui.GetStyle();
+        var pos = ImGui.GetCursorScreenPos();
+        // Draw out the text and stuff.
+        ImGui.GetWindowDrawList().AddRectFilled(pos - style.FramePadding, pos + size + style.FramePadding, col, style.FrameRounding);
+        ImGui.Text(text);
+    }
+
+    public static void TagLabelText(string text, Vector4 labelCol)
+    {
+        var size = ImGui.CalcTextSize(text);
+        var style = ImGui.GetStyle();
+        var pos = ImGui.GetCursorScreenPos();
+        // Draw out the text and stuff.
+        ImGui.GetWindowDrawList().AddRectFilled(pos - style.FramePadding, pos + size + style.FramePadding, labelCol.ToUint(), style.FrameRounding);
+        ImGui.Text(text);
+    }
+
+    public static void TagLabelColorText(string text, uint col, uint? labelCol = null)
+    {
+        var labelColor = labelCol ?? ImGui.GetColorU32(ImGuiCol.Button);
+        var size = ImGui.CalcTextSize(text);
+        var style = ImGui.GetStyle();
+        var pos = ImGui.GetCursorScreenPos();
+        // Draw out the text and stuff.
+        ImGui.GetWindowDrawList().AddRectFilled(pos - style.FramePadding, pos + size + style.FramePadding, labelColor, style.FrameRounding);
+        CkGui.ColorText(text, col);
+    }
+
+    public static void TagLabelColorText(string text, Vector4 col, Vector4 labelCol)
+    {
+        var size = ImGui.CalcTextSize(text);
+        var style = ImGui.GetStyle();
+        var pos = ImGui.GetCursorScreenPos();
+        // Draw out the text and stuff.
+        ImGui.GetWindowDrawList().AddRectFilled(pos - style.FramePadding, pos + size + style.FramePadding, labelCol.ToUint(), style.FrameRounding);
+        CkGui.ColorText(text, col);
+    }
 
     public static bool IconButtonColored(FAI icon, uint col, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
         => IconButtonInternal(icon, height, id, disabled, inPopup, col);

@@ -40,11 +40,11 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, uint, float, DFlags, WFlags)"/>/>
     public static IEOContainer ChildPadded(string id, Vector2 size, DFlags dFlags = DFlags.None)
         => ChildPadded(id, size, 0,  CkStyle.ChildRounding(), dFlags);
 
-    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, uint, float, DFlags, WFlags)"/>/>
     public static IEOContainer ChildPadded(string id, Vector2 size, uint bgCol, DFlags dFlags = DFlags.None)
         => ChildPadded(id, size, bgCol,  CkStyle.ChildRounding(), dFlags);
 
@@ -58,11 +58,11 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="FramedChildPaddedH(string, float, float, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedH(string, float, float, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedH(string id, float width, float height, uint bgCol, uint frameCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChildPaddedH(id, width, height, bgCol, frameCol, CkStyle.ChildRounding(), dFlags, wFlags);
 
-    /// <inheritdoc cref="FramedChildPaddedH(string, float, float, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedH(string, float, float, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedH(string id, float width, float height, uint bgCol, uint frameCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChildPaddedH(id, width, height, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags);
 
@@ -76,11 +76,11 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="FramedChildPaddedW(string, float, float, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedW(string, float, float, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedW(string id, float width, float height, uint bgCol, uint frameCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChildPaddedW(id, width, height, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags);
 
-    /// <inheritdoc cref="FramedChildPaddedW(string, float, float, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedW(string, float, float, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedW(string id, float width, float height, uint bgCol, uint frameCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChildPaddedW(id, width, height, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags);
 
@@ -94,11 +94,11 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="FramedChildPaddedWH(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedWH(string, Vector2, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedWH(string id, Vector2 size, uint bgCol, uint frameCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChild(id, size, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags.WithPadding());
 
-    /// <inheritdoc cref="FramedChildPaddedWH(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FramedChildPaddedWH(string, Vector2, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FramedChildPaddedWH(string id, Vector2 size, uint bgCol, uint frameCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChild(id, size, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags.WithPadding());
 
@@ -111,11 +111,11 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="FrameChildPadded(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FrameChildPadded(string, Vector2, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FrameChildPadded(string id, Vector2 size, uint bgCol, uint frameCol, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FrameChildPadded(id, size, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags);
 
-    /// <inheritdoc cref="FrameChildPadded(string, Vector2, uint, float, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="FrameChildPadded(string, Vector2, uint, uint, float, float, DFlags, WFlags)"/>/>
     public static IEOContainer FrameChildPadded(string id, Vector2 size, uint bgCol, uint frameCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FrameChildPadded(id, size, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags);
 
