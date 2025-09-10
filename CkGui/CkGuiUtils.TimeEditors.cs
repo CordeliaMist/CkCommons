@@ -1,8 +1,7 @@
-using CkCommons;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
@@ -17,14 +16,14 @@ public static partial class CkGuiUtils
     public static float GetTimeSpanDisplayWidth(TimeSpan maxTime, string format, IFontHandle fontHandle)
     {
         using var font = fontHandle.Push();
-        float extraPadding = ImGui.GetStyle().ItemSpacing.X;
+        var extraPadding = ImGui.GetStyle().ItemSpacing.X;
 
         // Define the regex pattern to match any of the time units (hh, mm, ss, fff)
-        Regex regex = new Regex(@"hh|mm|ss|fff");
-        MatchCollection matches = regex.Matches(format);
+        var regex = new Regex(@"hh|mm|ss|fff");
+        var matches = regex.Matches(format);
 
         // Concatenate all time parts into a single string
-        string timeString = string.Concat(matches
+        var timeString = string.Concat(matches
             .Select(match => match.Value switch
             {
                 "hh" => $"{maxTime.Hours:00}h",
@@ -40,9 +39,9 @@ public static partial class CkGuiUtils
 
     public static float GetTimeDisplayHeight(IFontHandle fontHandle)
     {
-        float smallH = ImGui.GetTextLineHeightWithSpacing() * 2;
+        var smallH = ImGui.GetTextLineHeightWithSpacing() * 2;
         using var font = fontHandle.Push();
-        float bigH = ImGui.GetTextLineHeight();
+        var bigH = ImGui.GetTextLineHeight();
         return smallH + bigH;
     }
 
@@ -57,8 +56,8 @@ public static partial class CkGuiUtils
     {
         using var s = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);
 
-        float fullWidth = width ?? GetDateTimeDisplayWidth(time, font);
-        DateTimeOffset localTime = time.ToLocalTime();
+        var fullWidth = width ?? GetDateTimeDisplayWidth(time, font);
+        var localTime = time.ToLocalTime();
         float hourSize;
         float splitSize;
         float minuteSize;
@@ -70,8 +69,8 @@ public static partial class CkGuiUtils
         }
 
         // Get the remaining width to be used for splitting.
-        float spacingWidth = fullWidth - (hourSize + minuteSize + splitSize);
-        float individualSpacing = spacingWidth / 2;
+        var spacingWidth = fullWidth - (hourSize + minuteSize + splitSize);
+        var individualSpacing = spacingWidth / 2;
 
         using (var t = ImRaii.Table($"DateTimeEditor_{id}", 3, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
@@ -89,8 +88,8 @@ public static partial class CkGuiUtils
             CkGui.FontTextCentered($"{localTime.Hour:00}", font);
             if (ImGui.IsItemHovered() && isEditor && ImGui.GetIO().MouseWheel != 0)
             {
-                int newHour = (localTime.Hour - (int)ImGui.GetIO().MouseWheel + 24) % 24;
-                DateTime newLocalTime = new DateTime(localTime.Year, localTime.Month, localTime.Day, newHour, localTime.Minute, 0);
+                var newHour = (localTime.Hour - (int)ImGui.GetIO().MouseWheel + 24) % 24;
+                var newLocalTime = new DateTime(localTime.Year, localTime.Month, localTime.Day, newHour, localTime.Minute, 0);
                 time = new DateTimeOffset(newLocalTime, TimeZoneInfo.Local.GetUtcOffset(newLocalTime)).ToUniversalTime();
             }
             CkGui.ColorTextCentered($"{(localTime.Hour + 1) % 24:00}", ImGuiColors.DalamudGrey);
@@ -106,8 +105,8 @@ public static partial class CkGuiUtils
             CkGui.FontTextCentered($"{localTime.Minute:00}", font);
             if (ImGui.IsItemHovered() && isEditor && ImGui.GetIO().MouseWheel != 0)
             {
-                int newMinute = (time.Minute - (int)ImGui.GetIO().MouseWheel + 60) % 60;
-                DateTime newLocalTime = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, newMinute, 0);
+                var newMinute = (time.Minute - (int)ImGui.GetIO().MouseWheel + 60) % 60;
+                var newLocalTime = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, newMinute, 0);
                 time = new DateTimeOffset(newLocalTime, TimeZoneInfo.Local.GetUtcOffset(newLocalTime)).ToUniversalTime();
             }
             CkGui.ColorTextCentered($"{(localTime.Minute + 1) % 60:00}", ImGuiColors.DalamudGrey);
@@ -123,15 +122,15 @@ public static partial class CkGuiUtils
 
     private static void DrawTimeSpanInternal(string id, TimeSpan maxTime, ref TimeSpan timeRef, string format, bool editorMode, IFontHandle font, float? width = null)
     {
-        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(ImGui.GetStyle().CellPadding.X, 0));
+        using var style = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(ImGui.GetStyle().CellPadding.X, 0));
 
-        float fullWidth = width ?? GetTimeSpanDisplayWidth(maxTime, format, font);
+        var fullWidth = width ?? GetTimeSpanDisplayWidth(maxTime, format, font);
         float h, m, s, ms = 0;
 
         // get the regex for the format so we know how many columns to make and sizes to calculate.
-        Regex regex = new Regex(@"hh|mm|ss|fff");
-        string[] matches = regex.Matches(format).Select(m => m.Value).ToArray();
-        int totalColumns = matches.Length;
+        var regex = new Regex(@"hh|mm|ss|fff");
+        var matches = regex.Matches(format).Select(m => m.Value).ToArray();
+        var totalColumns = matches.Length;
 
         // Calculate the sizes for each time unit based on the format.
         // (curse the left spacing for forcing me to do this twice)
@@ -144,15 +143,15 @@ public static partial class CkGuiUtils
         }
 
         // Get the remaining width to be used for splitting.
-        float spacingWidth = fullWidth - (h + m + s + ms);
-        float individualSpacing = spacingWidth / 2;
+        var spacingWidth = fullWidth - (h + m + s + ms);
+        var individualSpacing = spacingWidth / 2;
 
         using (var t = ImRaii.Table($"DateTimePreview_{id}", totalColumns + 2, ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
             if (!t) return;
 
             ImGui.TableSetupColumn("SpaceLeft", ImGuiTableColumnFlags.WidthFixed, individualSpacing);
-            foreach (string? match in matches)
+            foreach (var match in matches)
                 switch (match)
                 {
                     case "hh":  ImGui.TableSetupColumn("Hour", ImGuiTableColumnFlags.WidthFixed, h);        break;
@@ -166,10 +165,10 @@ public static partial class CkGuiUtils
             ImGui.TableNextColumn();
 
             // Draw the components based on the matches
-            foreach (string? match in matches)
+            foreach (var match in matches)
             {
                 ImGui.TableNextColumn();
-                (string prev, string cur, string next) = GetDisplayTriplet(timeRef, maxTime, match);
+                (var prev, var cur, var next) = GetDisplayTriplet(timeRef, maxTime, match);
                 CkGui.ColorTextCentered(prev, ImGuiColors.DalamudGrey);
 
                 CkGui.FontTextCentered(cur, font);
@@ -185,7 +184,7 @@ public static partial class CkGuiUtils
 
     private static (string prev, string cur, string next) GetDisplayTriplet(TimeSpan duration, TimeSpan maxTime, string suffix)
     {
-        string prevValue = suffix switch
+        var prevValue = suffix switch
         {
             "hh" => $"{Math.Max(0, (duration.Hours - 1)):00}",
             "mm" => $"{Math.Max(0, (duration.Minutes - 1)):00}",
@@ -194,7 +193,7 @@ public static partial class CkGuiUtils
             _ => $"UNK"
         };
 
-        string currentValue = suffix switch
+        var currentValue = suffix switch
         {
             "hh" => $"{duration.Hours:00}h",
             "mm" => $"{duration.Minutes:00}m",
@@ -203,7 +202,7 @@ public static partial class CkGuiUtils
             _ => $"UNK"
         };
 
-        string nextValue = suffix switch
+        var nextValue = suffix switch
         {
             "hh" => $"{Math.Min(maxTime.Hours, (duration.Hours + 1)):00}",
             "mm" => duration.Hours == maxTime.Hours
@@ -225,12 +224,12 @@ public static partial class CkGuiUtils
         if (!ImGui.IsItemHovered() || ImGui.GetIO().MouseWheel == 0)
             return;
 
-        int delta = -(int)ImGui.GetIO().MouseWheel;
+        var delta = -(int)ImGui.GetIO().MouseWheel;
 
-        int h = timeRef.Hours;
-        int m = timeRef.Minutes;
-        int s = timeRef.Seconds;
-        int ms = timeRef.Milliseconds;
+        var h = timeRef.Hours;
+        var m = timeRef.Minutes;
+        var s = timeRef.Seconds;
+        var ms = timeRef.Milliseconds;
 
         switch (suffix)
         {
@@ -251,7 +250,7 @@ public static partial class CkGuiUtils
         if (m < 0) { h += (m / 60) - 1; m = 60 + (m % 60); }
 
         // Build & clamp
-        TimeSpan adjusted = new TimeSpan(0, h, m, s, ms);
+        var adjusted = new TimeSpan(0, h, m, s, ms);
         if (adjusted < TimeSpan.Zero) adjusted = TimeSpan.Zero;
         if (adjusted > maxDuration) adjusted = maxDuration;
 

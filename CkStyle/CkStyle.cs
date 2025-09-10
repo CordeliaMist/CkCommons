@@ -1,5 +1,5 @@
-using Dalamud.Interface.Utility;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility;
 
 namespace CkCommons;
 public static partial class CkStyle

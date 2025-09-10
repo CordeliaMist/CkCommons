@@ -1,9 +1,8 @@
-using CkCommons;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
 using OtterGui;
 using OtterGui.Text;
 using System.Runtime.CompilerServices;
@@ -146,7 +145,7 @@ public static partial class CkGui
     /// <summary> Displays colored text based on the boolean value of true or false. </summary>
     public static void ColorTextBool(string text, bool value)
     {
-        Vector4 color = value ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed;
+        var color = value ? ImGuiColors.HealerGreen : ImGuiColors.DalamudRed;
         ColorText(text, color);
     }
 
@@ -154,7 +153,7 @@ public static partial class CkGui
     /// <remarks> Can provide custom colors if desired. </remarks>
     public static void ColorTextBool(string text, bool value, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
-        Vector4 color = value
+        var color = value
             ? (colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue
             : (colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse;
 
@@ -163,14 +162,14 @@ public static partial class CkGui
 
     public static void CenterTextAligned(string text, float? width = null)
     {
-        float offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
+        var offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
         ImUtf8.TextFrameAligned(text);
     }
 
     public static void ColorTextCentered(string text, Vector4 color, float? width = null)
     {
-        float offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
+        var offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
         ColorText(text, color);
     }
@@ -198,7 +197,7 @@ public static partial class CkGui
     {
         ImGui.PushTextWrapPos(wrapWidth);
         // Split the text by regex.
-        string[] tokens = TooltipTokenRegex.Split(text);
+        var tokens = TooltipTokenRegex.Split(text);
         // if there were no tokens, just print the text unformatted
         if (tokens.Length <= 1)
         {
@@ -208,10 +207,10 @@ public static partial class CkGui
         }
 
         // Otherwise, parse it!
-        bool useColor = false;
-        bool firstLineSegment = true;
+        var useColor = false;
+        var firstLineSegment = true;
 
-        foreach (string token in tokens)
+        foreach (var token in tokens)
         {
             switch (token)
             {
@@ -241,7 +240,7 @@ public static partial class CkGui
     /// <summary> Helper function to draw the outlined font in ImGui. </summary>
     public static void OutlinedFont(string text, Vector4 fontColor, Vector4 outlineColor, int thickness)
     {
-        Vector2 original = ImGui.GetCursorPos();
+        var original = ImGui.GetCursorPos();
         using (ImRaii.PushColor(ImGuiCol.Text, outlineColor))
             OutlinedFontOutline(original, text, thickness);
 
@@ -251,7 +250,7 @@ public static partial class CkGui
 
     public static void OutlinedFont(string text, uint fontColor, uint outlineColor, int thickness)
     {
-        Vector2 original = ImGui.GetCursorPos();
+        var original = ImGui.GetCursorPos();
         using (ImRaii.PushColor(ImGuiCol.Text, outlineColor))
             OutlinedFontOutline(original, text, thickness);
 
@@ -302,10 +301,10 @@ public static partial class CkGui
             return Vector2.Zero;
 
         float width = 0;
-        float scale = fontPtr.Scale; // Important for ImGui fonts!
+        var scale = fontPtr.Scale; // Important for ImGui fonts!
         ushort? prevChar = null;
 
-        for (int i = 0; i < text.Length; i++)
+        for (var i = 0; i < text.Length; i++)
         {
             ushort current = text[i];
 
@@ -347,14 +346,14 @@ public static partial class CkGui
     /// <summary> Draws iconText centered within ImGui.GetFrameHeight() square. </summary>
     public static void FramedIconText(FAI icon, uint? color = null)
     {
-        Vector2 region = new Vector2(ImGui.GetFrameHeight());
+        var region = new Vector2(ImGui.GetFrameHeight());
 
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         // Get the text size.
-        string text = icon.ToIconString();
-        Vector2 iconSize = ImGui.CalcTextSize(text);
-        Vector2 currentPos = ImGui.GetCursorScreenPos();
-        Vector2 iconPosition = currentPos + (region - iconSize) * 0.5f;
+        var text = icon.ToIconString();
+        var iconSize = ImGui.CalcTextSize(text);
+        var currentPos = ImGui.GetCursorScreenPos();
+        var iconPosition = currentPos + (region - iconSize) * 0.5f;
         // Draw a dummy to fill the frame region.
         ImGui.Dummy(region);
         ImGui.GetWindowDrawList().AddText(iconPosition, color ?? ImGui.GetColorU32(ImGuiCol.Text), text);
@@ -366,7 +365,7 @@ public static partial class CkGui
         var region = new Vector2(ImGui.GetTextLineHeight());
         var col = color ?? ImGui.GetColorU32(ImGuiCol.Text);
         // Get the text size.
-        Vector2 pos = ImGui.GetCursorScreenPos();
+        var pos = ImGui.GetCursorScreenPos();
         ImGui.Dummy(region);
         if (ImGui.IsItemHovered())
             col = hoverCol;
@@ -380,10 +379,10 @@ public static partial class CkGui
 
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         // Get the text size.
-        string text = icon.ToIconString();
-        Vector2 iconSize = ImGui.CalcTextSize(text);
-        Vector2 currentPos = ImGui.GetCursorScreenPos();
-        Vector2 iconPosition = currentPos + (region - iconSize) * 0.5f;
+        var text = icon.ToIconString();
+        var iconSize = ImGui.CalcTextSize(text);
+        var currentPos = ImGui.GetCursorScreenPos();
+        var iconPosition = currentPos + (region - iconSize) * 0.5f;
         // Draw a dummy to fill the frame region.
         ImGui.Dummy(region);
         if (ImGui.IsItemHovered())
