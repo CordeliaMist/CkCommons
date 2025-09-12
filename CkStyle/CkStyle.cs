@@ -1,5 +1,6 @@
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
+using OtterGui.Text;
 
 namespace CkCommons;
 public static partial class CkStyle
@@ -10,6 +11,10 @@ public static partial class CkStyle
     public static float GetFrameRowsHeight(uint rows)
         => rows == 0 ? ImGui.GetFrameHeight()
         : ImGui.GetFrameHeightWithSpacing() * rows - ImGui.GetStyle().ItemSpacing.Y;
+    
+    public static float GetFrameWidth(uint count, bool inner = false)
+        => count == 0 ? ImUtf8.FrameHeight
+        : (ImUtf8.FrameHeight * count) + ((inner ? ImUtf8.ItemInnerSpacing.X : ImUtf8.ItemSpacing.X) * (count - 1));
 
 
     // Size Helpers

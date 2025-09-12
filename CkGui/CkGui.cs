@@ -91,7 +91,8 @@ public static partial class CkGui
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
-    public static float GetWindowContentRegionWidth() => ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
+    public static float GetWindowContentRegionWidth()
+        => ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
 
     public static void InlineSpacing()
     {
@@ -105,11 +106,14 @@ public static partial class CkGui
         ImUtf8.SameLineInner();
     }
 
+    public static float GetSeparatorVWidth(float? width = null)
+        => ImGui.GetStyle().ItemSpacing.X * 2 + (width ?? 1 * ImGuiHelpers.GlobalScale);
+
     public static float GetSeparatorHeight(float? height = null)
         => height + ImGui.GetStyle().ItemSpacing.Y * 2 ?? ImGui.GetStyle().ItemSpacing.Y * 3;
 
     public static float GetSeparatorSpacedHeight(float? height = null)
-    => height + ImGui.GetStyle().ItemSpacing.Y * 4 ?? ImGui.GetStyle().ItemSpacing.Y * 5;
+        => height + ImGui.GetStyle().ItemSpacing.Y * 4 ?? ImGui.GetStyle().ItemSpacing.Y * 5;
 
     public static void Separator(float? width = null, float? height = null)
     {
@@ -117,10 +121,10 @@ public static partial class CkGui
     }
 
 
-    public static void SeparatorColored(float? width = null, float? height = null, uint? col = null)
+    public static void Separator(uint col, float? width = null, float? height = null)
     {
         ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col ?? CkColor.FancyHeaderContrast.Uint());
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col);
     }
 
     public static void SeparatorSpaced(float? height = null, float? width = null)
@@ -130,34 +134,35 @@ public static partial class CkGui
         ImGui.Spacing();
     }
 
-    public static void SeparatorSpacedColored(float? height = null, float? width = null, uint? col = null)
+    public static void SeparatorSpaced(uint col, float? height = null, float? width = null)
     {
         ImGui.Spacing();
         ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col ?? CkColor.FancyHeaderContrast.Uint());
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col);
         ImGui.Spacing();
     }
 
-    public static void VerticalSeparator(float? width = null, uint? col = null, float? height = null)
+    public static void SeparatorV(float? width = null, uint? col = null, float? height = null)
     {
-        var lineWidth = width ?? 1f;         
         var spacing = ImGui.GetStyle().ItemSpacing.X;
-        ImGui.SameLine(0, lineWidth + spacing * 2);
+        var lineWidth = width ?? 1 * ImGuiHelpers.GlobalScale;
+        var fullWidth = lineWidth + spacing * 2;
+        ImGui.SameLine(0, fullWidth);
 
         // get lineHeight after so if it has to grab GetContentRegionAvail().Y it grabs the full height.
         var lineHeight = height ?? ImGui.GetContentRegionAvail().Y;
         var drawList = ImGui.GetWindowDrawList();
         var pos = ImGui.GetCursorScreenPos();
-        var top = new Vector2(pos.X - spacing, pos.Y);
+        var top = new Vector2(pos.X - fullWidth * .5f, pos.Y);
 
         drawList.AddLine(top, top + new Vector2(0, lineHeight), col ?? ImGui.GetColorU32(ImGuiCol.Border), lineWidth);
     }
 
-    public static void TextLineVerticalSeparator(float? width = null, uint? col = null)
-        => VerticalSeparator(width, col, ImGui.GetTextLineHeight());
+    public static void TextLineSeparatorV(float? width = null, uint? col = null)
+        => SeparatorV(width, col, ImGui.GetTextLineHeight());
 
-    public static void FrameVerticalSeparator(float? width = null, uint? col = null)
-        => VerticalSeparator(width, col, ImGui.GetFrameHeight());
+    public static void FrameSeparatorV(float? width = null, uint? col = null)
+        => SeparatorV(width, col, ImGui.GetFrameHeight());
 
     // A 'small button' that is not a button. Alternatively could use some disabled trickery,
     // but this saves the extra render data with buttons.

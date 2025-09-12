@@ -87,7 +87,7 @@ public class RichTextString
                     ImGui.Spacing();
                     break;
 
-                case SeperatorPayload:
+                case SeparatorPayload:
                     ImGui.Separator();
                     break;
             }
@@ -146,7 +146,7 @@ public class RichTextString
                 switch (part)
                 {
                     case "[line]":
-                        _payloads.Add(new SeperatorPayload());
+                        _payloads.Add(new SeparatorPayload());
                         continue;
                     case "[para]":
                         _payloads.Add(new NewLinePayload());

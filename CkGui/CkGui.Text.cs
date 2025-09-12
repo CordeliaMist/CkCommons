@@ -63,6 +63,12 @@ public static partial class CkGui
         ImGui.TextUnformatted(text);
     }
 
+    /// <summary> An Frame-Aligned Text version of ImGui.TextColored accepting UINT </summary>
+    public static void TextFrameAligned(string text)
+    {
+        ImUtf8.TextFrameAligned(text);
+    }
+
 
     public static void TextFrameAlignedInline(string text, bool inner = true)
     {
