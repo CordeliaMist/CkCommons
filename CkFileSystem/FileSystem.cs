@@ -219,6 +219,9 @@ public partial class CkFileSystem<T> where T : class
         }
     }
 
+    public void UpdateLeafValue(Leaf leaf, T newValue)
+        => leaf.UpdateValue(newValue);
+
     /// <summary> Delete a child from its parent. </summary>
     /// <exception cref="Exception"> if child is Root. </exception>
     public void Delete(IPath child)

@@ -4,6 +4,22 @@ namespace CkCommons.FileSystem;
 
 public static partial class Extensions
 {
+    /// <summary>
+    ///     Add an [IPath] leaf to a list if it does not exist yet, or replace the leaf if comparison equals..
+    /// </summary>
+    public static int AddOrReplace<T>(this List<T> list, T obj) where T : IEquatable<T>
+    {
+        var idx = list.FindIndex(obj.Equals);
+        if (idx < 0)
+        {
+            list.Add(obj);
+            return list.Count - 1;
+        }
+
+        list[idx] = obj;
+        return idx;
+    }
+
     /// <summary> Move an item in a list from index 1 to index 2. The indices are clamped to the valid range.
     /// <remarks> Other list entries are shifted accordingly. </remarks>
     public static bool Move<T>(this IList<T> list, int idx1, int idx2)

@@ -6,7 +6,7 @@ public partial class CkFileSystem<T>
     {
         /// <summary> The kind of item we are storing a reference of within the file system leaf. </summary>
         /// <remarks> A readonly reference. </remarks>
-        public T Value { get; }
+        public T Value { get; private set; }
 
         internal Leaf(Folder parent, string name, T value, uint identifier)
         {
@@ -29,6 +29,11 @@ public partial class CkFileSystem<T>
         public byte   Depth         { get; internal set; }
         public ushort IndexInParent { get; internal set; }
         public bool   State         { get; internal set; }
+
+        // Use with caution, only intended for updating abstract types.
+        // Using this for any other purpose may break the structure of the file system.
+        internal void UpdateValue(T newValue)
+            => Value = newValue;
 
         void IWritePath.SetParent(Folder parent)
             => Parent = parent;

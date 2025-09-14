@@ -166,6 +166,11 @@ public partial class CkFileSystem<T>
         }
     }
 
+    /// <summary> A bandaid fix to update abstract types that are updated. Improve later if possible. </summary>
+    /// <remarks> Designed to prevent a full reload on each change, and to keep folders open! </remarks>
+    private static void SetLeafValue(Leaf leaf, T newValue)
+        => leaf.UpdateValue(newValue);
+
     /// <summary> Update the state of a Folder or File </summary>
     private static void SetState(IWritePath path, bool newState)
         => path.UpdateState(newState);

@@ -185,7 +185,18 @@ public static partial class CkGui
     {
         var pos = ImGui.GetCursorScreenPos();
         var size = ImGui.CalcTextSize(text);
-        var fPad = ImGui.GetStyle().FramePadding;
+        var tagPadX = padding ?? ImUtf8.FramePadding.X;
+        var padWidth = new Vector2(tagPadX, 0);
+        // Draw out the text and stuff.
+        ImGui.GetWindowDrawList().AddRectFilled(pos - padWidth, pos + size + padWidth, col.ToUint(), ImGui.GetStyle().FrameRounding);
+        ImGui.Text(text);
+    }
+
+    public static void TagLabelTextFrameAligned(string text, Vector4 col, float? padding = null)
+    {
+        var pos = ImGui.GetCursorScreenPos();
+        var size = ImGui.CalcTextSize(text);
+        var fPad = ImGui.GetStyle().FramePadding; 
         pos.Y += fPad.Y;
         var tagPadX = padding ?? fPad.X;
         var padWidth = new Vector2(tagPadX, 0);
@@ -479,6 +490,7 @@ public static partial class CkGui
     public static void SetCursorXtoCenter(float width)
         => ImGui.SetCursorPosX((ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X) / 2 - width / 2);
 
+    // make a non-framed variant of this soon.
     public static void BooleanToColoredIcon(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
         if (inline)
