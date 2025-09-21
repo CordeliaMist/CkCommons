@@ -24,6 +24,7 @@ public static unsafe class PlayerData
     public static ClientLanguage Language => Svc.ClientState.ClientLanguage;
     public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
     public static IntPtr ObjectAddress => Svc.ClientState.LocalPlayer?.Address ?? IntPtr.Zero;
+    public static GameObject* ObjectThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value;
     public static bool Available => Svc.ClientState.LocalPlayer != null;
     public unsafe static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
