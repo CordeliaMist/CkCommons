@@ -1,5 +1,4 @@
 using CkCommons.Gui;
-using CkCommons;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;

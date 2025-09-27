@@ -1,7 +1,6 @@
 using CkCommons.Gui;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
-using OtterGui.Classes;
 using OtterGui.Text.Widget;
 using OtterGuiInternal.Utility;
 using System.Runtime.CompilerServices;

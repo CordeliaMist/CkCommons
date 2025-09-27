@@ -2,7 +2,6 @@ using CkCommons.Gui;
 using CkCommons.Helpers;
 using Dalamud.Interface.Colors;
 using Dalamud.Bindings.ImGui;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CkCommons.RichText;
 
@@ -53,7 +52,7 @@ public static partial class CkRichText
     ///     [stroke=red] turns the text into outlined text. [/stroke] <para/>
     ///     [stroke=5] turns the text into outlined text by xldata number value. [/stroke] <para/>
     ///     [img=path/to/image.png] - image from the Assets folder. <para/>
-    ///     [emote=Cappie] - CoreEmoteTexture to display on the screen. <para/>
+    ///     [emote=Cappie] - EmoteTexture to display on the screen. <para/>
     ///     
     ///     For color number values, type the command "/xldata uicolor" into the in-game chat.
     /// </summary>

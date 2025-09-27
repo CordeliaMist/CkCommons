@@ -1,4 +1,3 @@
-using CkCommons;
 using CkCommons.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using System.Threading;

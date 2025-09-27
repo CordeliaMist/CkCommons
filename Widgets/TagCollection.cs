@@ -6,10 +6,6 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
 using OtterGui.Extensions;
-using OtterGui.Text;
-using System.Windows.Forms;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
-using static FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentButton.Delegates;
 
 namespace CkCommons.Widgets;
 

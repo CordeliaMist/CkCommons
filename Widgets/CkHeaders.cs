@@ -1,7 +1,5 @@
 using Dalamud.Bindings.ImGui;
-using OtterGui.Text.EndObjects;
 using System.Runtime.InteropServices;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
 
 namespace CkCommons.Widgets;
 

@@ -96,7 +96,7 @@ public enum ActionRoles : byte
     Healer = 0x4
 }
 
-// Only ones we care about for GagSpeak.
+// Only ones we care about for GSpeak.
 public enum LimitedActionEffectType : byte
 {
     Nothing = 0,
