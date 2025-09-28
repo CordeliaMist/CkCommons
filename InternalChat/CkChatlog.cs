@@ -82,7 +82,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         // Create a windows drawlist here so we have the outermost drawlist.
         Vector2 inputMin;
 
-        using (var c = CkRaii.Child($"##GlobalChatLogFrame-{Label}", region))
+        using (var c = CkRaii.Child($"##ChatLogFrame-{Label}", region))
         {   
             var chatlogSize = c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing());
             // temporarily cleave the pushcliprect so that the chatlog confines to it.
@@ -98,7 +98,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
 
     public void DrawChatLog(Vector2 region, WFlags flags = WFlags.NoScrollbar)
     {
-        using var _ = CkRaii.Child($"##GlobalChatLog-{Label}", region, wFlags: flags);
+        using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
         var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
         var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, region.X);
 
