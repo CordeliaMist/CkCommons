@@ -11,7 +11,7 @@ public abstract class IconTabBar<ITab> where ITab : Enum
 
     protected readonly List<TabButtonDefinition> _tabButtons = new();
     private ITab _selectedTab;
-    public ITab TabSelection
+    public virtual ITab TabSelection
     {
         get => _selectedTab;
         set
