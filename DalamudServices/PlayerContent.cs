@@ -12,14 +12,14 @@ namespace CkCommons;
 /// </summary>
 public static class PlayerContent
 {
-    public static uint TerritoryID => Svc.ClientState.TerritoryType;
+    public static ushort TerritoryID => Svc.ClientState.TerritoryType;
 
-    private static string TerritoryName
+    public static string TerritoryName
     {
         get
         {
             var t = Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(TerritoryID);
-            return $"{TerritoryID} | {t?.ContentFinderCondition.ValueNullable?.Name.ToString() ?? (t?.PlaceName.ValueNullable?.Name.ToString())}";
+            return $"{t?.ContentFinderCondition.ValueNullable?.Name.ToString() ?? (t?.PlaceName.ValueNullable?.Name.ToString())}";
         }
     }
     public static unsafe uint TerritoryIdInstanced => GameMain.Instance()->CurrentTerritoryTypeId;
