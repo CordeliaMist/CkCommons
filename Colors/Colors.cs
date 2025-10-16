@@ -9,8 +9,8 @@ public enum CkColor
     VibrantPinkHovered,
     VibrantPinkPressed,
 
-    CkMistressColor,
-    CkMistressText,
+    ShopKeeperColor,
+    ShopKeeperText,
     
     LushPinkLine,
     LushPinkLineDisabled,
@@ -62,8 +62,8 @@ public static class CkColors
             CkColor.VibrantPinkHovered      => new Vector4(0.986f, 0.464f, 0.691f, 0.955f),
             CkColor.VibrantPinkPressed      => new Vector4(0.846f, 0.276f, 0.523f, 0.769f),
 
-            CkColor.CkMistressColor         => new Vector4(0.886f, 0.407f, 0.658f, 1.000f),
-            CkColor.CkMistressText          => new Vector4(1.000f, 0.711f, 0.843f, 1.000f),
+            CkColor.ShopKeeperColor         => new Vector4(0.886f, 0.407f, 0.658f, 1.000f),
+            CkColor.ShopKeeperText          => new Vector4(1.000f, 0.711f, 0.843f, 1.000f),
 
             CkColor.LushPinkLine            => new Vector4(0.806f, 0.102f, 0.407f, 1.000f),
             CkColor.LushPinkLineDisabled    => new Vector4(0.806f, 0.102f, 0.407f, 0.500f),
@@ -108,8 +108,8 @@ public static class CkColors
             CkColor.VibrantPinkHovered      => 0xF3B076FB,
             CkColor.VibrantPinkPressed      => 0xC48546D7,
 
-            CkColor.CkMistressColor         => CkColor.CkMistressColor.Vec4().ToUint(),
-            CkColor.CkMistressText          => CkColor.CkMistressText.Vec4().ToUint(),
+            CkColor.ShopKeeperColor         => CkColor.ShopKeeperColor.Vec4().ToUint(),
+            CkColor.ShopKeeperText          => CkColor.ShopKeeperText.Vec4().ToUint(),
 
             CkColor.LushPinkLine            => 0xFF671ACD,
             CkColor.LushPinkButton          => 0xFF750DFF,

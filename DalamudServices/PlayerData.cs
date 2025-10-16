@@ -44,6 +44,7 @@ public static unsafe class PlayerData
     public static uint CurrentWorldId => Object?.CurrentWorld.RowId ?? 0;
     public static ushort CurrentWorldIdInstanced => Control.Instance()->LocalPlayer->CurrentWorld;
     public static string CurrentWorld => Object?.CurrentWorld.Value.Name.ToString() ?? string.Empty;
+    public static string CurrentWorldNameInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
     public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldId)?.DataCenter.ValueNullable?.Name.ToString();
     public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldId)?.DataCenter.ValueNullable?.Name.ToString();
 

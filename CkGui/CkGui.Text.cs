@@ -166,6 +166,13 @@ public static partial class CkGui
         ColorText(text, color);
     }
 
+    public static void CenterText(string text, float? width = null)
+    {
+        var offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
+        ImGui.TextUnformatted(text);
+    }
+
     public static void CenterTextAligned(string text, float? width = null)
     {
         var offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;

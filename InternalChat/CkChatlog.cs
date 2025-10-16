@@ -22,6 +22,10 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     protected bool shouldFocusChatInput = false;
     protected float prevValidHeight = 0f;
 
+    // Disable states.
+    protected bool disableContent = false;
+    protected bool disableInput = false;
+
     public CkChatlog(int chatlogId, string label, int capacity)
     {
         ID = chatlogId;
@@ -85,7 +89,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         using (var c = CkRaii.Child($"##ChatLogFrame-{Label}", region))
         {   
             var chatlogSize = c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing());
-            // temporarily cleave the pushcliprect so that the chatlog confines to it.
+            // temporarily cleave the PushClipRect so that the chatlog confines to it.
             DrawChatLog(chatlogSize);
 
             DrawChatInputRow();
@@ -98,6 +102,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
 
     public void DrawChatLog(Vector2 region, WFlags flags = WFlags.NoScrollbar)
     {
+        using var dis = ImRaii.Disabled(disableContent);
         using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
         var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
         var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, region.X);
@@ -123,7 +128,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         // Optional Middle click function.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Middle))
             OnMiddleClick(message);
-        CkGui.AttachToolTip(ToTooltip(message), color: CkColor.VibrantPink.Vec4());
+        CkGui.AttachToolTip(ToTooltip(message), disableContent, CkColor.VibrantPink.Vec4());
     }
 
     public virtual void DrawChatInputRow()
@@ -139,7 +144,10 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         }
 
         ImGui.SetNextItemWidth(width);
-        ImGui.InputTextWithHint($"##ChatInput{Label}{ID}", $"message {Label}...", ref previewMessage, 400);
+        ImGui.InputTextWithHint($"##ChatInput{Label}{ID}", $"message {Label}...", ref previewMessage, 400, disableInput ? ITFlags.ReadOnly : 0);
+
+        if (disableInput)
+            return;
 
         // Process submission Prevent losing chat focus after pressing the Enter key.
         if (ImGui.IsItemFocused() && ImGui.IsKeyPressed(ImGuiKey.Enter))
@@ -163,7 +171,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         // we need to firstly get the calculated height of the CkRichText message.
         var fetchedHeight = CkRichText.GetRichTextLineHeight(message, ID);
 
-        // if it is between frames calculating, for 1 drawframe the value can be 0.
+        // if it is between frames calculating, for 1 draw frame the value can be 0.
         // This occurs because when we type a new character for our input string, we
         // technically have a new message, so it has to be regenerated and re-cached.
         // to account for this, a backup value is used.
