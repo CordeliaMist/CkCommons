@@ -202,7 +202,7 @@ public static partial class CkGui
     /// <summary> What it says on the tin. </summary>
     public static void ColorTextWrapped(string text, Vector4 color)
     {
-        using var raiicolor = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         TextWrapped(text);
     }
 
@@ -248,6 +248,13 @@ public static partial class CkGui
             }
         }
         ImGui.PopTextWrapPos();
+    }
+
+    public static void FontTextWrapped(string text, IFontHandle font, Vector4? color = null)
+    {
+        using var pushedFont = font.Push();
+        using var pushedColor = ImRaii.PushColor(ImGuiCol.Text, color == null ? ImGui.GetColorU32(ImGuiCol.Text) : ImGui.GetColorU32(color.Value));
+        TextWrapped(text);
     }
 
     /// <summary> Helper function to draw the outlined font in ImGui. </summary>

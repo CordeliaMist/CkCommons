@@ -137,9 +137,9 @@ public static class CkColors
             CkColor.FavoriteStarHovered     => CkColor.FavoriteStarHovered.Vec4().ToUint(),
             CkColor.FavoriteStarOff         => CkColor.FavoriteStarOff.Vec4().ToUint(),
 
-            CkColor.TriStateCheck           => 0xFFD040D0,
-            CkColor.TriStateCross           => 0x20808080,
-            CkColor.TriStateNeutral         => 0xFF00D000,
+            CkColor.TriStateCheck           => 0xFF00D000,
+            CkColor.TriStateCross           => 0xFF0000E0,
+            CkColor.TriStateNeutral         => 0xFFD0D0D0,
 
             CkColor.IconCheckOn             => 0xFF00D000,
             CkColor.IconCheckOff            => 0xFFD0D0D0,

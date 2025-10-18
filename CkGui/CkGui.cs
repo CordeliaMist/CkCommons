@@ -106,6 +106,15 @@ public static partial class CkGui
         ImUtf8.SameLineInner();
     }
 
+    /// <summary>
+    ///     Checkbox, but with a disable condition.
+    /// </summary>
+    public static bool Checkbox(ImU8String label, ref bool v, bool disabled)
+    {
+        using var _ = ImRaii.Disabled(disabled);
+        return ImGui.Checkbox(label, ref v);
+    }
+
     public static float GetSeparatorVWidth(float? width = null)
         => ImGui.GetStyle().ItemSpacing.X * 2 + (width ?? 1 * ImGuiHelpers.GlobalScale);
 
@@ -144,18 +153,13 @@ public static partial class CkGui
 
     public static void SeparatorV(float? width = null, uint? col = null, float? height = null)
     {
-        var spacing = ImGui.GetStyle().ItemSpacing.X;
-        var lineWidth = width ?? 1 * ImGuiHelpers.GlobalScale;
-        var fullWidth = lineWidth + spacing * 2;
-        ImGui.SameLine(0, fullWidth);
-
-        // get lineHeight after so if it has to grab GetContentRegionAvail().Y it grabs the full height.
+        ImGui.SameLine(0, ImUtf8.ItemSpacing.X);
         var lineHeight = height ?? ImGui.GetContentRegionAvail().Y;
-        var drawList = ImGui.GetWindowDrawList();
-        var pos = ImGui.GetCursorScreenPos();
-        var top = new Vector2(pos.X - fullWidth * .5f, pos.Y);
-
-        drawList.AddLine(top, top + new Vector2(0, lineHeight), col ?? ImGui.GetColorU32(ImGuiCol.Border), lineWidth);
+        var lineWidth = width ?? 1 * ImGuiHelpers.GlobalScale;
+        col ??= ImGui.GetColorU32(ImGuiCol.Border);
+        ImGui.Dummy(new Vector2(lineWidth, lineHeight));
+        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col.Value);
+        ImGui.SameLine();
     }
 
     public static void TextLineSeparatorV(float? width = null, uint? col = null)
