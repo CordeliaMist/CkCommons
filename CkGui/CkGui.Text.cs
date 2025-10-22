@@ -12,6 +12,31 @@ namespace CkCommons.Gui;
 // Partial Class for Text Display Helpers.
 public static partial class CkGui
 {
+    public static void BulletText(string text)
+    {
+        using var _ = ImRaii.Group();
+        ImGui.Bullet();
+        ImGui.SameLine();
+        CkGui.TextWrapped(text);
+    }
+
+    public static void BulletText(string text, uint color)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.Group();
+        ImGui.Bullet();
+        ImGui.SameLine();
+        CkGui.TextWrapped(text);
+    }
+
+    public static void BulletText(string text, Vector4 color)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var _ = ImRaii.Group();
+        ImGui.Bullet();
+        ImGui.SameLine();
+        CkGui.TextWrapped(text);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static void RightAligned(string text, float offset = 0)
@@ -201,6 +226,12 @@ public static partial class CkGui
 
     /// <summary> What it says on the tin. </summary>
     public static void ColorTextWrapped(string text, Vector4 color)
+    {
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        TextWrapped(text);
+    }
+
+    public static void ColorTextWrapped(string text, uint color)
     {
         using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
         TextWrapped(text);
