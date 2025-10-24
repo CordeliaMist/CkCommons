@@ -1,5 +1,7 @@
 using Dalamud.Bindings.ImGui;
 using OtterGui.Raii;
+using OtterGui.Text;
+using System;
 
 namespace CkCommons.Gui;
 
@@ -43,6 +45,144 @@ public static class CkGuiClip
 
         return (lastVisible >= firstVisible && firstVisible != -1)
             ? (lastVisible - firstVisible + 1) : 0;
+    }
+
+    /// <summary>
+    ///     Performs a dynamic clipped gallery draw with specified columns and item width. <para />
+    ///     Can have any height on drawn items.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException"> Items must be greater than 0. </exception>
+    /// <returns> The remainder index. </returns>
+    public static int DynamicClippedGalleryDraw<T>(IEnumerable<T> data, Action<T> draw, int columns, float itemWidth)
+    {
+        // Exception Handles.
+        if (columns <= 0)   throw new ArgumentOutOfRangeException(nameof(columns), "Columns must be greater than zero.");
+        if (itemWidth <= 0) throw new ArgumentOutOfRangeException(nameof(itemWidth), "Item width must be greater than zero.");
+
+        // view the data in enumerator format.
+        using IEnumerator<T> enumerator = data.GetEnumerator();
+
+        // total row width (may exceed available region; caller passed explicit width)
+        var rowWidth = columns * itemWidth + ((columns - 1) * ImUtf8.ItemSpacing.X);
+
+        // Tracked variables.
+        int index = 0;
+        int firstVisible = -1;
+        int lastVisible = -1;
+        bool endReached = false;
+
+        // While we have not reached the end of our drawn data.
+        while (!endReached)
+        {
+            // track if the row has contents.
+            bool rowHadVisible = false;
+
+            // Draw out the column items.
+            for (int col = 0; col < columns; ++col)
+            {
+                // If we are no longer able to move to the next item, we hit the end, so break out of the for-loop.
+                if (!enumerator.MoveNext())
+                {
+                    endReached = true;
+                    break;
+                }
+
+                // Otherwise define the group and draw the item.
+                using var endObj = ImRaii.Group();
+                draw(enumerator.Current);
+
+                // place next item on same line if not last column
+                if (col < columns - 1)
+                    ImUtf8.SameLineInner();
+
+                // If the item is not visible, we can skip it.
+                if (ImGui.IsItemVisible())
+                {
+                    if (firstVisible == -1)
+                        firstVisible = index;
+                    lastVisible = index;
+                    rowHadVisible = true;
+                }
+
+                index++;
+            }
+
+            // If we already started seeing invisible rows and this row had no visible items, we are done.
+            if (firstVisible != -1 && !rowHadVisible)
+                break;
+        }
+
+        // Return the remainder index.
+        return (lastVisible >= firstVisible && firstVisible != -1) ? (lastVisible - firstVisible + 1) : 0;
+    }
+
+    /// <summary>
+    ///     Clipped gallery draw with specified columns and item width. Can have any height on drawn items. <para />
+    ///     Passes the local IDX iterator to the draw actions.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException"> Items must be greater than 0. </exception>
+    /// <returns> The remainder index. </returns>
+    public static int DynamicClippedGalleryDraw<T>(IEnumerable<T> data, Action<T, int> draw, int columns, float itemWidth)
+    {
+        // Exception Handles.
+        if (columns <= 0) throw new ArgumentOutOfRangeException(nameof(columns), "Columns must be greater than zero.");
+        if (itemWidth <= 0) throw new ArgumentOutOfRangeException(nameof(itemWidth), "Item width must be greater than zero.");
+
+        // view the data in enumerator format.
+        using IEnumerator<T> enumerator = data.GetEnumerator();
+
+        // total row width (may exceed available region; caller passed explicit width)
+        var rowWidth = columns * itemWidth + ((columns - 1) * ImUtf8.ItemSpacing.X);
+
+        // Tracked variables.
+        int index = 0;
+        int firstVisible = -1;
+        int lastVisible = -1;
+        bool endReached = false;
+
+        // While we have not reached the end of our drawn data.
+        while (!endReached)
+        {
+            // track if the row has contents.
+            bool rowHadVisible = false;
+
+            // Draw out the column items.
+            for (int col = 0; col < columns; ++col)
+            {
+                // If we are no longer able to move to the next item, we hit the end, so break out of the for-loop.
+                if (!enumerator.MoveNext())
+                {
+                    endReached = true;
+                    break;
+                }
+
+                // Otherwise define the group and draw the item.
+                using var endObj = ImRaii.Group();
+                draw(enumerator.Current, index);
+
+                // place next item on same line if not last column
+                if (col < columns - 1)
+                    ImUtf8.SameLineInner();
+
+                // If the item is not visible, we can skip it.
+                if (ImGui.IsItemVisible())
+                {
+                    if (firstVisible == -1)
+                        firstVisible = index;
+                    lastVisible = index;
+                    rowHadVisible = true;
+                }
+
+                index++;
+            }
+
+            // If we already started seeing invisible rows and this row had no visible items, we are done.
+            if (firstVisible != -1 && !rowHadVisible)
+                break;
+        }
+
+        // Return the remainder index.
+        return (lastVisible >= firstVisible && firstVisible != -1) ? (lastVisible - firstVisible + 1) : 0;
     }
 
 
