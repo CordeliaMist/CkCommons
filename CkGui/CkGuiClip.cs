@@ -132,7 +132,7 @@ public static class CkGuiClip
         using IEnumerator<T> enumerator = data.GetEnumerator();
 
         // total row width (may exceed available region; caller passed explicit width)
-        var rowWidth = columns * itemWidth + ((columns - 1) * ImUtf8.ItemSpacing.X);
+        var rowWidth = columns * itemWidth + ((columns - 1) * ImUtf8.ItemInnerSpacing.X);
 
         // Tracked variables.
         int index = 0;
@@ -157,8 +157,8 @@ public static class CkGuiClip
                 }
 
                 // Otherwise define the group and draw the item.
-                using var endObj = ImRaii.Group();
-                draw(enumerator.Current, index);
+                using (ImRaii.Group())
+                    draw(enumerator.Current, index);
 
                 // place next item on same line if not last column
                 if (col < columns - 1)
