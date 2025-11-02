@@ -204,6 +204,12 @@ public static partial class CkGui
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
         ImUtf8.TextFrameAligned(text);
     }
+    public static void ColorTextCentered(string text, uint color, float? width = null)
+    {
+        var offset = ((width ?? ImGui.GetContentRegionAvail().X) - ImGui.CalcTextSize(text).X) / 2;
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
+        ColorText(text, color);
+    }
 
     public static void ColorTextCentered(string text, Vector4 color, float? width = null)
     {

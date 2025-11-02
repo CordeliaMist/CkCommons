@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using OtterGui;
 using OtterGui.Text;
 
 namespace CkCommons.Gui;
@@ -234,9 +235,6 @@ public static partial class CkGui
         ImGui.GetWindowDrawList().AddRectFilled(pos - padWidth, pos + size + padWidth * 2, labelCol.ToUint(), ImGui.GetStyle().FrameRounding);
         CkGui.ColorText(text, col);
     }
-
-    public static bool IconButtonColored(FAI icon, uint col, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
-        => IconButtonInternal(icon, height, id, disabled, inPopup, col);
 
     /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
