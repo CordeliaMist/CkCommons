@@ -379,7 +379,7 @@ public static partial class CkGui
         return new Vector2(width, fontPtr.FontSize);
     }
 
-    public static void CopyableDisplayText(string text, string tooltip = "Click to copy")
+    public static void CopyableDisplayText(string text, string tooltip = "--SEP--Click to copy")
     {
         // then when the item is clicked, copy it to clipboard so we can share with others
         if (ImGui.IsItemClicked())
@@ -467,6 +467,18 @@ public static partial class CkGui
         using var pushedFont = font.Push();
         using var pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(text);
+    }
+
+    public static void FontTextAligned(string text, IFontHandle font, Vector4? color = null)
+    {
+        FontTextAligned(text, font, color == null ? ImGui.GetColorU32(ImGuiCol.Text) : ImGui.GetColorU32(color.Value));
+    }
+
+    public static void FontTextAligned(string text, IFontHandle font, uint color)
+    {
+        using var pushedFont = font.Push();
+        using var pushedColor = ImRaii.PushColor(ImGuiCol.Text, color);
+        ImUtf8.TextFrameAligned(text);
     }
 
     public static void FontTextCentered(string text, IFontHandle font, Vector4? color = null)

@@ -68,6 +68,20 @@ public static class CkGuiEx
         drawList.AddText(textPos, fontColor, text);
     }
 
+    public static void OutlinedFont(this ImDrawListPtr drawList, ImFontPtr fontPtr, string text, Vector2 textPos, uint fontColor, uint outlineColor, int thickness)
+    {
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos with { Y = textPos.Y - thickness }, outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos with { X = textPos.X - thickness }, outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos with { Y = textPos.Y + thickness }, outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos with { X = textPos.X + thickness }, outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, new Vector2(textPos.X - thickness, textPos.Y - thickness), outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, new Vector2(textPos.X + thickness, textPos.Y + thickness), outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, new Vector2(textPos.X - thickness, textPos.Y + thickness), outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, new Vector2(textPos.X + thickness, textPos.Y - thickness), outlineColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos, fontColor, text);
+        drawList.AddText(fontPtr, fontPtr.FontSize, textPos, fontColor, text);
+    }
+
     public static void OutlinedFontScaled(this ImDrawListPtr drawlist, ImFontPtr fontPtr, float fontSize, float scale, Vector2 pos, string text, uint col, uint outline, int thickness)
     {
         var size = fontSize * scale;
