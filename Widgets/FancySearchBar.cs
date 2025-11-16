@@ -8,8 +8,8 @@ namespace CkCommons.Widgets;
 
 public class FancySearchBar
 {
-    // WIP - At the moment the clear text does not appear to do much, unsure why currently. Look into how otter clears text probably.
-    public unsafe static bool Draw(string id, float width, string hint, ref string str, int textLen, float rWidth = 0f, Action? rButtons = null)
+    // Optimize later for DynamicDrawer usages, expand modularity.
+    public unsafe static bool Draw(string id, float width, ref string str, string hint, int length, float rWidth = 0f, Action? rButtons = null)
     {
         var needsFocus = false;
         var height = ImGui.GetTextLineHeight() + (ImGui.GetStyle().FramePadding.Y * 2);
@@ -56,7 +56,7 @@ public class FancySearchBar
         using (ImRaii.PushColor(ImGuiCol.FrameBg, 0))
         {
             var flags = ITFlags.NoHorizontalScroll | ITFlags.NoUndoRedo | ITFlags.CallbackAlways;
-            ret = ImGui.InputTextWithHint("##" + id, hint, ref localSearchStr, textLen, flags, (data) =>
+            ret = ImGui.InputTextWithHint("##" + id, hint, ref localSearchStr, length, flags, (data) =>
             {
                 if (needsClear)
                 {

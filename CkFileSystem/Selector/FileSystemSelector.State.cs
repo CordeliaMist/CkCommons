@@ -69,7 +69,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
         float searchW   = CustomFiltersWidth(width);
         string tmp       = FilterValue;
         string tooltip   = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
-        bool change    = FancySearchBar.Draw("Filter", width, tooltip, ref tmp, 128, width - searchW, DrawCustomFilters);
+        bool change    = FancySearchBar.Draw("Filter", width, ref tmp, tooltip, 128, width - searchW, DrawCustomFilters);
 
         // the filter box had its value updated.
         if (change)

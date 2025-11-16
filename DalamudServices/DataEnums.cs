@@ -8,13 +8,8 @@ public enum DeepDungeonType
     EurekaOrthos,
 }
 
-
-// Pulled from:
-// https://github.com/NightmareXIV/ECommons/blob/71ee09f7cc2230a73503b945422760da1368405c/ECommons/ExcelServices/TerritoryIntendedUseEnum.cs
-
 /// <summary>
-/// Because the new Lumina Territory Intended use is all listed as Unknowns, 
-/// this parses the proper intended use of the territory.
+/// Prefer to use FFXIVClientStructs .FFXIV.Client.Game.TerritoryIntendedUse names, while keeping the commonly used attribute.
 /// </summary>
 public enum TerritoryIntendedUseEnum : uint
 {

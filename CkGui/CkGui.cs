@@ -359,11 +359,57 @@ public static partial class CkGui
 
     public static bool SmallIconTextButton(FAI icon, string text, float? width = null, bool isInPopup = false, bool disabled = false, string id = "Identifier")
     {
-        return SmallIconTextButtonInternal(icon, text,
+        return SmallIconTextButtonInternal(icon, text, 
             isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null,
             width <= 0 ? null : width,
             disabled, id);
     }
+
+    private static bool IconTextButtonCenteredInternal(FAI icon, string text, float width, Vector4 ? defaultColor = null, bool disabled = false, string id = "")
+    {
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        var num = 0;
+        if (defaultColor.HasValue)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, defaultColor.Value);
+            num++;
+        }
+
+        // Push the id.
+        ImGui.PushID(text + "##" + id);
+        // Calculate the widths.
+        Vector2 iconSize;
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
+            iconSize = ImGui.CalcTextSize(icon.ToIconString());
+        var textSize = ImGui.CalcTextSize(text);
+        // Get draw items.
+        var wdl = ImGui.GetWindowDrawList();
+        var cursorScreenPos = ImGui.GetCursorScreenPos();
+        var padding = ImUtf8.FramePadding;
+        var num2 = 3f * ImGuiHelpers.GlobalScale;
+        // Determine total width.
+        var result = ImGui.Button(string.Empty, new Vector2(width, ImUtf8.FrameHeight));
+        // Offset the icon pos to the center.
+        var iconPos = cursorScreenPos + new Vector2((width - (iconSize.X + textSize.X + num2)) / 2f + padding.X, padding.Y);
+        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
+            wdl.AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
+        // text pos is offset of icon pos.
+        var pos2 = new Vector2(iconPos.X + iconSize.X + num2, iconPos.Y);
+        wdl.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
+        // pop the id, and color if included.
+        ImGui.PopID();
+        if (num > 0)
+        {
+            ImGui.PopStyleColor(num);
+        }
+        dis.Pop();
+
+        return result && !disabled;
+    }
+
+    public static bool IconTextButtonCentered(FAI icon, string text, float width, bool isInPopup = false, bool disabled = false, string id = "Identifier")
+        => IconTextButtonCenteredInternal(icon, text, width, isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null, disabled, id);
+
 
     private static bool IconSliderFloatInternal(string id, FAI icon, string label, ref float valueRef, float min,
         float max, Vector4? defaultColor = null, float? width = null, bool disabled = false, string format = "%.1f")

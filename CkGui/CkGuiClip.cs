@@ -26,7 +26,7 @@ public static class CkGuiClip
             // draw to check for visibility.
             using ImRaii.IEndObject endObject = ImRaii.Group();
             draw(enumerator.Current, usedWidth);
-
+            endObject.Dispose();
             // If the item is not visible, we can skip it.
             if (ImGui.IsItemVisible())
             {
@@ -90,7 +90,7 @@ public static class CkGuiClip
                 // Otherwise define the group and draw the item.
                 using var endObj = ImRaii.Group();
                 draw(enumerator.Current);
-
+                endObj.Dispose();
                 // place next item on same line if not last column
                 if (col < columns - 1)
                     ImUtf8.SameLineInner();
@@ -157,8 +157,9 @@ public static class CkGuiClip
                 }
 
                 // Otherwise define the group and draw the item.
-                using (ImRaii.Group())
-                    draw(enumerator.Current, index);
+                using ImRaii.IEndObject endObj = ImRaii.Group();
+                draw(enumerator.Current, index);
+                endObj.Dispose();
 
                 // place next item on same line if not last column
                 if (col < columns - 1)
