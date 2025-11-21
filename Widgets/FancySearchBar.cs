@@ -12,9 +12,9 @@ public class FancySearchBar
     public unsafe static bool Draw(string id, float width, ref string str, string hint, int length, float rWidth = 0f, Action? rButtons = null)
     {
         var needsFocus = false;
-        var height = ImGui.GetTextLineHeight() + (ImGui.GetStyle().FramePadding.Y * 2);
+        var height = ImUtf8.FrameHeight;
         var searchWidth = width - CkGui.IconButtonSize(FAI.TimesCircle).X -
-            ((rButtons is not null) ? (rWidth + ImGui.GetStyle().ItemInnerSpacing.X * 2) : ImGui.GetStyle().ItemSpacing.X*2);
+            ((rButtons is not null) ? (rWidth + ImUtf8.ItemInnerSpacing.X*2) : ImUtf8.ItemSpacing.X*2);
         var size = new Vector2(width, height);
         var ret = false;
 
