@@ -254,7 +254,7 @@ public class TagCollection
                 bool rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
                 CkGui.AttachToolTip(HELP_TEXT_SHORT, color: CkColor.VibrantPink.Vec4());
                 // Rearrangement.
-                if(ImGui.IsItemHovered() && KeyMonitor.ShiftPressed())
+                if(ImGui.IsItemHovered() && ImGui.GetIO().KeyShift)
                 {
                     if (idx > 0 && lClicked)
                     {
@@ -268,7 +268,7 @@ public class TagCollection
                     }
                 }
                 // Handle Delete
-                if (KeyMonitor.CtrlPressed() && rClicked)
+                if (ImGui.GetIO().KeyCtrl && rClicked)
                 {
                     _latestStringTags.RemoveAt(idx);
                     _editIdx = -1;

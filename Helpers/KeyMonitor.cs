@@ -24,8 +24,20 @@ public static partial class KeyMonitor
     // see if the key bit is set
     public static bool IsBitSet(short b, int pos) => (b & (1 << pos)) != 0;
 
+    /// <summary> 
+    ///     Use ImGui.GetIO().KeyShift if detecting inside the UI draw frame.
+    ///     This performs additional logic which can add up if called several times in a drawframe.
+    /// </summary>
     public static bool ShiftPressed() => (IsKeyPressed(0xA1) || IsKeyPressed(0xA0));
+    /// <summary> 
+    ///     Use ImGui.GetIO().KeyCtrl if detecting inside the UI draw frame.
+    ///     This performs additional logic which can add up if called several times in a drawframe.
+    /// </summary>
     public static bool CtrlPressed() => (IsKeyPressed(0xA2) || IsKeyPressed(0xA3));
+    /// <summary> 
+    ///     Use ImGui.GetIO().KeyAlt if detecting inside the UI draw frame.
+    ///     This performs additional logic which can add up if called several times in a drawframe.
+    /// </summary>
     public static bool AltPressed() => (IsKeyPressed(0xA4) || IsKeyPressed(0xA5));
     public static bool BackPressed() => IsKeyPressed(0x08);
     public static bool TabPressed() => IsKeyPressed(0x09);

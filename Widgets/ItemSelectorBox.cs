@@ -373,7 +373,7 @@ public class ItemSelectorBox<T>
             if (lClicked)
             {
                 // handle shifting, if allowed.
-                if (KeyMonitor.ShiftPressed() && _allowShift && idx > 0)
+                if (ImGui.GetIO().KeyShift && _allowShift && idx > 0)
                 {
                     if (idx is 0 && lockFirst)
                         return;
@@ -394,9 +394,9 @@ public class ItemSelectorBox<T>
                     return;
 
                 // handle removal, if CTRL + SHIFT is pressed.
-                if (KeyMonitor.ShiftPressed())
+                if (ImGui.GetIO().KeyShift)
                 {
-                    if (KeyMonitor.CtrlPressed())
+                    if (ImGui.GetIO().KeyCtrl)
                     {
                         OnRemove?.Invoke(item);
                         changeOccurred = OnRemove is not null;
