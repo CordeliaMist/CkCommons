@@ -16,7 +16,10 @@ public class FancySearchBar
         var searchWidth = width - CkGui.IconButtonSize(FAI.TimesCircle).X -
             ((rButtons is not null) ? (rWidth + ImUtf8.ItemInnerSpacing.X*2) : ImUtf8.ItemSpacing.X*2);
         var size = new Vector2(width, height);
-        var ret = false;
+        
+        bool ret = false;
+        bool needsClear = false;
+
 
         using var group = ImRaii.Group();
         var pos = ImGui.GetCursorScreenPos();
@@ -30,6 +33,7 @@ public class FancySearchBar
             // push the color for the button to have an invisible bg.
             if (CkGui.IconButton(FAI.TimesCircle, inPopup: true))
             {
+                ret = true;
                 str = string.Empty;
                 needsClear = true;
                 needsFocus = true;
@@ -56,7 +60,7 @@ public class FancySearchBar
         using (ImRaii.PushColor(ImGuiCol.FrameBg, 0))
         {
             var flags = ITFlags.NoHorizontalScroll | ITFlags.NoUndoRedo | ITFlags.CallbackAlways;
-            ret = ImGui.InputTextWithHint("##" + id, hint, ref localSearchStr, length, flags, (data) =>
+            ret |= ImGui.InputTextWithHint("##" + id, hint, ref localSearchStr, length, flags, (data) =>
             {
                 if (needsClear)
                 {
@@ -80,6 +84,4 @@ public class FancySearchBar
         str = localSearchStr;
         return ret;
     }
-
-    public static bool needsClear = false;
 }
