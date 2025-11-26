@@ -24,7 +24,29 @@ public static partial class CkGui
     /// <summary> A helper function for retrieving the proper color value given RGBA. </summary>
     /// <returns> The color formatted as a uint </returns>
     public static uint Color(byte r, byte g, byte b, byte a)
-    { uint ret = a; ret <<= 8; ret += b; ret <<= 8; ret += g; ret <<= 8; ret += r; return ret; }
+    {
+        uint ret = a; 
+        ret <<= 8; 
+        ret += b;
+        ret <<= 8;
+        ret += g;
+        ret <<= 8;
+        ret += r;
+        return ret;
+    }
+
+    /// <summary>
+    ///     Apply an alpha opacity float between 0 and 1 to an existing uint. <para />
+    ///     If you give something not between 0 and 1, that's on you lol.
+    /// </summary>
+    public static uint ApplyAlpha(uint rgba, float alpha)
+    {
+        byte a = (byte)(alpha * 255f);
+        return (rgba & 0x00FFFFFF) | ((uint)a << 24);
+    }
+
+
+
 
     /// <summary> A helper function for retrieving the proper color value given a vector4. </summary>
     /// <returns> The color formatted as a uint </returns>
@@ -62,36 +84,6 @@ public static partial class CkGui
 
     public static Vector4 GetBoolColor(bool input) => input ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed;
 
-/*    public float GetFontScalerFloat() => ImGuiHelpers.GlobalScale * (_pi.UiBuilder.DefaultFontSpec.SizePt / 12f); */
-    public static float GetButtonSize(string text)
-    {
-        var vector2 = ImGui.CalcTextSize(text);
-        return vector2.X + ImGui.GetStyle().FramePadding.X * 2f;
-    }
-
-    public static float IconTextButtonSize(FAI icon, string text)
-    {
-        Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            vector = ImGui.CalcTextSize(icon.ToIconString());
-
-        var vector2 = ImGui.CalcTextSize(text);
-        var num = 3f * ImGuiHelpers.GlobalScale;
-        return vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num;
-    }
-
-    public static Vector2 IconButtonSize(FAI icon)
-    {
-        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
-        return ImGuiHelpers.GetButtonSize(icon.ToIconString());
-    }
-
-    public static Vector2 IconSize(FAI icon)
-    {
-        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
-        return ImGui.CalcTextSize(icon.ToIconString());
-    }
-
     public static float GetWindowContentRegionWidth()
         => ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
 
@@ -115,59 +107,6 @@ public static partial class CkGui
         using var _ = ImRaii.Disabled(disabled);
         return ImGui.Checkbox(label, ref v);
     }
-
-    public static float GetSeparatorVWidth(float? width = null)
-        => ImGui.GetStyle().ItemSpacing.X * 2 + (width ?? 1 * ImGuiHelpers.GlobalScale);
-
-    public static float GetSeparatorHeight(float? height = null)
-        => height + ImGui.GetStyle().ItemSpacing.Y * 2 ?? ImGui.GetStyle().ItemSpacing.Y * 3;
-
-    public static float GetSeparatorSpacedHeight(float? height = null)
-        => height + ImGui.GetStyle().ItemSpacing.Y * 4 ?? ImGui.GetStyle().ItemSpacing.Y * 5;
-
-    public static void Separator(float? width = null, float? height = null)
-    {
-        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-    }
-
-
-    public static void Separator(uint col, float? width = null, float? height = null)
-    {
-        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col);
-    }
-
-    public static void SeparatorSpaced(float? height = null, float? width = null)
-    {
-        ImGui.Spacing();
-        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        ImGui.Spacing();
-    }
-
-    public static void SeparatorSpaced(uint col, float? height = null, float? width = null)
-    {
-        ImGui.Spacing();
-        ImGui.Dummy(new Vector2(width ?? ImGui.GetContentRegionAvail().X, height ?? ImGui.GetStyle().ItemSpacing.Y));
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col);
-        ImGui.Spacing();
-    }
-
-    public static void SeparatorV(float? width = null, uint? col = null, float? height = null)
-    {
-        ImGui.SameLine(0, ImUtf8.ItemSpacing.X);
-        var lineHeight = height ?? ImGui.GetContentRegionAvail().Y;
-        var lineWidth = width ?? 1 * ImGuiHelpers.GlobalScale;
-        col ??= ImGui.GetColorU32(ImGuiCol.Border);
-        ImGui.Dummy(new Vector2(lineWidth, lineHeight));
-        ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col.Value);
-        ImGui.SameLine();
-    }
-
-    public static void TextLineSeparatorV(float? width = null, uint? col = null)
-        => SeparatorV(width, col, ImGui.GetTextLineHeight());
-
-    public static void FrameSeparatorV(float? width = null, uint? col = null)
-        => SeparatorV(width, col, ImGui.GetFrameHeight());
 
     // A 'small button' that is not a button. Alternatively could use some disabled trickery,
     // but this saves the extra render data with buttons.
@@ -235,181 +174,6 @@ public static partial class CkGui
         ImGui.GetWindowDrawList().AddRectFilled(pos - padWidth, pos + size + padWidth * 2, labelCol.ToUint(), ImGui.GetStyle().FrameRounding);
         CkGui.ColorText(text, col);
     }
-
-    /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
-    public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
-        => IconButtonInternal(icon, height, id, disabled, inPopup);
-    private static bool IconButtonInternal(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false, uint? color = null)
-    {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
-        if (inPopup)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f));
-            num++;
-        }
-        var txtCol = color ?? ImGui.GetColorU32(ImGuiCol.Text);
-        var text = icon.ToIconString();
-
-        ImGui.PushID((id == null) ? icon.ToIconString() : id + icon.ToIconString());
-        Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            vector = ImGui.CalcTextSize(text);
-        var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var x = vector.X + ImGui.GetStyle().FramePadding.X * 2f;
-        var frameHeight = height ?? ImGui.GetFrameHeight();
-        var result = ImGui.Button(string.Empty, new Vector2(x, frameHeight));
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
-            cursorScreenPos.Y + (height ?? ImGui.GetFrameHeight()) / 2f - (vector.Y / 2f));
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            windowDrawList.AddText(pos, txtCol, text);
-        ImGui.PopID();
-
-        if (num > 0)
-        {
-            ImGui.PopStyleColor(num);
-        }
-        return result && !disabled;
-    }
-
-    private static bool IconTextButtonInternal(FAI icon, string text, Vector4? defaultColor = null, float? width = null, bool disabled = false, string id = "")
-    {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
-        if (defaultColor.HasValue)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, defaultColor.Value);
-            num++;
-        }
-
-        ImGui.PushID(text + "##" + id);
-        Vector2 vector;
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            vector = ImGui.CalcTextSize(icon.ToIconString());
-        var vector2 = ImGui.CalcTextSize(text);
-        var wdl = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
-        var result = ImGui.Button(string.Empty, new Vector2(x, ImGui.GetFrameHeight()));
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            wdl.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
-        var pos2 = new Vector2(pos.X + vector.X + num2, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        wdl.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
-        ImGui.PopID();
-        if (num > 0)
-        {
-            ImGui.PopStyleColor(num);
-        }
-        dis.Pop();
-
-        return result && !disabled;
-    }
-
-    public static bool IconTextButton(FAI icon, string text, float? width = null, bool isInPopup = false, bool disabled = false, string id = "Identifier")
-    {
-        return IconTextButtonInternal(icon, text,
-            isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null,
-            width <= 0 ? null : width,
-            disabled, id);
-    }
-
-    private static bool SmallIconTextButtonInternal(FAI icon, string text, Vector4? defaultColor = null, float? width = null, bool disabled = false, string id = "")
-    {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
-        if (defaultColor.HasValue)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, defaultColor.Value);
-            num++;
-        }
-
-        ImGui.PushID(text + "##" + id);
-        var iconSize = CkGui.CalcFontTextSize(icon.ToIconString(), Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle);
-        var textSize = ImGui.CalcTextSize(text);
-
-        var wdl = ImGui.GetWindowDrawList();
-        var screenPos = ImGui.GetCursorScreenPos();
-        var padding = ImGui.GetStyle().FramePadding;
-
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? iconSize.X + textSize.X + padding.X * 2f + num2;
-
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding.Y);
-        var result = ImGui.Button(string.Empty, new Vector2(x, ImGui.GetTextLineHeight()));
-
-        var pos = new Vector2(screenPos.X + padding.X, screenPos.Y + padding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            wdl.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
-
-        var pos2 = new Vector2(pos.X + iconSize.X + num2, screenPos.Y + padding.Y);
-        wdl.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
-
-        ImGui.PopID();
-        if (num > 0)
-        {
-            ImGui.PopStyleColor(num);
-        }
-        dis.Pop();
-
-        return result && !disabled;
-    }
-
-    public static bool SmallIconTextButton(FAI icon, string text, float? width = null, bool isInPopup = false, bool disabled = false, string id = "Identifier")
-    {
-        return SmallIconTextButtonInternal(icon, text, 
-            isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null,
-            width <= 0 ? null : width,
-            disabled, id);
-    }
-
-    private static bool IconTextButtonCenteredInternal(FAI icon, string text, float width, Vector4 ? defaultColor = null, bool disabled = false, string id = "")
-    {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
-        if (defaultColor.HasValue)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, defaultColor.Value);
-            num++;
-        }
-
-        // Push the id.
-        ImGui.PushID(text + "##" + id);
-        // Calculate the widths.
-        Vector2 iconSize;
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            iconSize = ImGui.CalcTextSize(icon.ToIconString());
-        var textSize = ImGui.CalcTextSize(text);
-        // Get draw items.
-        var wdl = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var padding = ImUtf8.FramePadding;
-        var num2 = 3f * ImGuiHelpers.GlobalScale;
-        // Determine total width.
-        var result = ImGui.Button(string.Empty, new Vector2(width, ImUtf8.FrameHeight));
-        // Offset the icon pos to the center.
-        var iconPos = cursorScreenPos + new Vector2((width - (iconSize.X + textSize.X + num2)) / 2f + padding.X, padding.Y);
-        using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            wdl.AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
-        // text pos is offset of icon pos.
-        var pos2 = new Vector2(iconPos.X + iconSize.X + num2, iconPos.Y);
-        wdl.AddText(pos2, ImGui.GetColorU32(ImGuiCol.Text), text);
-        // pop the id, and color if included.
-        ImGui.PopID();
-        if (num > 0)
-        {
-            ImGui.PopStyleColor(num);
-        }
-        dis.Pop();
-
-        return result && !disabled;
-    }
-
-    public static bool IconTextButtonCentered(FAI icon, string text, float width, bool isInPopup = false, bool disabled = false, string id = "Identifier")
-        => IconTextButtonCenteredInternal(icon, text, width, isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null, disabled, id);
-
 
     private static bool IconSliderFloatInternal(string id, FAI icon, string label, ref float valueRef, float min,
         float max, Vector4? defaultColor = null, float? width = null, bool disabled = false, string format = "%.1f")
