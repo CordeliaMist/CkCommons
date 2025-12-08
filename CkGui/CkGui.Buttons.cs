@@ -245,7 +245,7 @@ public static partial class CkGui
         // Aquire our ID for this new internal item
         var id = ImGui.GetID(text);
 
-        // Otherwise, grab the style and frameheights as defaults.
+        // Otherwise, grab the style and frame-heights as defaults.
         var pos = window.DC.CursorPos;
         var frameH = ImUtf8.FrameHeight;
         var style = ImGui.GetStyle();
@@ -291,7 +291,7 @@ public static partial class CkGui
 
         // Outer Drop Shadow on bottom.
         window.DrawList.AddRectFilled(hitbox.Min, hitbox.Max, shadowCol, rounding, ImDrawFlags.RoundCornersAll);
-        // Draw over with inner border, ghreyish look.
+        // Draw over with inner border, greyish look.
         window.DrawList.AddRectFilled(hitbox.Min + borderVec, hitbox.Max - borderVec, borderCol, rounding, ImDrawFlags.RoundCornersAll);
         // Draw over again with the bgColor.
         window.DrawList.AddRectFilled(hitbox.Min + outerOffset, hitbox.Max - outerOffset, bgCol, rounding, ImDrawFlags.RoundCornersAll);

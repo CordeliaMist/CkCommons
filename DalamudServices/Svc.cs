@@ -18,12 +18,13 @@ public class Svc
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; set; } = null!;
     [PluginService] public static IPluginLog Log { get; set; } = null!;
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; set; } = null!;
-    [PluginService] public static IAddonEventManager AddonEventManager { get; private set; }
-    [PluginService] public static IAetheryteList AetheryteList { get; private set; }
+    [PluginService] public static IAddonEventManager AddonEventManager { get; private set; } = null!;
+    [PluginService] public static IAetheryteList AetheryteList { get; private set; } = null!;
     [PluginService] public static IChatGui Chat { get; set; } = null!;
     [PluginService] public static IClientState ClientState { get; set; } = null!;
-    [PluginService] public static ICommandManager Commands { get; private set; }
-    [PluginService] public static ICondition Condition { get; private set; }
+    [PluginService] public static IPlayerState PlayerState { get; private set; } = null!;
+    [PluginService] public static ICommandManager Commands { get; private set; } = null!;
+    [PluginService] public static ICondition Condition { get; private set; } = null!;
     [PluginService] public static IContextMenu ContextMenu { get; private set; }
     [PluginService] public static IDataManager Data { get; private set; } = null!;
     [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;

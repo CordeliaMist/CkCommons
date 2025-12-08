@@ -10,9 +10,11 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 #nullable disable
+
 namespace CkCommons;
 
 /// <summary> 
@@ -22,36 +24,39 @@ public static unsafe class PlayerData
 {
     public static readonly int MaxLevel = 100;
     public static ClientLanguage Language => Svc.ClientState.ClientLanguage;
-    public static IPlayerCharacter Object => Svc.ClientState.LocalPlayer;
-    public static IntPtr ObjectAddress => Svc.ClientState.LocalPlayer?.Address ?? IntPtr.Zero;
+    public static IPlayerCharacter Object => Svc.Objects.LocalPlayer;
+    public static IntPtr ObjectAddress => Svc.Objects.LocalPlayer?.Address ?? IntPtr.Zero;
     public static GameObject* ObjectThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value;
-    public static bool Available => Svc.ClientState.LocalPlayer != null;
+    public static bool Available => Svc.Objects.LocalPlayer != null;
     public unsafe static bool AvailableThreadSafe => GameObjectManager.Instance()->Objects.IndexSorted[0].Value != null;
     public static bool Interactable => Available && Object.IsTargetable;
     public static Vector3 PositionInstanced => Control.Instance()->LocalPlayer->Position;
-    public static ulong ContentId => Svc.ClientState.LocalContentId;
-    public static ulong ContendIdInstanced => Control.Instance()->LocalPlayer->ContentId;
-    public static StatusList Status => Object?.StatusList;
-    public static string Name => Object?.Name.ToString() ?? string.Empty;
-    public static string NameInstanced => Control.Instance()->LocalPlayer->NameString ?? string.Empty;
-    public static string HomeWorld => Object?.HomeWorld.Value.Name.ToString() ?? string.Empty;
-    public static string HomeWorldInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
-    public static ushort HomeWorldId => (ushort)(Object?.HomeWorld.RowId ?? 0);
+    public static ulong ContentId => Svc.PlayerState.ContentId;
+    public static ulong ContentIdInstanced => Control.Instance()->LocalPlayer->ContentId;
+    public static StatusList Status => Object? .StatusList;
+
+    // Name & World Info
+    public static ushort HomeWorldId => (ushort)Svc.PlayerState.HomeWorld.RowId;
+    public static ushort CurrentWorldId => (ushort)Svc.PlayerState.CurrentWorld.RowId;
     public static ushort HomeWorldIdInstanced => Control.Instance()->LocalPlayer->HomeWorld;
-    public static string NameWithWorld => GetNameWithWorld(Object);
-    public static string NameWithWorldInstanced => NameInstanced + "@" + HomeWorldInstanced;
-    public static string GetNameWithWorld(this IPlayerCharacter pc) => pc is null ? string.Empty : (pc.Name.ToString() + "@" + pc.HomeWorld.Value.Name.ToString());
-    public static uint CurrentWorldId => Object?.CurrentWorld.RowId ?? 0;
     public static ushort CurrentWorldIdInstanced => Control.Instance()->LocalPlayer->CurrentWorld;
-    public static string CurrentWorld => Object?.CurrentWorld.Value.Name.ToString() ?? string.Empty;
-    public static string CurrentWorldNameInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
-    public static string HomeDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldId)?.DataCenter.ValueNullable?.Name.ToString();
-    public static string CurrentDataCenter => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldId)?.DataCenter.ValueNullable?.Name.ToString();
+    public static string Name => Svc.PlayerState.CharacterName;
+    public static string HomeWorld => Svc.PlayerState.HomeWorld.Value.Name.ToString();
+    public static string NameWithWorld => GetNameWithWorld(Object);
+    public static string CurrentWorld => Svc.PlayerState.CurrentWorld.Value.Name.ToString();
+    public static string HomeDataCenter => Svc.PlayerState.HomeWorld.Value.DataCenter.Value.Name.ToString();
+    public static string CurrentDataCenter => Svc.PlayerState.CurrentWorld.Value.DataCenter.Value.Name.ToString();
+    public static string GetNameWithWorld(this IPlayerCharacter pc) => pc is null ? string.Empty : (pc.Name.ToString() + "@" + pc.HomeWorld.Value.Name.ToString());
+
+    public static string NameInstanced => Control.Instance()->LocalPlayer->NameString ?? string.Empty;
+    public static string HomeWorldInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
+    public static string CurrentWorldInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
+    public static string NameWithWorldInstanced => NameInstanced + "@" + HomeWorldIdInstanced;
 
     public static uint OnlineStatus => Object?.OnlineStatus.RowId ?? 0;
     public static unsafe short Commendations => PlayerState.Instance()->PlayerCommendations;
-    public static bool IsInHomeWorld => Available ? Object!.HomeWorld.RowId == Object!.CurrentWorld.RowId : false;
-    public static bool IsInHomeDC => Available ? Object!.CurrentWorld.Value.DataCenter.RowId == Object!.HomeWorld.Value.DataCenter.RowId : false;
+    public static bool IsInHomeWorld => Available && Svc.PlayerState.CurrentWorld.RowId == Svc.PlayerState.HomeWorld.RowId;
+    public static bool IsInHomeDC => Available && Svc.PlayerState.CurrentWorld.Value.DataCenter.RowId == Svc.PlayerState.HomeWorld.Value.DataCenter.RowId;
     public static unsafe bool IsInDuty => GameMain.Instance()->CurrentContentFinderConditionId is not 0; // alternative method from IDutyState
     public static unsafe bool IsOnIsland => MJIManager.Instance()->IsPlayerInSanctuary;
     public static bool IsInPvP => GameMain.IsInPvPInstance();
@@ -59,14 +64,15 @@ public static unsafe class PlayerData
 
     public static uint Health => Available ? Object!.CurrentHp : 0;
     public static uint HealthInstanced => Control.Instance()->LocalPlayer->Health;
-    public static int Level => Object?.Level ?? 0;
+    public static int Level => Svc.PlayerState.Level;
     public static bool IsLevelSynced => PlayerState.Instance()->IsLevelSynced;
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int UnsyncedLevel => GetUnsyncedLevel(JobId);
     public static int GetUnsyncedLevel(uint job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(job).Value.ExpArrayIndex];
 
-    public static uint JobId => Object?.ClassJob.RowId ?? 0;
-    public static unsafe ushort JobIdThreadSafe => PlayerState.Instance()->CurrentClassJobId;
+    public static RowRef<ClassJob> ClassJob => Svc.PlayerState.ClassJob;
+    public static uint JobId => Svc.PlayerState.ClassJob.RowId;
+    public static unsafe ushort JobIdInstanced => PlayerState.Instance()->CurrentClassJobId;
     public static ActionRoles JobRole => (ActionRoles)(Object?.ClassJob.Value.Role ?? 0);
     public static byte GrandCompany => PlayerState.Instance()->GrandCompany;
 
@@ -84,9 +90,9 @@ public static unsafe class PlayerData
     public static int PartySize => Svc.Party.Length;
     public static bool InSoloParty => Svc.Party.Length <= 1 && IsInDuty;
 
-    public static Character* Character => (Character*)Svc.ClientState.LocalPlayer.Address;
-    public static BattleChara* BattleChara => (BattleChara*)Svc.ClientState.LocalPlayer.Address;
-    public static GameObject* GameObject => (GameObject*)Svc.ClientState.LocalPlayer.Address;
+    public static Character* Character => (Character*)Object.Address;
+    public static BattleChara* BattleChara => (BattleChara*)Object.Address;
+    public static GameObject* GameObject => (GameObject*)Object.Address;
 
     public static Vector3 Position => Available ? Object!.Position : Vector3.Zero;
     public static float Rotation => Available ? Object!.Rotation : 0;
