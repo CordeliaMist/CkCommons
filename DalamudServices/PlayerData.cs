@@ -51,7 +51,9 @@ public static unsafe class PlayerData
     public static string NameInstanced => Control.Instance()->LocalPlayer->NameString ?? string.Empty;
     public static string HomeWorldInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(HomeWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
     public static string CurrentWorldInstanced => Svc.Data.GetExcelSheet<World>().GetRowOrDefault(CurrentWorldIdInstanced) is { } w ? w.Name.ToString() : string.Empty;
-    public static string NameWithWorldInstanced => NameInstanced + "@" + HomeWorldIdInstanced;
+    public static string NameWithWorldInstanced => NameInstanced + "@" + HomeWorldInstanced;
+    public static unsafe string GetNameWorldUnsafe(Character* character)
+        => character->NameString + "@" + (Svc.Data.GetExcelSheet<World>().GetRowOrDefault(character->HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
 
     public static uint OnlineStatus => Object?.OnlineStatus.RowId ?? 0;
     public static unsafe short Commendations => PlayerState.Instance()->PlayerCommendations;
