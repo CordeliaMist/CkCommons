@@ -7,13 +7,6 @@ namespace CkCommons.Textures;
 // Migrate this to a static class soon.
 public static class MoodleDisplay
 {
-    public enum StatusType
-    {
-        Positive,
-        Negative,
-        Special
-    }
-
     public static IDalamudTextureWrap? GetGameIconOrDefault(uint iconId)
         => Svc.Texture.GetFromGameIcon(iconId).GetWrapOrDefault();
 
