@@ -33,6 +33,7 @@
         <Optimize>True</Optimize>
         <Deterministic>true</Deterministic>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
     
     <PropertyGroup Label="Warnings">
