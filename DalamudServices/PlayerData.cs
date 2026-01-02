@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -7,10 +8,12 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
+using LuminaWorld = Lumina.Excel.Sheets.World;
 #nullable disable
 
 namespace CkCommons;
@@ -21,6 +24,9 @@ namespace CkCommons;
 /// </summary>
 public static unsafe class PlayerData
 {
+    // Temporary placeholder for people who absolutely need it.
+    public static IPlayerCharacter PlayerChara => Svc.Objects.LocalPlayer;
+
     // Could use GameObjectManager.Instance()->Objects.IndexSorted[0].Value also.
     public static GameObject*   Object      => (GameObject*)BattleChara;
     public static Character*    Character   => (Character*)BattleChara;
@@ -29,13 +35,23 @@ public static unsafe class PlayerData
     public static bool Available => Control.Instance()->LocalPlayer is not null;
     public static bool Interactable => Available && Object->GetIsTargetable();
 
+    // Info about local player.
+    public static ulong EntityId => Available ? Object->EntityId : 0;
+    public static ulong GameObjectId => Available ? Object->GetGameObjectId().ObjectId : ulong.MaxValue;
+    public static ushort ObjIndex => Available ? Object->ObjectIndex : ushort.MaxValue;
+    public static nint DrawObjAddress => Available ? (nint)Object->DrawObject : nint.Zero;
+    public static ulong RenderFlags => Available ? (ulong)Object->RenderFlags : 0;
+    public static bool HasModelInSlotLoaded => Available ? ((CharacterBase*)Object->DrawObject)->HasModelInSlotLoaded != 0 : false;
+    public static bool HasModelFilesInSlotLoaded => Available ? ((CharacterBase*)Object->DrawObject)->HasModelFilesInSlotLoaded != 0 : false;
+
+
     // Overview (I have not tested PlayerState results yet, but can use FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState to optimize calls a bit.
     public static string Name => Character->NameString ?? string.Empty;
     public static string CharacterName => PlayerState.Instance()->IsLoaded ? PlayerState.Instance()->CharacterNameString : string.Empty;
     public static string NameWithWorld => Character->GetNameWithWorld();
     public static ulong  CID => PlayerState.Instance()->ContentId;
     public static string GetNameWithWorld(this Character chara)
-        => chara.NameString + "@" + (Svc.Data.GetExcelSheet<World>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
+        => chara.NameString + "@" + (Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
 
 
     // Could have been simple as new(BattleChara->GetStatusManager()), but they made that internal.
@@ -47,13 +63,16 @@ public static unsafe class PlayerData
     public static int SyncedLevel => PlayerState.Instance()->SyncedLevel;
     public static int GetUnsyncedLevel(uint job) => PlayerState.Instance()->ClassJobLevels[Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(job).Value.ExpArrayIndex];
     public static uint Health => Control.Instance()->LocalPlayer->Health;
+    public static uint Mana => Control.Instance()->LocalPlayer->Mana;
+    public static uint CurrentHp => Control.Instance()->LocalPlayer->Character.CharacterData.Health;
+    public static uint CurrentMp => Control.Instance()->LocalPlayer->Character.CharacterData.Mana;
 
 
     // Excel related information.
     public static RowRef<Race> Race => Svc.PlayerState.Race;
     public static RowRef<Tribe> Tribe => CreateRef<Tribe>(PlayerState.Instance()->Tribe);
-    public static RowRef<World> HomeWorld => Svc.PlayerState.HomeWorld;
-    public static RowRef<World> CurrentWorld => Svc.PlayerState.CurrentWorld;
+    public static RowRef<LuminaWorld> HomeWorld => Svc.PlayerState.HomeWorld;
+    public static RowRef<LuminaWorld> CurrentWorld => Svc.PlayerState.CurrentWorld;
     public static RowRef<WorldDCGroupType> HomeDateCenter => HomeWorld.Value.DataCenter;
     public static RowRef<WorldDCGroupType> CurrentDataCenter => CurrentWorld.Value.DataCenter;
     public static RowRef<TerritoryType> Territory => CreateRef<TerritoryType>(GameMain.Instance()->CurrentTerritoryTypeId);
