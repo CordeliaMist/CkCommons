@@ -1,8 +1,8 @@
 namespace CkCommons.Helpers;
 
-public class GSpeakTimers
+public class CkTimers
 {
-    public static bool TryParseTimeSpanStr(string input, out TimeSpan result)
+    public static bool TryParseTimeSpan(string input, out TimeSpan result)
     {
         result = TimeSpan.Zero;
         var regex = new Regex(@"^\s*(?:(\d+)d\s*)?\s*(?:(\d+)h\s*)?\s*(?:(\d+)m\s*)?\s*(?:(\d+)s\s*)?$");
@@ -21,7 +21,7 @@ public class GSpeakTimers
     }
 }
 
-public static class GSpeakTimersEx
+public static class CkTimersEx
 {
     public static string ToTimeSpanStr(this TimeSpan timeSpan)
     {
