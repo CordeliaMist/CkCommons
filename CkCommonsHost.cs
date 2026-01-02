@@ -10,11 +10,12 @@ namespace CkCommons;
 [Flags]
 public enum CkLogFilter
 {
-    None = 0,
+    None        = 0,
     AudioSystem = 1 << 0,
-    RichText = 1 << 1,
+    RichText    = 1 << 1,
+    DrawSystem  = 1 << 2,
 
-    All = AudioSystem | RichText
+    All = AudioSystem | RichText | DrawSystem,
 }
 
 
