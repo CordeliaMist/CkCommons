@@ -41,7 +41,7 @@ public partial class DynamicDrawer<T>
     /// </summary>
     /// <param name="cachedNode"> The cached node to draw. </param>
     /// <param name="flags"> The dynamic draw flags. </param>
-    private void DrawClippedCacheNode(IDynamicCache<T> cachedNode, DynamicFlags flags)
+    protected void DrawClippedCacheNode(IDynamicCache<T> cachedNode, DynamicFlags flags)
     {
         if (cachedNode is DynamicFolderGroupCache<T> cfg)
             DrawClippedCacheNode(cfg, flags);
@@ -51,7 +51,7 @@ public partial class DynamicDrawer<T>
 
     /// <inheritdoc cref="DrawClippedCacheNode(IDynamicCache{T},DynamicFlags)"/>
     /// <remarks> Only allows <see cref="DynamicFolder{T}"/>'s matching <typeparamref name="TFolder"/> </remarks>
-    private void DrawClippedCacheNode<TFolder>(IDynamicCache<T> cachedNode, DynamicFlags flags)
+    protected void DrawClippedCacheNode<TFolder>(IDynamicCache<T> cachedNode, DynamicFlags flags)
         where TFolder : DynamicFolder<T>
     {
         if (cachedNode is DynamicFolderGroupCache<T> cfg)
@@ -228,7 +228,7 @@ public partial class DynamicDrawer<T>
         CkGui.TextFrameAligned(leaf.Name);
     }
 
-    private void HandleMainContextActions()
+    protected void HandleMainContextActions()
     {
         //const string mainContext = "MainContext";
         //if (!ImGui.IsAnyItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))

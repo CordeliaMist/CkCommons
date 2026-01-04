@@ -50,8 +50,8 @@ public static unsafe class PlayerData
     public static string CharacterName => PlayerState.Instance()->IsLoaded ? PlayerState.Instance()->CharacterNameString : string.Empty;
     public static string NameWithWorld => Character->GetNameWithWorld();
     public static ulong  CID => PlayerState.Instance()->ContentId;
-    public static string GetNameWithWorld(this Character chara)
-        => chara.NameString + "@" + (Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
+    public static string GetNameWithWorld(this Character chara) => chara.NameString + "@" + (Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
+    public static string GetWorld(this Character chara) => Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty;
 
 
     // Could have been simple as new(BattleChara->GetStatusManager()), but they made that internal.
@@ -109,6 +109,7 @@ public static unsafe class PlayerData
     public static float DistanceTo(Vector3 other) => Vector3.Distance(Position, other);
     public static float DistanceTo(Vector2 other) => Vector2.Distance(new Vector2(Position.X, Position.Z), other);
     public static float DistanceTo(IGameObject other) => Vector3.Distance(Position, other.Position);
+    public static float DistanceTo(GameObject* other) => Vector3.Distance(Position, other->Position);
 
 
     // Dead or Alive?

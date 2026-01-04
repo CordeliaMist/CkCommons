@@ -75,6 +75,9 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     /// <remarks> Used when we are drawing individual folders, or a group of select folders that could have been filtered out. </remarks>
     public IReadOnlyDictionary<IDynamicCollection<T>, IDynamicCache<T>> CacheMap => _cachedFolderMap;
 
+    public IEnumerable<IDynamicLeaf<T>> VisibleLeaves => RootCache.GetAllDescendants().OfType<IDynamicLeaf<T>>();
+
+
     /// <summary>
     ///     Generic call to mark the entire cache as dirty, requiring a full recalculation.
     /// </summary>
