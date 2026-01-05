@@ -396,6 +396,24 @@ public static partial class CkGui
         ImGui.PopTextWrapPos();
     }
 
+    public static void IconText(FAI icon, uint color)
+        => FontText(icon.ToIconString(), Svc.PluginInterface.UiBuilder.IconFontHandle, color);
+
+    public static void IconText(FAI icon, Vector4? color = null)
+        => IconText(icon, color == null ? ImGui.GetColorU32(ImGuiCol.Text) : ImGui.GetColorU32(color.Value));
+
+    public static void IconTextAligned(FAI icon, uint color)
+    {
+        ImGui.AlignTextToFramePadding();
+        FontText(icon.ToIconString(), Svc.PluginInterface.UiBuilder.IconFontHandle, color);
+    }
+
+    public static void IconTextAligned(FAI icon, Vector4? color = null)
+    {
+        ImGui.AlignTextToFramePadding();
+        IconText(icon, color == null ? ImGui.GetColorU32(ImGuiCol.Text) : ImGui.GetColorU32(color.Value));
+    }
+
     /// <summary> Draws iconText centered within ImGui.GetFrameHeight() square. </summary>
     public static void FramedIconText(FAI icon, Vector4 color)
         => FramedIconText(icon, CkGui.Color(color));
@@ -445,16 +463,6 @@ public static partial class CkGui
         if (ImGui.IsItemHovered())
             col = hoverCol;
         ImGui.GetWindowDrawList().AddText(iconPosition, col, text);
-    }
-
-    public static void IconText(FAI icon, uint color)
-    {
-        FontText(icon.ToIconString(), Svc.PluginInterface.UiBuilder.IconFontHandle, color);
-    }
-
-    public static void IconText(FAI icon, Vector4? color = null)
-    {
-        IconText(icon, color == null ? ImGui.GetColorU32(ImGuiCol.Text) : ImGui.GetColorU32(color.Value));
     }
 
     public static void FontText(string text, IFontHandle font, Vector4? color = null)
