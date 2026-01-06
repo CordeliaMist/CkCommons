@@ -447,6 +447,9 @@ public static partial class CkGui
         ImGui.GetWindowDrawList().AddText(pos, col, icon.ToIconString());
     }
 
+    public static void FramedHoverIconText(FAI icon, Vector4 hoverCol, Vector4? color)
+        => FramedHoverIconText(icon, hoverCol.ToUint(), color?.ToUint());
+
     public static void FramedHoverIconText(FAI icon, uint hoverCol, uint? color = null)
     {
         var region = new Vector2(ImGui.GetFrameHeight());

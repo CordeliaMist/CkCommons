@@ -14,7 +14,7 @@ public enum FolderFlags : byte
 }
 
 [Flags]
-public enum DynamicFlags : short
+public enum DynamicFlags : uint
 {
     None                = 0 << 0, // No behaviors are set for this draw.
     SelectableFolders   = 1 << 1, // Folder Single-Select is allowed.
@@ -24,7 +24,7 @@ public enum DynamicFlags : short
     DragDropFolders     = 1 << 5, // Folder Drag-Drop is allowed.
     DragDropLeaves      = 1 << 6, // Leaf Drag-Drop is allowed.
     CopyDrag            = 1 << 7, // Drag-Drop performs copy on the dragged items over a move.
-    TrashDrop           = 1 << 8,// Drag-Drop removes the source items on drop into another target, instead of moving.
+    TrashDrop           = 1 << 8, // Drag-Drop removes the source items on drop into another target, instead of moving.
 
     // Masks
     Selectable = SelectableLeaves | MultiSelect | RangeSelect,

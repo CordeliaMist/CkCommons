@@ -11,8 +11,8 @@ namespace CkCommons.Gui;
 // Primary Partial Class
 public static partial class CkGui
 {
-    public static float GetSeparatorVWidth(float? width = null)
-        => ImGui.GetStyle().ItemSpacing.X * 2 + (width ?? 1 * ImGuiHelpers.GlobalScale);
+    public static float GetSeparatorVWidth(float? width = null, bool inner = false)
+        => 2 * (inner ? ImUtf8.ItemInnerSpacing.X : ImUtf8.ItemSpacing.X) + (width ?? 1 * ImGuiHelpers.GlobalScale);
 
     public static float GetSeparatorHeight(float? height = null)
         => height + ImGui.GetStyle().ItemSpacing.Y * 2 ?? ImGui.GetStyle().ItemSpacing.Y * 3;
@@ -47,20 +47,22 @@ public static partial class CkGui
         ImGui.Spacing();
     }
 
-    public static void SeparatorV(float? width = null, uint? col = null, float? height = null)
+    public static void SeparatorV(float? width = null, uint? col = null, float? height = null, bool inner = false)
     {
-        ImGui.SameLine(0, ImUtf8.ItemSpacing.X);
+        ImGui.SameLine(0, inner ? ImUtf8.ItemInnerSpacing.X : ImUtf8.ItemSpacing.X);
         var lineHeight = height ?? ImGui.GetContentRegionAvail().Y;
         var lineWidth = width ?? 1 * ImGuiHelpers.GlobalScale;
         col ??= ImGui.GetColorU32(ImGuiCol.Border);
         ImGui.Dummy(new Vector2(lineWidth, lineHeight));
         ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), col.Value);
-        ImGui.SameLine();
+        
+        if (inner) ImUtf8.SameLineInner();
+        else ImGui.SameLine();
     }
 
-    public static void TextLineSeparatorV(float? width = null, uint? col = null)
-        => SeparatorV(width, col, ImGui.GetTextLineHeight());
+    public static void TextLineSeparatorV(float? width = null, uint? col = null, bool inner = false)
+        => SeparatorV(width, col, ImGui.GetTextLineHeight(), inner);
 
-    public static void FrameSeparatorV(float? width = null, uint? col = null)
-        => SeparatorV(width, col, ImGui.GetFrameHeight());
+    public static void FrameSeparatorV(float? width = null, uint? col = null, bool inner = false)
+        => SeparatorV(width, col, ImGui.GetFrameHeight(), inner);
    }

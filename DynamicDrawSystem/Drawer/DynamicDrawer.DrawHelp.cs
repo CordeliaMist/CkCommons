@@ -35,64 +35,79 @@ public partial class DynamicDrawer<T>
     protected virtual void PostSearchBar()
     { }
 
-
+    #region Top Level CacheNodes Drawers
     /// <summary>
-    ///     Draws a <see cref="IDynamicCache{T}"/> node, with the defined flags.
+    ///     Highest level call to draw a cached <see cref="IDynamicCollection{T}"/> node from the draw system. <br/>
+    ///     This node is expected to be filtered by the drawer / cache. <para />
     /// </summary>
     /// <param name="cachedNode"> The cached node to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
     /// <param name="flags"> The dynamic draw flags. </param>
-    protected void DrawClippedCacheNode(IDynamicCache<T> cachedNode, DynamicFlags flags)
+    protected void DrawClippedCacheNode(IDynamicCache<T> cachedNode, float groupIndent, float indent, DynamicFlags flags)
     {
         if (cachedNode is DynamicFolderGroupCache<T> cfg)
-            DrawClippedCacheNode(cfg, flags);
+            DrawClippedCacheNode(cfg, groupIndent, indent, flags);
         else if (cachedNode is DynamicFolderCache<T> cf)
-            DrawClippedCacheNode(cf, flags);
-    }
-
-    /// <inheritdoc cref="DrawClippedCacheNode(IDynamicCache{T},DynamicFlags)"/>
-    /// <remarks> Only allows <see cref="DynamicFolder{T}"/>'s matching <typeparamref name="TFolder"/> </remarks>
-    protected void DrawClippedCacheNode<TFolder>(IDynamicCache<T> cachedNode, DynamicFlags flags)
-        where TFolder : DynamicFolder<T>
-    {
-        if (cachedNode is DynamicFolderGroupCache<T> cfg)
-            DrawClippedCacheNode(cfg, flags);
-        else if (cachedNode is DynamicFolderCache<T> cf && cf.Folder is TFolder)
-            DrawClippedCacheNode(cf, flags);
+            DrawClippedCacheNode(cf, indent, flags);
     }
 
     /// <summary>
-    ///     The clipped draw method for folder groups.
+    ///     Draws a cached <see cref="IDynamicCollection{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
+    ///     This node is expected to be filtered by the drawer / cache. <para />
+    ///     Any folder not matching <typeparamref name="TFolder"/> is skipped.
     /// </summary>
-    /// <param name="cfg"> The cached folder group to draw. </param>
+    /// <param name="cachedNode"> The cached node to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
     /// <param name="flags"> The dynamic draw flags. </param>
-    protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, DynamicFlags flags)
+    protected void DrawClippedCacheNode<TFolder>(IDynamicCache<T> cachedNode, float groupIndent, float indent, DynamicFlags flags)
+        where TFolder : DynamicFolder<T>
+    {
+        if (cachedNode is DynamicFolderGroupCache<T> cfg)
+            DrawClippedCacheNode(cfg, groupIndent, indent, flags);
+        else if (cachedNode is DynamicFolderCache<T> cf && cf.Folder is TFolder)
+            DrawClippedCacheNode(cf, indent, flags);
+    }
+
+    /// <summary>
+    ///     Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the drawer.<br/>
+    ///     This node is expected to be filtered by the drawer / cache. <para />
+    /// </summary>
+    /// <param name="cfg"> The CachedFolderGroup node to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
+    /// <param name="flags"> The dynamic draw flags. </param>
+    protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cfg.Folder);
-        // Dont need to worry about checking for opened state as cache handles this?
-
         // Draw the children objects.
-        using var indent = ImRaii.PushIndent(ImUtf8.FrameHeight);
-        DrawFolderGroupChildren(cfg, flags);
+        using var tab = ImRaii.PushIndent(groupIndent, groupIndent != 0);
+        DrawFolderGroupChildren(cfg, groupIndent, indent, flags);
     }
 
-
-    /// <inheritdoc cref="DrawClippedCacheNode(DynamicFolderGroupCache{T},DynamicFlags)"/>
-    /// <remarks> Only allows <see cref="DynamicFolder{T}"/>'s matching <typeparamref name="TFolder"/> </remarks>
-    protected void DrawClippedCacheNode<TFolder>(DynamicFolderGroupCache<T> cfg, DynamicFlags flags)
+    /// <summary>
+    ///     Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
+    ///     This node is expected to be filtered by the drawer / cache. <para />
+    ///     Any folder not matching <typeparamref name="TFolder"/> is skipped.
+    /// </summary>
+    /// <param name="cfg"> The CachedFolderGroup node to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
+    /// <param name="flags"> The dynamic draw flags. </param>
+    protected void DrawClippedCacheNode<TFolder>(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
         where TFolder : DynamicFolder<T>
     {
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cfg.Folder);
-        // Dont need to worry about checking for opened state as cache handles this?
-
         // Draw the children objects.
-        using var indent = ImRaii.PushIndent(ImUtf8.FrameHeight);
-        DrawFolderGroupChildren<TFolder>(cfg, flags);
+        using var tab = ImRaii.PushIndent(groupIndent, groupIndent != 0);
+        DrawFolderGroupChildren<TFolder>(cfg, groupIndent, indent, flags);
     }
 
     /// <summary>
@@ -100,17 +115,20 @@ public partial class DynamicDrawer<T>
     ///     The parent's children are not drawn if the parent's children are not visible.
     /// </summary>
     /// <returns> True if the parent folder was visible, false otherwise. </returns>
-    protected void DrawClippedCacheNode(DynamicFolderCache<T> cf, DynamicFlags flags)
+    protected void DrawClippedCacheNode(DynamicFolderCache<T> cf, float indent, DynamicFlags flags)
     {
         using var id = ImRaii.PushId($"DDS_{Label}_{cf.Folder.ID}");
         DrawFolderBanner(cf.Folder, flags, _hoveredNode == cf.Folder || Selector.Selected.Contains(cf.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cf.Folder);
         // Draw the children objects.
-        using var _ = ImRaii.PushIndent(ImUtf8.FrameHeight + ImUtf8.ItemInnerSpacing.X);
+        using var _ = ImRaii.PushIndent(indent, indent != 0);
         DrawFolderLeaves(cf, flags);
     }
 
+    #endregion Top Level CacheNodes Drawers
+
+    #region DrawFolder Headers / Banners
     // Overridable draw method for the folder display.
     protected virtual void DrawFolderGroupBanner(IDynamicFolderGroup<T> fg, DynamicFlags flags, bool selected)
     {
@@ -120,8 +138,13 @@ public partial class DynamicDrawer<T>
         using var _ = CkRaii.FramedChildPaddedW($"dfg_{Label}_{fg.ID}", width, ImUtf8.FrameHeight, bgCol, fg.BorderColor, 5f, 1f);
             DrawFolderGroupBanner(fg, _.InnerRegion, flags);
     }
-    
-    // Where we draw the interactions area and the responses to said items, can be customized.
+
+    /// <summary>
+    ///     The visible folder draw region.
+    /// </summary>
+    /// <param name="fg"> The folder group to draw. </param>
+    /// <param name="region"> The size of the folder draw region. </param>
+    /// <param name="flags"> The dynamic draw flags. </param>
     protected virtual void DrawFolderGroupBanner(IDynamicFolderGroup<T> fg, Vector2 region, DynamicFlags flags)
     {
         var pos = ImGui.GetCursorPos();
@@ -136,28 +159,33 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Draws the children of a <see cref="DynamicFolderGroup{T}"/>. No Stylization by default. Can be customized.
+    ///     Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
     /// </summary>
     /// <param name="cfg"> The cached folder group to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
     /// <param name="flags"> The dynamic draw flags. </param>
-    protected virtual void DrawFolderGroupChildren(DynamicFolderGroupCache<T> cfg, DynamicFlags flags)
+    protected virtual void DrawFolderGroupChildren(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
-        // Simple for-each loop, if things ever really become a problem we can ClipRect this, but not much of an issue for now.
         foreach (var child in cfg.Children)
-            DrawClippedCacheNode(child, flags);
+            DrawClippedCacheNode(child, groupIndent, indent, flags);
     }
 
-    /// <inheritdoc cref="DrawFolderGroupChildren(DynamicFolderGroupCache{T},DynamicFlags)"/>
-    /// <remarks> Only allows <see cref="DynamicFolder{T}"/>'s matching <typeparamref name="TFolder"/> </remarks>
-    protected virtual void DrawFolderGroupChildren<TFolder>(DynamicFolderGroupCache<T> cfg, DynamicFlags flags) 
+    /// <summary>
+    ///     Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
+    ///     You can use a <typeparamref name="TFolder"/> arguement make the drawer only display folders of that type.
+    /// </summary>
+    /// <param name="cfg"> The cached folder group to draw. </param>
+    /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
+    /// <param name="indent"> The indent given to DynamicFolders. (0 for ignored) </param>
+    /// <param name="flags"> The dynamic draw flags. </param>
+    protected virtual void DrawFolderGroupChildren<TFolder>(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags) 
         where TFolder : DynamicFolder<T>
     {
         // Simple for-each loop, if things ever really become a problem we can ClipRect this, but not much of an issue for now.
         foreach (var child in cfg.Children)
-            DrawClippedCacheNode<TFolder>(child, flags);
+            DrawClippedCacheNode<TFolder>(child, groupIndent, indent, flags);
     }
-
-
 
     protected virtual void DrawFolderBanner(IDynamicFolder<T> f, DynamicFlags flags, bool selected)
     {
@@ -184,6 +212,8 @@ public partial class DynamicDrawer<T>
         CkGui.IconText(f.Icon, f.IconColor);
         CkGui.ColorTextFrameAlignedInline(f.Name, f.NameColor);
     }
+    #endregion DrawFolder Headers / Banners
+
 
     // Outer, customization point for styling.
     protected virtual void DrawFolderLeaves(DynamicFolderCache<T> cf, DynamicFlags flags)

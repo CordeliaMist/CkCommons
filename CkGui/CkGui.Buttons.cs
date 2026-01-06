@@ -42,23 +42,28 @@ public static partial class CkGui
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
-    /// <summary> The additional param for an ID is optional. if not provided, the id will be the text. </summary>
+    /// <summary> 
+    ///     The additional param for an ID is optional. if not provided, the id will be the text.
+    /// </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
-        => IconButtonInternal(icon, height, id, disabled, inPopup);
+        => IconButtonInternal(icon, inPopup ? 0 : null, disabled, height, id);
 
-    private static bool IconButtonInternal(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false, uint? color = null)
+    public static bool IconButtonColored(FAI icon, uint buttonCol, bool disabled = false, float ? height = null, string? id = null)
+        => IconButtonInternal(icon, buttonCol, disabled, height, id);
+
+    private static bool IconButtonInternal(FAI icon, uint? buttonCol = null, bool disabled = false, float? height = null, string? id = null)
     {
         using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        
+        var text = icon.ToIconString();
         var num = 0;
-        if (inPopup)
+        if (buttonCol.HasValue)
         {
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f));
+            ImGui.PushStyleColor(ImGuiCol.Button, buttonCol.Value);
             num++;
         }
-        var txtCol = color ?? ImGui.GetColorU32(ImGuiCol.Text);
-        var text = icon.ToIconString();
 
-        ImGui.PushID((id == null) ? icon.ToIconString() : id + icon.ToIconString());
+        ImGui.PushID((id == null) ? text : id + text);
         Vector2 vector;
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             vector = ImGui.CalcTextSize(text);
@@ -70,9 +75,8 @@ public static partial class CkGui
         var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X,
             cursorScreenPos.Y + (height ?? ImGui.GetFrameHeight()) / 2f - (vector.Y / 2f));
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            windowDrawList.AddText(pos, txtCol, text);
+            windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), text);
         ImGui.PopID();
-
         if (num > 0)
         {
             ImGui.PopStyleColor(num);
