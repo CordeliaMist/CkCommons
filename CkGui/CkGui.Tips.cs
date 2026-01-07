@@ -12,8 +12,7 @@ public static partial class CkGui
     public const string TipSep = "--SEP--";
     public const string TipNL = "--NL--";
     public const string TipCol = "--COL--";
-    private static readonly Regex TooltipTokenRegex = new($"({TipSep}|{TipNL}|{TipCol})", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
+  
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
     /// <remarks> If the string is null, empty, or whitespace, will do early return at no performance impact. </remarks>
     public static void AttachToolTip(string? text, Vector4? color = null)
@@ -97,4 +96,8 @@ public static partial class CkGui
         FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
         AttachToolTip(helpText, color: ColorHelpers.RgbaUintToVector4(tooltipCol));
     }
+
+
+    [GeneratedRegex($"({TipSep}|{TipNL}|{TipCol})", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+    public static partial Regex TooltipTokenRegex();
 }

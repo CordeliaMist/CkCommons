@@ -247,7 +247,7 @@ public static partial class CkGui
     {
         ImGui.PushTextWrapPos(wrapWidth);
         // Split the text by regex.
-        var tokens = TooltipTokenRegex.Split(text);
+        var tokens = TooltipTokenRegex().Split(text);
         // if there were no tokens, just print the text unformatted
         if (tokens.Length <= 1)
         {
