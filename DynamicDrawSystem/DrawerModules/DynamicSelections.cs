@@ -57,6 +57,7 @@ public class DynamicSelections<T> : IDisposable where T : class
 
     // Public Accessor for selection.
     public IReadOnlyList<IDynamicCollection<T>> Collections => _selectedFoldersAll;
+    public IReadOnlyList<DynamicFolder<T>> Folders => _selectedFolders;
     public IReadOnlyList<DynamicLeaf<T>> Leaves => _selectedLeaves;
     public IReadOnlySet<IDynamicNode<T>> Selected => _selected;
     public IDynamicNode<T>? LastSelected => _lastSelected;

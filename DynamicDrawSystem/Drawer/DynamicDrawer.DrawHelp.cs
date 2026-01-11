@@ -121,6 +121,10 @@ public partial class DynamicDrawer<T>
         DrawFolderBanner(cf.Folder, flags, _hoveredNode == cf.Folder || Selector.Selected.Contains(cf.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cf.Folder);
+
+        if (flags.HasAny(DynamicFlags.FoldersOnly))
+            return;
+
         // Draw the children objects.
         using var _ = ImRaii.PushIndent(indent, indent != 0);
         DrawFolderLeaves(cf, flags);

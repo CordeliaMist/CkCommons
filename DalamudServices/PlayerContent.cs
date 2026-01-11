@@ -54,7 +54,7 @@ public static class PlayerContent
 
     public static unsafe ushort TerritoryIdInstanced => (ushort)GameMain.Instance()->CurrentTerritoryTypeId;
     public static uint Territory => Svc.ClientState.TerritoryType;
-    public static TerritoryIntendedUseEnum TerritoryIntendedUse => (TerritoryIntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
+    public static IntendedUseEnum TerritoryIntendedUse => (IntendedUseEnum)(Svc.Data.GetExcelSheet<TerritoryType>().GetRowOrDefault(Territory)?.TerritoryIntendedUse.ValueNullable?.RowId ?? default);
     public unsafe static IAetheryteEntry? HomeAetheryte => Svc.AetheryteList[PlayerState.Instance()->HomeAetheryteId];
     public static bool InMainCity => Svc.Data.GetExcelSheet<Aetheryte>()?.Any(x => x.IsAetheryte && x.Territory.RowId == Territory && x.Territory.Value.TerritoryIntendedUse.Value.RowId is 0) ?? false;
     public static string MainCityName => Svc.Data.GetExcelSheet<Aetheryte>()?.FirstOrDefault(x => x.IsAetheryte && x.Territory.RowId == Territory && x.Territory.Value.TerritoryIntendedUse.Value.RowId is 0).PlaceName.ToString() ?? "Unknown";

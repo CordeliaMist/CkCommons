@@ -25,10 +25,11 @@ public enum DynamicFlags : uint
     DragDropLeaves      = 1 << 6, // Leaf Drag-Drop is allowed.
     CopyDrag            = 1 << 7, // Drag-Drop performs copy on the dragged items over a move.
     TrashDrop           = 1 << 8, // Drag-Drop removes the source items on drop into another target, instead of moving.
+    FoldersOnly         = 1 << 9, // Only folders are displayed.
 
     // Masks
     Selectable = SelectableLeaves | MultiSelect | RangeSelect,
-    SelectableDragDrop = SelectableFolders | MultiSelect | RangeSelect | DragDropFolders,
+    SelectableDragDrop = SelectableFolders | MultiSelect | RangeSelect | DragDropFolders | FoldersOnly,
     GroupEditor = SelectableLeaves | MultiSelect | RangeSelect | DragDropLeaves,
     AllEditor = SelectableLeaves | MultiSelect | RangeSelect | DragDropLeaves | CopyDrag | TrashDrop,
     DragDrop = DragDropFolders | DragDropLeaves,

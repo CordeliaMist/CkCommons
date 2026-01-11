@@ -4,6 +4,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 using OtterGuiInternal;
+using System.Drawing;
 namespace CkCommons.Gui;
 
 // Primary Partial Class
@@ -40,6 +41,13 @@ public static partial class CkGui
     {
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         return ImGui.CalcTextSize(icon.ToIconString());
+    }
+
+    public static Vector2 IconsSize(FAI[] icons)
+    {
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
+        var text = string.Concat(icons.Select(i => i.ToIconString()));
+        return ImGui.CalcTextSize(text);
     }
 
     /// <summary> 
@@ -201,7 +209,7 @@ public static partial class CkGui
         // Determine total width.
         var result = ImGui.Button(string.Empty, new Vector2(width, ImUtf8.FrameHeight));
         // Offset the icon pos to the center.
-        var iconPos = cursorScreenPos + new Vector2((width - (iconSize.X + textSize.X + num2)) / 2f + padding.X, padding.Y);
+        var iconPos = cursorScreenPos + new Vector2((width - padding.X - (iconSize.X + textSize.X + num2)) / 2f, padding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
             wdl.AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
         // text pos is offset of icon pos.
