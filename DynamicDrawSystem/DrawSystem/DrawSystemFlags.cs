@@ -26,6 +26,7 @@ public enum DynamicFlags : uint
     CopyDrag            = 1 << 7, // Drag-Drop performs copy on the dragged items over a move.
     TrashDrop           = 1 << 8, // Drag-Drop removes the source items on drop into another target, instead of moving.
     FoldersOnly         = 1 << 9, // Only folders are displayed.
+    // Could add ContextFolderGroups, ContextFolders, ContextLeaves here, but wait until later.
 
     // Masks
     Selectable = SelectableLeaves | MultiSelect | RangeSelect,

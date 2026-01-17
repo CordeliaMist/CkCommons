@@ -40,7 +40,9 @@ public partial class DynamicDrawer<T> : IDisposable
         FilterCache.Dispose();
     }
 
-    // Manages all nodes hover state over a 2 setters per draw-frame outside updates.
+    // How we track popup nodes, because id tracking is a pain in the tail without an extra GetID twice.
+    protected HashSet<IDynamicNode<T>> _popupNodes = new();
+
     protected IDynamicNode? _hoveredNode = null; // From last frame.
     protected IDynamicNode? _newHoveredNode = null; // Tracked each frame.
 
@@ -50,7 +52,7 @@ public partial class DynamicDrawer<T> : IDisposable
 
     /// <inheritdoc cref="DrawContents(float, float, float, DynamicFlags)"/>
     public void DrawContents(float width, DynamicFlags flags = DynamicFlags.None)
-        => DrawContents(width, ImUtf8.FrameHeight, ImUtf8.FrameHeight + ImUtf8.ItemInnerSpacing.X, flags);
+        => DrawContents(width, ImUtf8.FrameHeight * .65f, ImUtf8.FrameHeight + ImUtf8.ItemInnerSpacing.X, flags);
 
     /// <inheritdoc cref="DrawContents(float, float, float, DynamicFlags)"/>
     public void DrawContents(float width, float indent, DynamicFlags flags = DynamicFlags.None)
@@ -68,7 +70,7 @@ public partial class DynamicDrawer<T> : IDisposable
         using var _ = ImRaii.Child(Label, new Vector2(width, -1), false, WFlags.NoScrollbar);
         if (!_) return;
 
-        HandleMainContextActions();
+        HandleMainContext();
         FilterCache.UpdateCache();
 
         // Set the style for the draw logic.
@@ -105,7 +107,7 @@ public partial class DynamicDrawer<T> : IDisposable
         using var _ = ImRaii.Child(Label, new Vector2(width, -1), false, WFlags.NoScrollbar);
         if (!_) return;
 
-        HandleMainContextActions();
+        HandleMainContext();
         FilterCache.UpdateCache();
 
         // Set the style for the draw logic.
@@ -144,7 +146,7 @@ public partial class DynamicDrawer<T> : IDisposable
         if (!_) return;
 
         // Handle any main context interactions such as right-click menus and the like.
-        HandleMainContextActions();
+        HandleMainContext();
         // Update the cache to its latest state.
         FilterCache.UpdateCache();
 
@@ -168,16 +170,6 @@ public partial class DynamicDrawer<T> : IDisposable
     protected void PostDraw()
     {
         UpdateHoverNode();
-//#if DEBUG
-//        ImGui.Text($"Selected: {Selector.Collections.Count} Collections");
-//        ImGui.Text($"Selected: {Selector.Leaves.Count} Leaves");
-//        ImGui.Text($"Selected: {Selector.Selected.Count} Nodes");
-//        ImGui.Text($"CacheMapSize: {FilterCache.CacheMap.Count}");
-//        ImGui.Text($"FlatCacheSize: {FilterCache.FlatList.Count}");
-//        ImGui.Text($"Total Cache Children: {FilterCache.RootCache.GetAllDescendants().Count()}");
-//        ImGui.Text($"Total DragDrop Nodes: {DragDrop.Total}");
-//        ImGui.Text($"DragDrop Names: {string.Join(',', DragDrop.Nodes.Select(n => n.Name))}");
-//#endif
         // Process post-draw actions.
         while (_postDrawActions.TryDequeue(out Action? action))
         {
@@ -190,6 +182,18 @@ public partial class DynamicDrawer<T> : IDisposable
                 Log.Warning($"HandleAction Error: {e}");
             }
         }
+    }
+
+    protected void DrawDebugInfo()
+    {
+        ImGui.Text($"Selected: {Selector.Collections.Count} Collections");
+        ImGui.Text($"Selected: {Selector.Leaves.Count} Leaves");
+        ImGui.Text($"Selected: {Selector.Selected.Count} Nodes");
+        ImGui.Text($"CacheMapSize: {FilterCache.CacheMap.Count}");
+        ImGui.Text($"FlatCacheSize: {FilterCache.FlatList.Count}");
+        ImGui.Text($"Total Cache Children: {FilterCache.RootCache.GetAllDescendants().Count()}");
+        ImGui.Text($"Total DragDrop Nodes: {DragDrop.Total}");
+        ImGui.Text($"DragDrop Names: {string.Join(',', DragDrop.Nodes.Select(n => n.Name))}");
     }
 
     protected virtual void UpdateHoverNode()

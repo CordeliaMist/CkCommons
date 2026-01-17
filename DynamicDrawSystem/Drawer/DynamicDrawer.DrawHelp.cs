@@ -3,8 +3,10 @@ using CkCommons.Raii;
 using CkCommons.Widgets;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
+using OtterGui.Text.EndObjects;
 
 namespace CkCommons.DrawSystem.Selector;
 
@@ -81,10 +83,11 @@ public partial class DynamicDrawer<T>
     protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
+
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cfg.Folder);
-        // Draw the children objects.
+
         using var tab = ImRaii.PushIndent(groupIndent, groupIndent != 0);
         DrawFolderGroupChildren(cfg, groupIndent, indent, flags);
     }
@@ -139,8 +142,11 @@ public partial class DynamicDrawer<T>
         var width = CkGui.GetWindowContentRegionWidth() - ImGui.GetCursorPosX();
         var bgCol = selected ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : fg.BgColor;
         // Display a framed child with stylizations based on the folders preferences.
-        using var _ = CkRaii.FramedChildPaddedW($"dfg_{Label}_{fg.ID}", width, ImUtf8.FrameHeight, bgCol, fg.BorderColor, 5f, 1f);
+        using (var _ = CkRaii.FramedChildPaddedW($"dfg_{Label}_{fg.ID}", width, ImUtf8.FrameHeight, bgCol, fg.BorderColor, 5f, 1f))
+        {
             DrawFolderGroupBanner(fg, _.InnerRegion, flags);
+            HandleContext(fg);
+        }
     }
 
     /// <summary>
@@ -153,7 +159,7 @@ public partial class DynamicDrawer<T>
     {
         var pos = ImGui.GetCursorPos();
         if (ImGui.InvisibleButton($"{Label}_node_{fg.ID}", region))
-            HandleClick(fg, flags);
+            HandleLeftClick(fg, flags);
         HandleDetections(fg, flags);
 
         // Back to the start of the line, then draw the folder display contents.
@@ -174,6 +180,45 @@ public partial class DynamicDrawer<T>
         foreach (var child in cfg.Children)
             DrawClippedCacheNode(child, groupIndent, indent, flags);
     }
+
+    // For Future Reference.
+    //protected virtual void DrawFolderGroupChildren(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
+    //{
+    //    if (cfg.Folder.IsRoot)
+    //    {
+    //        // Simple for-each loop, if things ever really become a problem we can ClipRect this, but not much of an issue for now.
+    //        foreach (var child in cfg.Children)
+    //            DrawClippedCacheNode(child, groupIndent, indent, flags);
+    //    }
+    //    else
+    //    {
+    //        // Draw the children objects.
+    //        using var tab = ImRaii.PushIndent(groupIndent, groupIndent != 0);
+    //        // Folder line stuff.
+    //        var offsetX = -groupIndent + ImGui.GetTreeNodeToLabelSpacing() / 2;
+    //        var lineStart = ImGui.GetCursorScreenPos();
+    //        var drawList = ImGui.GetWindowDrawList();
+    //        lineStart.X += offsetX;
+    //        lineStart.Y -= 2 * ImGuiHelpers.GlobalScale;
+    //        var lineEnd = lineStart;
+
+    //        foreach (var child in cfg.Children)
+    //        {
+    //            var lineSize = Math.Max(0, groupIndent - 9 * ImGuiHelpers.GlobalScale);
+    //            // Draw the child
+    //            DrawClippedCacheNode(child, groupIndent, indent, flags);
+    //            var minRect = ImGui.GetItemRectMin();
+    //            var maxRect = ImGui.GetItemRectMax();
+    //            if (minRect.X == 0)
+    //                continue;
+
+    //            lineEnd.Y = maxRect.Y;
+    //        }
+    //        // Finally, draw the folder line.
+    //        drawList.AddLine(lineStart, lineEnd, cfg.Folder.BorderColor, ImGuiHelpers.GlobalScale);
+    //    }
+    //}
+
 
     /// <summary>
     ///     Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
@@ -197,23 +242,25 @@ public partial class DynamicDrawer<T>
         var width = CkGui.GetWindowContentRegionWidth() - ImGui.GetCursorPosX();
         var bgCol = selected ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : f.BgColor;
         // Display a framed child with stylizations based on the folders preferences.
-        using var _ = CkRaii.FramedChildPaddedW($"df_{Label}_{f.ID}", width, ImUtf8.FrameHeight, bgCol, f.BorderColor, 5f, 1f);
+        using (var _ = CkRaii.FramedChildPaddedW($"df_{Label}_{f.ID}", width, ImUtf8.FrameHeight, bgCol, f.BorderColor, 5f, 1f))
+        {
             DrawFolderBannerInner(f, _.InnerRegion, flags);
+            HandleContext(f);
+        }
     }
 
     protected virtual void DrawFolderBannerInner(IDynamicFolder<T> f, Vector2 region, DynamicFlags flags)
     {
         var pos = ImGui.GetCursorPos();
         if (ImGui.InvisibleButton($"{Label}_node_{f.ID}", region))
-            HandleClick(f, flags);
+            HandleLeftClick(f, flags);
         HandleDetections(f, flags);
 
         // Back to the start of the line, then draw the folder display contents.
         ImGui.SameLine(pos.X);
         CkGui.FramedIconText(f.IsOpen ? FAI.CaretDown : FAI.CaretRight);
         ImGui.SameLine();
-        ImGui.AlignTextToFramePadding();
-        CkGui.IconText(f.Icon, f.IconColor);
+        CkGui.IconTextAligned(f.Icon, f.IconColor);
         CkGui.ColorTextFrameAlignedInline(f.Name, f.NameColor);
     }
     #endregion DrawFolder Headers / Banners
@@ -247,47 +294,142 @@ public partial class DynamicDrawer<T>
         var size = new Vector2(CkGui.GetWindowContentRegionWidth() - ImGui.GetCursorPosX(), ImUtf8.FrameHeight);
         var bgCol = selected ? ImGui.GetColorU32(ImGuiCol.FrameBgHovered) : 0;
 
+        // The DrawContext MUST be drawn within this child to remain in scope.
         using (var _ = CkRaii.Child(Label + leaf.Name, size, bgCol, 5f))
+        {
             DrawLeafInner(leaf, _.InnerRegion, flags);
+            HandleContext(leaf);
+        }
     }
 
     protected virtual void DrawLeafInner(IDynamicLeaf<T> leaf, Vector2 region, DynamicFlags flags)
     {
         var pos = ImGui.GetCursorPos();
         if (ImGui.InvisibleButton($"{Label}_node_{leaf.Name}", region))
-            HandleClick(leaf, flags);
+            HandleLeftClick(leaf, flags);
         HandleDetections(leaf, flags);
 
         ImGui.SameLine(pos.X);
         CkGui.TextFrameAligned(leaf.Name);
     }
 
-    protected void HandleMainContextActions()
+    /// <summary>
+    ///     Context Menu displayed when the selector background is right-clicked. <br/>
+    /// </summary>
+    protected void HandleMainContext()
     {
-        //const string mainContext = "MainContext";
-        //if (!ImGui.IsAnyItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
-        //{
-        //    if (!ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
-        //        ImGui.SetWindowFocus(Label);
-        //    ImGui.OpenPopup(mainContext);
-        //}
+        if (!ImGui.IsAnyItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
+        {
+            if (!ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
+                ImGui.SetWindowFocus(Label);
+            ImGui.OpenPopup("MainContext");
+        }
 
-        //using var pop = ImRaii.Popup(mainContext);
-        //if (!pop)
-        //    return;
+        using var _ = ImRaii.Popup("MainContext");
+        if (!_) return; 
+        DrawContextMenu();
+    }
 
-        //RightClickMainContext();
+    protected void HandleContext(IDynamicFolderGroup<T> node)
+    {
+        using var popup = ImRaii.Popup(node.FullPath);
+        if (popup)
+        {
+            _popupNodes.Add(node);
+            DrawContextMenu(node);
+        }
+        else
+        {
+            _popupNodes.Remove(node);
+        }
+    }
+
+    protected void HandleContext(IDynamicFolder<T> node)
+    {
+        using var popup = ImRaii.Popup(node.FullPath);
+        if (popup)
+        {
+            _popupNodes.Add(node);
+            DrawContextMenu(node);
+        }
+        else
+        {
+            _popupNodes.Remove(node);
+        }
+    }
+
+    protected void HandleContext(IDynamicLeaf<T> node)
+    {
+        using var popup = ImRaii.Popup(node.FullPath);
+        if (popup)
+        {
+            _popupNodes.Add(node);
+            DrawContextMenu(node);
+        }
+        else
+        {
+            _popupNodes.Remove(node);
+        }
     }
 
     /// <summary>
-    ///     Defines the logic to execute when a node is clicked. <para />
-    ///     
-    ///     Because certain interactions have various definitions for what a 'click' is, 
-    ///     operations are divided between HandleClick, and HandleDetections. <para />
-    ///     
+    ///     The Selector's Context Menu.
+    /// </summary>
+    protected virtual void DrawContextMenu()
+    {
+        if (ImGui.MenuItem("Expand All"))
+            AddPostDrawLogic(() => ToggleDescendants(DrawSystem.Root, true));
+
+        if (ImGui.MenuItem("Collapse All"))
+            AddPostDrawLogic(() => ToggleDescendants(DrawSystem.Root, false));
+    }
+
+    /// <summary>
+    ///     The FolderGroup Context Menu.
+    /// </summary>
+    protected virtual void DrawContextMenu(IDynamicFolderGroup<T> node)
+    {
+        if (ImGui.MenuItem("Expand Descendants"))
+            AddPostDrawLogic(() => ToggleDescendants(node, true));
+        CkGui.AttachToolTip("Expand all child collection nodes.");
+
+        if (ImGui.MenuItem("Collapse Descendants"))
+            AddPostDrawLogic(() => ToggleDescendants(node, false));
+        CkGui.AttachToolTip("Collapse all child collection nodes.");
+
+        if (ImGui.MenuItem("Dissolve", enabled: ImGui.GetIO().KeyShift))
+            AddPostDrawLogic(() => DrawSystem.Delete(node));
+        CkGui.AttachToolTip("Remove this FolderGroup, then move all children to the parent node." +
+            "--SEP----COL--Hold SHIFT to delete.--COL--", ImGuiColors.DalamudYellow);
+    }
+
+    /// <summary>
+    ///     The Folder Context Menu.
+    /// </summary>
+    protected virtual void DrawContextMenu(IDynamicFolder<T> node)
+    {
+        // Nothing by default, close immidiately.
+        ImGui.CloseCurrentPopup(); // This causes an issue when closed in the same frame, find better alternative.
+    }
+
+    /// <summary>
+    ///     The Leaf Context Menu.
+    /// </summary>
+    protected virtual void DrawContextMenu(IDynamicLeaf<T> node)
+    {
+        // Nothing by default, close immidiately.
+        ImGui.CloseCurrentPopup(); // This causes an issue when closed in the same frame, find better alternative.
+    }
+
+    /// <summary>
+    ///     Left-Click handling is processed seperately from detections.
+    ///     This is because based on what's drawn by the DrawInner() func,
+    ///     how a completed 'click' is determined can differ. <para />
+    ///     Buttons return true after OnMousePressed() -> OnMouseRelease(), while IsItemClicked() 
+    ///     is true on MouseDown() <para />
     ///     <b> Overriding these implies you know what you are doing. </b>
     /// </summary>
-    protected virtual void HandleClick(IDynamicCollection<T> node, DynamicFlags flags)
+    protected virtual void HandleLeftClick(IDynamicCollection<T> node, DynamicFlags flags)
     {
         // Handle Folder Toggle.
         DrawSystem.SetOpenState(node, !node.IsOpen);
@@ -297,11 +439,16 @@ public partial class DynamicDrawer<T>
             Selector.SelectItem(node, flags.HasFlag(DynamicFlags.MultiSelect), flags.HasFlag(DynamicFlags.RangeSelect));
     }
 
+    /// <inheritdoc cref="HandleLeftClick(IDynamicCollection{T},DynamicFlags)"/>
+    protected virtual void HandleLeftClick(IDynamicLeaf<T> node, DynamicFlags flags)
+    {
+        // Handle Selection.
+        if (flags.HasAny(DynamicFlags.SelectableLeaves))
+            Selector.SelectItem(node, flags.HasFlag(DynamicFlags.MultiSelect), flags.HasFlag(DynamicFlags.RangeSelect));
+    }
+
     /// <summary>
     ///     Defines hover, drag-drop, and other detection logic for a node. <para />
-    ///     
-    ///     Because certain interactions have various definitions for what a 'click' is, 
-    ///     operations are divided between HandleClick, and HandleDetections. <para />
     /// </summary>
     protected virtual void HandleDetections(IDynamicCollection<T> node, DynamicFlags flags)
     {
@@ -314,14 +461,10 @@ public partial class DynamicDrawer<T>
             AsDragDropSource(node);
             AsDragDropTarget(node);
         }
-    }
 
-    /// <inheritdoc cref="HandleClick(IDynamicCollection{T},DynamicFlags)"/>
-    protected virtual void HandleClick(IDynamicLeaf<T> node, DynamicFlags flags)
-    {
-        // Handle Selection.
-        if (flags.HasAny(DynamicFlags.SelectableLeaves))
-            Selector.SelectItem(node, flags.HasFlag(DynamicFlags.MultiSelect), flags.HasFlag(DynamicFlags.RangeSelect));
+        // Handle Context Menus. (Maybe make a flag later. Would save on some drawtime.)
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            ImGui.OpenPopup(node.FullPath);
     }
 
     /// <inheritdoc cref="HandleDetections(IDynamicCollection{T},DynamicFlags)"/>
@@ -336,6 +479,10 @@ public partial class DynamicDrawer<T>
             AsDragDropSource(node);
             AsDragDropTarget(node);
         }
+
+        // Handle Context Menus. (Maybe make a flag later. Would save on some drawtime.)
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            ImGui.OpenPopup(node.FullPath);
     }
 
     // Special clipped draw just for the DynamicDrawer.
