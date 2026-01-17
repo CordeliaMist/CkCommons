@@ -50,6 +50,28 @@ public static partial class CkGui
         return ImGui.CalcTextSize(text);
     }
 
+    public static bool IconButtonFramed(FAI icon, string? id = null, bool disabled = false, bool inPopup = false)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f), inPopup);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
+
+        var iconText = (id == null) ? icon.ToIconString() : id + icon.ToIconString();
+        var iconSize = ImGui.CalcTextSize(icon.ToIconString());
+        var cursor = ImGui.GetCursorScreenPos();
+
+        var ret = false;
+        var buttonSize = new Vector2(ImUtf8.FrameHeight);
+
+        using (ImRaii.PushId(iconText))
+            ret = ImGui.Button(string.Empty, buttonSize);
+
+        var iconPos = cursor + ((buttonSize - iconSize) / 2f);
+
+        ImGui.GetWindowDrawList().AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), iconText);
+        return ret && !disabled;
+    }
+
     /// <summary> 
     ///     The additional param for an ID is optional. if not provided, the id will be the text.
     /// </summary>

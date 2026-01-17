@@ -8,12 +8,12 @@ public static partial class CkStyle
     // Flag Style Helpers
     public static WFlags WithPadding(this WFlags flags) => flags |= WFlags.AlwaysUseWindowPadding;
 
-    public static float GetFrameRowsHeight(uint rows)
-        => rows == 0 ? ImGui.GetFrameHeight()
-        : ImGui.GetFrameHeightWithSpacing() * rows - ImGui.GetStyle().ItemSpacing.Y;
+    public static float GetFrameRowsHeight(int rows)
+        => rows <= 0 ? ImGui.GetFrameHeight()
+        : ImGui.GetFrameHeightWithSpacing() * rows - ImUtf8.ItemSpacing.Y;
     
-    public static float GetFrameWidth(uint count, bool inner = false)
-        => count == 0 ? ImUtf8.FrameHeight
+    public static float GetFrameWidth(int count, bool inner = false)
+        => count <= 0 ? ImUtf8.FrameHeight
         : (ImUtf8.FrameHeight * count) + ((inner ? ImUtf8.ItemInnerSpacing.X : ImUtf8.ItemSpacing.X) * (count - 1));
 
 
