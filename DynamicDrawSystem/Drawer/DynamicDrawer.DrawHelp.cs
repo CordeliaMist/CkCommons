@@ -16,11 +16,12 @@ public partial class DynamicDrawer<T>
 {
     // The below functions will be reworked later.
     // Draws out the entire filter row.
-    public void DrawFilterRow(float width, int length)
+    public bool DrawFilterRow(float width, int length)
     {
         using (ImRaii.Group())
-            DrawSearchBar(width, length);
+             DrawSearchBar(width, length);
         PostSearchBar();
+        return FilterCache.IsFilterDirty;
     }
 
     /// <summary>
@@ -83,7 +84,6 @@ public partial class DynamicDrawer<T>
     protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
-
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cfg.Folder);
@@ -286,7 +286,7 @@ public partial class DynamicDrawer<T>
     }
 
     // Adapter used by the clipper so we don't allocate a lambda capturing locals each frame.
-    private void DrawLeafClipped(IDynamicLeaf<T> leaf, DynamicFlags flags)
+    protected void DrawLeafClipped(IDynamicLeaf<T> leaf, DynamicFlags flags)
         => DrawLeaf(leaf, flags, leaf.Equals(_hoveredNode) || Selector.Selected.Contains(leaf));
 
     protected virtual void DrawLeaf(IDynamicLeaf<T> leaf, DynamicFlags flags, bool selected)

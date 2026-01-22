@@ -27,14 +27,13 @@ public partial class DynamicDrawer<T>
 
     protected void ToggleDescendants(IDynamicCollection<T> collection, bool newState)
     {
-        // Set the state of the collection itself.
-        DrawSystem.SetOpenState(collection, newState);
+        // Set the state of the collection itself, if not root.
+        if (!collection.IsRoot)
+            DrawSystem.SetOpenState(collection, newState);
         
         // Then operate on all it's children.
         if (collection is IDynamicFolder<T> folder)
-        {
             DrawSystem.SetOpenState(folder, newState);
-        }
         else if (collection is DynamicFolderGroup<T> folderGroup)
         {
             foreach (var child in folderGroup.GetAllFolderDescendants())

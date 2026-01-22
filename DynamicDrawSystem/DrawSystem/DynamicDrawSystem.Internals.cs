@@ -42,13 +42,17 @@ public partial class DynamicDrawSystem<T>
         // (Do not sort, leave that to the folder's AutoSort function)
         if (folder is DynamicFolderGroup<T> fc)
         {
+            _folderMap.Remove(folder.Name);
             fc.SetName(newName, false);
+            _folderMap.Add(fc.Name, fc);
             return Result.Success;
         }
         // works on any folder kind becuz abstract yes yes.
         else if (folder is DynamicFolder<T> f)
         {
+            _folderMap.Remove(folder.Name);
             f.SetName(newName, false);
+            _folderMap.Add(f.Name, f);
             return Result.Success;
         }
         else

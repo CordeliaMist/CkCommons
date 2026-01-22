@@ -52,6 +52,8 @@ public partial class DynamicDrawer<T>
         // If we are not dropping the opLabel, or the cache is not active, ignore this.
         if (!ImGuiUtil.IsDropping(DragDrop.Label) || !DragDrop.IsActive)
             return;
+
+        Log.Information($"DragDrop is over: {entity.FullPath}.");
         // Enqueue after this draw-frame the full transfer of all paths.
         _postDrawActions.Enqueue(() =>
         {
@@ -63,11 +65,14 @@ public partial class DynamicDrawer<T>
     // Should maybe allow this to be overridden or something, but not sure.
     private void ProcessTransfer(IDynamicNode<T> target)
     {
-        Log.Debug($"Processing drag-drop transfer of {DragDrop.Total} entities to target {target.FullPath}.");
         // If the transfer is not a valid transfer, ignore.
         if (DragDrop.Total is 0 || !DragDrop.IsValidTransfer(target))
+        {
+            Log.Verbose("DragDrop transfer returned early as it was not a valid drop.");
             return;
+        }
 
+        Log.Debug($"Processing drag-drop transfer of {DragDrop.Total} entities to target {target.FullPath}.");
         Log.Debug($"Transferring nodes [{string.Join(',', DragDrop.Nodes.Select(e => e.Name))}] to [{target.Name}]");
         PerformDrop(target);
     }

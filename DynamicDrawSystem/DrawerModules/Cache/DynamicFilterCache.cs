@@ -1,7 +1,11 @@
+using CkCommons.Gui;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility.Raii;
+
 namespace CkCommons.DrawSystem.Selector;
 
 /// <summary>
-///     The Cache used by a <see cref="DynamicDrawer{T, TCache}"/>, which
+///     The Cache used by a <see cref="DynamicDrawer{T}"/>, which
 ///     holds information about the nodes visible for a searchable filter. <para />
 ///     Includes a lookup cachedNode map of all DrawSystem collections.
 /// </summary>
@@ -11,16 +15,16 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     private readonly DynamicDrawSystem<T> _parent;
 
     // Generic Utility
-    private string _filter = string.Empty;
+    protected string filter = string.Empty;
     
     // Cleanup Utility
-    private bool                      _isDirty  = true;
-    private HashSet<IDynamicCache<T>> _toReload = [];
-    private HashSet<IDynamicCache<T>> _toSort   = [];
+    private bool                        _isDirty  = true;
+    protected HashSet<IDynamicCache<T>> toReload = [];
+    protected HashSet<IDynamicCache<T>> toSort   = [];
 
     // Mapping and Identification
-    private List<IDynamicNode<T>>                               _flatNodeCache   = [];
-    private Dictionary<IDynamicCollection<T>, IDynamicCache<T>> _cachedFolderMap = new();
+    protected List<IDynamicNode<T>>                               flatNodeCache   = [];
+    protected Dictionary<IDynamicCollection<T>, IDynamicCache<T>> cachedFolderMap = new();
 
     public DynamicFilterCache(DynamicDrawSystem<T> parent)
     {
@@ -37,6 +41,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
         _parent.CollectionUpdated -= OnCollectionChange;
     }
 
+    public bool IsFilterDirty => _isDirty;
+
     /// <summary>
     ///     The Filter string used to generate the DynamicCache. <para />
     ///     Automatically marks the cache as dirty when updated.
@@ -44,12 +50,12 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     /// <remarks> _cacheDirty doesn't update if Filter is set to the same as current. </remarks>
     public string Filter
     {
-        get => _filter;
+        get => filter;
         set
         {
-            if (_filter != value)
+            if (filter != value)
             {
-                _filter = value;
+                filter = value;
                 _isDirty = true;
             }
         }
@@ -66,17 +72,16 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     ///     The flattened list of RootNodeCache. <para />
     ///     Used primarily for multi-selection, but not much elsewhere. <para />
     /// </summary>
-    public IReadOnlyList<IDynamicNode<T>> FlatList => _flatNodeCache;
+    public IReadOnlyList<IDynamicNode<T>> FlatList => flatNodeCache;
 
     /// <summary>
     ///     Maps all collections from the parent <see cref="DynamicDrawSystem{T}"/>'s Root Folder. <para />
     ///     Unlike RootNodeCache, this includes folders that were fully filtered out and have no children. <para />
     /// </summary>
     /// <remarks> Used when we are drawing individual folders, or a group of select folders that could have been filtered out. </remarks>
-    public IReadOnlyDictionary<IDynamicCollection<T>, IDynamicCache<T>> CacheMap => _cachedFolderMap;
+    public IReadOnlyDictionary<IDynamicCollection<T>, IDynamicCache<T>> CacheMap => cachedFolderMap;
 
     public IEnumerable<IDynamicLeaf<T>> VisibleLeaves => RootCache.GetAllDescendants().OfType<IDynamicLeaf<T>>();
-
 
     /// <summary>
     ///     Generic call to mark the entire cache as dirty, requiring a full recalculation.
@@ -88,11 +93,17 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     ///     Marks a single cached folder as dirty, requiring the cache update to
     ///     only recalculate one folder and its children over the entire cache.
     /// </summary>
-    public void MarkForReload(IDynamicCollection<T> folder)
+    public virtual void MarkForReload(IDynamicCollection<T> folder, bool reloadParent = false)
     {
-        // Identify the cache for the folder via the map.
-        if (_cachedFolderMap.TryGetValue(folder, out var cachedNode))
-            _toReload.Add(cachedNode);
+        if (folder is null || reloadParent && folder.Parent is null)
+        {
+            MarkCacheDirty();
+            return;
+        }
+
+        var toCheck = reloadParent ? folder.Parent : folder;
+        if (cachedFolderMap.TryGetValue(toCheck, out var cachedNode))
+            toReload.Add(cachedNode);
     }
 
     /// <summary>
@@ -103,8 +114,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     {
         // Identify the cache for the folder via the map.
         // This will reference to the empty cache and/or the item in the root cache.
-        if (_cachedFolderMap.TryGetValue(folder, out var cachedNode))
-            _toSort.Add(cachedNode);
+        if (cachedFolderMap.TryGetValue(folder, out var cachedNode))
+            toSort.Add(cachedNode);
     }
 
     /// <summary>
@@ -117,33 +128,33 @@ public class DynamicFilterCache<T> : IDisposable where T : class
         if (_isDirty)
         {
             // Perform a full recalculation, nullifying all other changes.
-            _toSort.Clear();
-            _toReload.Clear();
+            toSort.Clear();
+            toReload.Clear();
             RootCache = new DynamicFolderGroupCache<T>(_parent.Root);
             BuildDynamicCache(RootCache);
-            _flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
+            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
             _isDirty = false;
             return;
         }
 
         // Otherwise, if we had any folders marked for reloading, process them recursively.
-        if (_toReload.Count > 0)
+        if (toReload.Count > 0)
         {
             // This will go through each folder and grab the filtered children again.
             // Also sorts the filtered result, and recursively calls BuildCachedFolder
             // on all sub-children.
-            foreach (var cachedNode in _toReload.ToList())
+            foreach (var cachedNode in toReload.ToList())
                 BuildDynamicCache(cachedNode);
             // Clear the nodes to reload.
-            _toReload.Clear();
+            toReload.Clear();
             // Update the flat cache.
-            _flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
+            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
         }
 
         // Finally, if we had any folders marked for re-sorting, process them non-recursively.
-        if (_toSort.Count > 0)
+        if (toSort.Count > 0)
         {
-            foreach (var cachedNode in _toSort)
+            foreach (var cachedNode in toSort)
             {
                 if (cachedNode is DynamicFolderGroupCache<T> fc)
                 {
@@ -157,9 +168,9 @@ public class DynamicFilterCache<T> : IDisposable where T : class
                 }
             }
             // Clear the nodes to sort.
-            _toSort.Clear();
+            toSort.Clear();
             // Update the flat cache.
-            _flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
+            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
         }
     }
 
@@ -167,13 +178,13 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     ///     Recursively constructs a <paramref name="cachedNode"/>, filtering
     ///     out non-visible nodes, sorting remaining, and updating the map.
     /// </summary>
-    private bool BuildDynamicCache(IDynamicCache<T> cachedNode)
+    protected virtual bool BuildDynamicCache(IDynamicCache<T> cachedNode)
     {
         // Assume visibility fails until proven otherwise.
         bool visible = false;
 
         // Add or Update to the map regardless of if it has children or not.
-        _cachedFolderMap[cachedNode.Folder] = cachedNode;
+        cachedFolderMap[cachedNode.Folder] = cachedNode;
 
         // If the cached group is a FolderCollection
         if (cachedNode is DynamicFolderGroupCache<T> fc)
@@ -254,7 +265,6 @@ public class DynamicFilterCache<T> : IDisposable where T : class
             return fc.Children.Any(IsCollapsedNodeVisible);
         else if (node is DynamicFolder<T> f)
             return f.Children.Any(IsCollapsedNodeVisible);
-
         // No visibility found at this node or deeper.
         return false;
     }
@@ -310,4 +320,51 @@ public class DynamicFilterCache<T> : IDisposable where T : class
         }
     }
 
+    #region DEBUGING
+    public void DrawDebug()
+    {
+        FolderMapDebug();
+        DrawCacheGroup(RootCache);
+    }
+
+    public void FolderMapDebug()
+    {
+        using var _ = ImRaii.TreeNode("Folder Map Debug");
+        if (!_) return;
+
+        using var t = ImRaii.Table("FolderMap-table", 4, ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit);
+        if (!t) return;
+        
+        ImGui.TableSetupColumn("Collection Name");
+        ImGui.TableSetupColumn("DynamicCache Folder");
+        ImGui.TableHeadersRow();
+
+        foreach (var (folder, cache) in cachedFolderMap)
+        {
+            ImGui.TableNextColumn();
+            ImGui.Text(folder.Name);
+            ImGui.TableNextColumn();
+            ImGui.Text(cache.Folder.Name);
+            ImGui.TableNextRow();
+        }
+    }
+
+    private void DrawCacheGroup(DynamicFolderGroupCache<T> groupCache)
+    {
+        using var _ = ImRaii.TreeNode($"{groupCache.Folder.Name}##{groupCache.Folder.ID}");
+        if (!_)
+            return;
+        ImGui.BulletText($"{groupCache.Folder.Name} ({groupCache.Children.Count} Children)");
+        // Children
+        foreach (var child in groupCache.Children)
+        {
+            if (child is DynamicFolderGroupCache<T> cacheGroup)
+                DrawCacheGroup(cacheGroup);
+            else if (child is DynamicFolderCache<T> cacheFolder)
+                ImGui.BulletText($"{cacheFolder.Folder.Name} ({cacheFolder.Children.Count} Children)");
+        }
+        // Divider
+        CkGui.SeparatorSpaced(CkColor.VibrantPink.Uint());
+    }
+    #endregion DEBUGING
 }

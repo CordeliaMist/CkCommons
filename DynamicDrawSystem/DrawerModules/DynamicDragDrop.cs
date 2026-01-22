@@ -34,15 +34,20 @@ public class DynamicDragDrop<T> : IDisposable where T : class
 
     public int Total => _filteredToMove.Count;
     public bool HasLeaves { get; private set; } = false;
+    public bool HasFolderGroups { get; private set; } = false;
     public bool OnlyCollections { get; private set; } = false;
     public bool OnlyFolderGroups { get; private set; } = false;
     public bool OnlyFolders { get; private set; } = false;
-    public bool OnlyLeaves { get; private set; } = false;
 
     public bool IsActive => _filteredToMove.Count > 0;
 
     public bool IsValidTransfer(IDynamicNode<T> destNode)
-        => Total > 0 && !(destNode is DynamicFolderGroup<T> && HasLeaves);
+    {
+        if (Total is 0) return false; // Nothing to move.
+        if (Nodes.Contains(destNode)) return false; // Do not place into self.
+        if (destNode is DynamicFolderGroup<T> && HasLeaves) return false; // Leaves cant go to folder groups.
+        return true;
+    }
 
     private string GetMoveString()
     {
@@ -83,7 +88,7 @@ public class DynamicDragDrop<T> : IDisposable where T : class
         int folderCount = filteredCollections.OfType<DynamicFolder<T>>().Count();
         int groupCount = filteredCollections.OfType<DynamicFolderGroup<T>>().Count();
         HasLeaves         = leafCount > 0;
-        OnlyLeaves        = leafCount > 0  && folderCount == 0 && groupCount == 0;
+        HasFolderGroups   = groupCount > 0;
         OnlyFolders       = folderCount > 0 && leafCount == 0  && groupCount == 0;
         OnlyFolderGroups  = groupCount > 0  && leafCount == 0  && folderCount == 0;
         OnlyCollections   = (folderCount + groupCount) > 0 && leafCount == 0;

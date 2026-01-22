@@ -37,7 +37,7 @@ public abstract partial class DynamicDrawSystem<T> where T : class
 
     // Whenever a notable update occurs to a collection that external sources should be notified for.
     // (Maybe change to IDynamicNode<T> for the enumerable if we need it.
-    public delegate void CollectionUpdateDelegate(CollectionUpdate kind, IDynamicCollection<T> collection, IEnumerable<DynamicLeaf<T>>? affectedLeaves);
+    public delegate void CollectionUpdateDelegate(CollectionUpdate kind, IDynamicCollection<T> collection, IEnumerable<DynamicLeaf<T>>? affected);
     public event CollectionUpdateDelegate? CollectionUpdated;
 
     // Internal folder mapping for quick access by name.
@@ -154,9 +154,7 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     public void UpdateFolder(string folderName)
     {
         if (_folderMap.TryGetValue(folderName, out var folder) && folder is DynamicFolder<T> f)
-        {
             UpdateFolder(f);
-        }
     }
 
     public void SetSortDirection(IDynamicCollection<T> folder, bool isDescending)
@@ -203,26 +201,6 @@ public abstract partial class DynamicDrawSystem<T> where T : class
         // Fail otherwise.
         return false;
     }
-
-    // Sets the expanded state of a folder to a new value.
-    public bool SetShowIfEmpty(IDynamicCollection<T> folder, bool showIfEmpty)
-    {
-        if (folder is DynamicFolderGroup<T> fc && fc.ShowIfEmpty != showIfEmpty)
-        {
-            fc.SetShowEmpty(showIfEmpty);
-            // Maybe collection update here??? Idk. If anything should just recalculate folder.
-            return true;
-        }
-        else if (folder is DynamicFolder<T> f && f.ShowIfEmpty != showIfEmpty)
-        {
-            f.SetShowEmpty(showIfEmpty);
-            // Maybe collection update here??? Idk. If anything should just recalculate folder.
-            return true;
-        }
-        // Fail otherwise.
-        return false;
-    }
-
 
     /// <summary>
     ///     Sets the opened state of multiple folders by name. <para />
