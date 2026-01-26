@@ -14,6 +14,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
 {
     private readonly DynamicDrawSystem<T> _parent;
 
+    private object _updateLock = new();
+
     // Generic Utility
     protected string filter = string.Empty;
     
@@ -103,7 +105,11 @@ public class DynamicFilterCache<T> : IDisposable where T : class
 
         var toCheck = reloadParent ? folder.Parent : folder;
         if (cachedFolderMap.TryGetValue(toCheck, out var cachedNode))
-            toReload.Add(cachedNode);
+        {
+            lock (_updateLock)
+                toReload.Add(cachedNode);
+        }
+
     }
 
     /// <summary>
@@ -115,7 +121,10 @@ public class DynamicFilterCache<T> : IDisposable where T : class
         // Identify the cache for the folder via the map.
         // This will reference to the empty cache and/or the item in the root cache.
         if (cachedFolderMap.TryGetValue(folder, out var cachedNode))
-            toSort.Add(cachedNode);
+        {
+            lock (_updateLock)
+                toSort.Add(cachedNode);
+        }
     }
 
     /// <summary>
@@ -128,12 +137,15 @@ public class DynamicFilterCache<T> : IDisposable where T : class
         if (_isDirty)
         {
             // Perform a full recalculation, nullifying all other changes.
-            toSort.Clear();
-            toReload.Clear();
-            RootCache = new DynamicFolderGroupCache<T>(_parent.Root);
-            BuildDynamicCache(RootCache);
-            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
-            _isDirty = false;
+            lock (_updateLock)
+            {
+                toSort.Clear();
+                toReload.Clear();
+                RootCache = new DynamicFolderGroupCache<T>(_parent.Root);
+                BuildDynamicCache(RootCache);
+                flatNodeCache = [RootCache.Folder, .. RootCache.GetAllDescendants()];
+                _isDirty = false;
+            }
             return;
         }
 
@@ -146,9 +158,12 @@ public class DynamicFilterCache<T> : IDisposable where T : class
             foreach (var cachedNode in toReload.ToList())
                 BuildDynamicCache(cachedNode);
             // Clear the nodes to reload.
-            toReload.Clear();
-            // Update the flat cache.
-            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
+            lock (_updateLock)
+            {
+                toReload.Clear();
+                // Update the flat cache.
+                flatNodeCache = [RootCache.Folder, .. RootCache.GetAllDescendants()];
+            }
         }
 
         // Finally, if we had any folders marked for re-sorting, process them non-recursively.
@@ -168,9 +183,12 @@ public class DynamicFilterCache<T> : IDisposable where T : class
                 }
             }
             // Clear the nodes to sort.
-            toSort.Clear();
+            lock (_updateLock)
+            {
+                toSort.Clear();
             // Update the flat cache.
-            flatNodeCache = [ RootCache.Folder, ..RootCache.GetAllDescendants() ];
+            flatNodeCache = [RootCache.Folder, .. RootCache.GetAllDescendants()];
+            }
         }
     }
 

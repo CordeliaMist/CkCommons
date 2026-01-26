@@ -33,7 +33,7 @@ public static partial class CkGui
             return;
 
         // if the item is currently hovered, with the ImGuiHoveredFlags set to allow when disabled
-        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.AllowWhenDisabled))
             ToolTipInternal(text, color);
     }
 

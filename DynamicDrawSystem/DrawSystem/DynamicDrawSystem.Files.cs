@@ -47,13 +47,14 @@ public partial class DynamicDrawSystem<T>
         foreach (var folder in rootFolders.OfType<IDynamicFolder<T>>())
         {
             // Skip if the parent was root.
+            if (folder.IsOpen)
+                opened.Add(folder);
+
             if (folder.Parent.IsRoot)
                 continue;
 
             j.WritePropertyName(folder.Name);
             j.WriteValue(folder.Parent.Name);
-            if (folder.IsOpen)
-                opened.Add(folder);
         }
         j.WriteEndObject();
 

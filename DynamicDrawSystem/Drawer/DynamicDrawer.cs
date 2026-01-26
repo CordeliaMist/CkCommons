@@ -2,7 +2,9 @@ using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
+using OtterGuiInternal;
 using Serilog;
+using System.Runtime.InteropServices;
 
 namespace CkCommons.DrawSystem.Selector;
 

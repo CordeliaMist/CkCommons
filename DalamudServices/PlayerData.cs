@@ -49,7 +49,7 @@ public static unsafe class PlayerData
     public static string Name => Character->NameString ?? string.Empty;
     public static string CharacterName => PlayerState.Instance()->IsLoaded ? PlayerState.Instance()->CharacterNameString : string.Empty;
     public static string NameWithWorld => Character->GetNameWithWorld();
-    public static ulong  CID => PlayerState.Instance()->ContentId;
+    public static ulong  CID => PlayerState.Instance()->IsLoaded ? PlayerState.Instance()->ContentId : ulong.MaxValue;
     public static string GetNameWithWorld(this Character chara) => chara.NameString + "@" + (Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty);
     public static string GetWorld(this Character chara) => Svc.Data.GetExcelSheet<LuminaWorld>().GetRowOrDefault(chara.HomeWorld) is { } w ? w.Name.ToString() : string.Empty;
 

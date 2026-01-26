@@ -226,13 +226,11 @@ public static partial class CkGui
         int maxLength, Vector4? color = null, float? width = null, bool disabled = false)
     {
         using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
-        var num = 0;
+        using var col = new ImRaii.Color();
+
         // Disable if issues, tends to be culpret
         if (color.HasValue)
-        {
-            ImGui.PushStyleColor(ImGuiCol.FrameBg, color.Value);
-            num++;
-        }
+            col.Push(ImGuiCol.FrameBg, color.Value);
 
         var flags = ITFlags.EnterReturnsTrue | (disabled ? ITFlags.ReadOnly : ITFlags.None);
 
@@ -243,25 +241,22 @@ public static partial class CkGui
 
         ImGui.PushID(id);
 
+        var padding = ImUtf8.FramePadding;
         var vector2 = ImGui.CalcTextSize(label);
         var windowDrawList = ImGui.GetWindowDrawList();
-        var cursorScreenPos = ImGui.GetCursorScreenPos();
         var num2 = 3f * ImGuiHelpers.GlobalScale;
-        var x = width ?? vector.X + vector2.X + ImGui.GetStyle().FramePadding.X * 2f + num2;
+        var x = width ?? vector.X + vector2.X + padding.X * 2f + num2;
         var frameHeight = ImGui.GetFrameHeight();
-        ImGui.SetCursorPosX(vector.X + ImGui.GetStyle().FramePadding.X * 2f);
+        ImGui.Dummy(new Vector2(frameHeight));
+        var minPos = ImGui.GetItemRectMin();
+        ImUtf8.SameLineInner();
         ImGui.SetNextItemWidth(x - vector.X - num2 * 4); // idk why this works, it probably doesnt on different scaling. Idfk. Look into later.
         var result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, flags);
 
-        var pos = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
+        var pos = new Vector2(minPos.X + padding.X, minPos.Y + padding.Y);
         using (Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push())
-            windowDrawList.AddText(pos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
+            windowDrawList.AddText(pos, ImGui.GetColorU32(disabled ? ImGuiCol.TextDisabled : ImGuiCol.Text), icon.ToIconString());
         ImGui.PopID();
-        if (num > 0)
-        {
-            ImGui.PopStyleColor(num);
-        }
-        dis.Pop();
 
         return result && !disabled;
     }
