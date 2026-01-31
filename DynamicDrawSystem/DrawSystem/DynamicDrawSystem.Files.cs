@@ -84,6 +84,7 @@ public partial class DynamicDrawSystem<T>
         else
         {
             Svc.Log.Warning($"DDS LoadFile called but file does not exist: {file.FullName}");
+            return false;
         }
         // Then perform the internal load function.
         return LoadObject(jObj);
