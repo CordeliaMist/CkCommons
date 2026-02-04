@@ -333,7 +333,7 @@ public class DynamicFilterCache<T> : IDisposable where T : class
                 break;
             case CollectionUpdate.OpenStateChange:
                 // Reload the parent, incase the folder is now to be shown.
-                MarkForReload(collection.Parent);
+                MarkForReload(collection.IsRoot ? collection : collection.Parent);
                 break;
         }
     }

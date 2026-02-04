@@ -109,7 +109,7 @@ public partial class DynamicDrawer<T>
         if (flags.HasAny(DynamicFlags.DragDropFolders))
             AsDragDropTarget(cfg.Folder);
         // Draw the children objects.
-        using var tab = ImRaii.PushIndent(groupIndent, groupIndent != 0);
+        using var tab = ImRaii.PushIndent(groupIndent, false, groupIndent != 0);
         DrawFolderGroupChildren<TFolder>(cfg, groupIndent, indent, flags);
     }
 
@@ -129,7 +129,7 @@ public partial class DynamicDrawer<T>
             return;
 
         // Draw the children objects.
-        using var _ = ImRaii.PushIndent(indent, indent != 0);
+        using var _ = ImRaii.PushIndent(indent, false, indent != 0);
         DrawFolderLeaves(cf, flags);
     }
 
