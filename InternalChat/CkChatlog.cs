@@ -128,7 +128,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         // Optional Middle click function.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Middle))
             OnMiddleClick(message);
-        CkGui.AttachToolTip(ToTooltip(message), disableContent, CkColor.VibrantPink.Vec4());
+        CkGui.AttachToolTip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
     }
 
     public virtual void DrawChatInputRow()
@@ -221,7 +221,9 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         using var style = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
             .Push(ImGuiStyleVar.PopupRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, 2f);
-        using var col = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+        // For now, change later when we find a way to pull from common color themes, or defined ones rather.
+        // That, or we would have modified this chatlog to be an instanced class with theme support.
+        using var col = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedGold);
 
         using (var popup = ImRaii.Popup($"CkChatMessageActions_{LastInteractedMsg.UID}"))
         {

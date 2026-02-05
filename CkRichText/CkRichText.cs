@@ -18,7 +18,7 @@ public static partial class CkRichText
     public static void DrawColorHelpText()
     {
         var tooltip = $"--COL--Named Color Codes:--COL----SEP--{string.Join(", ", Enum.GetNames<XlDataUiColor>())}";
-        CkGui.HelpText(tooltip, ImGuiColors.ParsedPink);
+        CkGui.HelpText(tooltip, ImGuiColors.TankBlue);
     }
 
     // may be prone to flickering if done mid-text edit, look into more later.
