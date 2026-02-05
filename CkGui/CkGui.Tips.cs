@@ -49,12 +49,14 @@ public static partial class CkGui
             ToolTipInternal(text, color);
     }
 
+    // Temporarily, for the sake of early sund implementation, make this gold,
+    // but make it variable later once a color system is fleshed out.
     public static void ToolTipInternal(string text, Vector4? color = null)
     {
         using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 6f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, 1f);
-        using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+        using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedGold);
 
         ImGui.BeginTooltip();
         TextWrappedTooltipFormat(text, ImGui.GetFontSize() * 35f, color);
