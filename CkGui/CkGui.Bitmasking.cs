@@ -35,7 +35,7 @@ public static partial class CkGui
                 var wasSet = (curBitMask & flag) != 0;
 
                 // set the color if the flag is a changed flag.
-                using var col = ImRaii.PushColor(ImGuiCol.Text, CkColor.TriStateCheck.Uint(), isSet != wasSet);
+                using var col = ImRaii.PushColor(ImGuiCol.Text, CkCol.TriStateCheck.Uint(), isSet != wasSet);
                 // get the preview.
                 var name = toName?.Invoke(flag) ?? $"Flag {i}";
                 var temp = isSet;

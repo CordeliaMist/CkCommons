@@ -87,26 +87,26 @@ public class TagCollection
     private void DrawPreviewBase(string id)
     {
         // provide unique ID
-        using ImRaii.Id _ = ImRaii.PushId(id);
+        using var _ = ImRaii.PushId(id);
         // Encapsulate all in a group.
-        using ImRaii.IEndObject group = ImRaii.Group();
+        using var group = ImRaii.Group();
         // Grab the correct x position.
         float x = ImGui.GetCursorPosX();
         ImGui.SetCursorPosX(x);
 
-        uint color = ImGui.GetColorU32(ImGuiCol.FrameBg);
-        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color)
-            .Push(ImGuiCol.ButtonActive, color)
-            .Push(ImGuiCol.Button, color);
-
         // Add some padding to the right end offset.
         float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
+
+        uint color = ImGui.GetColorU32(ImGuiCol.FrameBg);
+        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = rightEndOffset });
+        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color)
+            .Push(ImGuiCol.ButtonActive, color)
+            .Push(ImGuiCol.Button, color);
 
         // Draw the tags.
         foreach ((string tag, int idx) in _latestStringTags.WithIndex())
         {
-            using ImRaii.Id id2 = ImRaii.PushId(idx);
+            using var id2 = ImRaii.PushId(idx);
 
             SetPosButton(tag, x, rightEndOffset);
             Button(tag, idx, false);
@@ -114,7 +114,7 @@ public class TagCollection
         }
     }
 
-    public bool DrawHelpButtons(Vector2 botRight, string csvString, out string updatedCsvString, bool showSort)
+    public bool DrawHelpButtons(Vector2 botRight, string csvString, out string updatedCsvString, bool showSort, Vector4 tooltipCol)
     {
         bool change = false;
 
@@ -141,13 +141,13 @@ public class TagCollection
             CkGui.AttachToolTip("Sort Tags Alphabetically");
             ImGui.SameLine();
         }
-        CkGui.HelpText(HELP_TEXT, CkColor.VibrantPink.Uint());
+        CkGui.HelpText(HELP_TEXT, tooltipCol);
 
         updatedCsvString = string.Join(", ", _latestStringTags);
         return change;
     }
 
-    public bool DrawHelpButtons(IReadOnlyCollection<string> tags, out List<string> updatedTags, bool showSort)
+    public bool DrawHelpButtons(IReadOnlyCollection<string> tags, out List<string> updatedTags, bool showSort, Vector4 tooltipCol)
     {
         bool change = false;
 
@@ -164,7 +164,7 @@ public class TagCollection
         ImGui.SetCursorPos(newPos);
         if(showSort)
         {
-            CkGui.FramedHoverIconText(FontAwesomeIcon.SortAlphaDown, CkColor.VibrantPinkHovered.Uint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
+            CkGui.FramedHoverIconText(FontAwesomeIcon.SortAlphaDown, CkCol.HelpHovered.Uint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
                 _latestStringTags.Sort();
@@ -173,16 +173,16 @@ public class TagCollection
             CkGui.AttachToolTip("Sort Tags Alphabetically");
             ImGui.SameLine(0, 0);
         }
-        CkGui.FramedHoverIconText(FAI.QuestionCircle, ImGuiColors.TankBlue.ToUint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        CkGui.AttachToolTip(HELP_TEXT, color: CkColor.VibrantPink.Vec4());
+        CkGui.FramedHoverIconText(FAI.QuestionCircle, CkCol.HelpHovered.Uint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
+        CkGui.AttachToolTip(HELP_TEXT, color: tooltipCol);
 
         updatedTags = _latestStringTags;
         return change;
     }
 
-    public bool DrawTagsEditor(string id, IReadOnlyCollection<string> tags, out List<string> updatedTags)
+    public bool DrawTagsEditor(string id, IReadOnlyCollection<string> tags, out List<string> updatedTags, Vector4 tooltipCol)
     {
-        using ImRaii.Id _ = ImRaii.PushId(id);
+        using var _ = ImRaii.PushId(id);
         using ImRaii.IEndObject group = ImRaii.Group();
 
         uint color = ImGui.GetColorU32(ImGuiCol.Button);
@@ -197,14 +197,14 @@ public class TagCollection
         ImGui.SetCursorPosX(x);
         float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        bool changed = DrawEditorCore(x, rightEndOffset);
+        bool changed = DrawEditorCore(x, rightEndOffset, tooltipCol);
         updatedTags = _latestStringTags.ToList();
         return changed;
     }
 
-    public bool DrawTagsEditor(string id, string csvString, out string updatedCsvString)
+    public bool DrawTagsEditor(string id, string csvString, out string updatedCsvString, Vector4 tooltipCol)
     {
-        using ImRaii.Id _ = ImRaii.PushId(id);
+        using var _ = ImRaii.PushId(id);
         using ImRaii.IEndObject group = ImRaii.Group();
 
         uint color = ImGui.GetColorU32(ImGuiCol.Button);
@@ -219,19 +219,19 @@ public class TagCollection
         ImGui.SetCursorPosX(x);
         float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        bool changed = DrawEditorCore(x, rightEndOffset);
+        bool changed = DrawEditorCore(x, rightEndOffset, tooltipCol);
         updatedCsvString = string.Join(", ", _latestStringTags);
         return changed;
     }
 
-    private bool DrawEditorCore(float x, float rightEndOffset)
+    private bool DrawEditorCore(float x, float rightEndOffset, Vector4 tooltipCol)
     {
         bool changeOccurred = false;
         List<string> tagGroupClone = _latestStringTags.ToList();
 
         foreach ((string tag, int idx) in tagGroupClone.WithIndex())
         {
-            using ImRaii.Id id2 = ImRaii.PushId(idx);
+            using var id2 = ImRaii.PushId(idx);
             if (_editIdx == idx)
             {
                 float width = SetPosText(_currentTag, x);
@@ -252,7 +252,7 @@ public class TagCollection
                 Button(tag, idx, true);
                 bool lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
                 bool rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
-                CkGui.AttachToolTip(HELP_TEXT_SHORT, color: CkColor.VibrantPink.Vec4());
+                CkGui.AttachToolTip(HELP_TEXT_SHORT, color: tooltipCol);
                 // Rearrangement.
                 if(ImGui.IsItemHovered() && ImGui.GetIO().KeyShift)
                 {

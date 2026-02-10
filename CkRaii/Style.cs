@@ -12,24 +12,6 @@ public static partial class CkRaii
             _ => new Vector2((headerWidth - textWidth) / 2, (headerHeight - ImGui.GetTextLineHeight()) / 2), // Center is default.
         };
 
-    public struct ColorsLC(uint label, uint shadow, uint background, uint labelHovered = 0)
-    {
-        public uint Label { get; } = label;
-        public uint LabelHovered { get; } = labelHovered;
-        public uint Shadow { get; } = shadow;
-        public uint BG { get; } = background;
-        public static ColorsLC Default => new ColorsLC(CkColor.VibrantPink.Uint(), CkColor.ElementSplit.Uint(), CkColor.FancyHeader.Uint(), CkColor.VibrantPinkHovered.Uint());
-    }
-
-    public struct HeaderChildColors(uint headerColor, uint splitColor, uint bodyColor)
-    {
-        public uint HeaderColor { get; } = headerColor;
-        public uint SplitColor { get; } = splitColor;
-        public uint BodyColor { get; } = bodyColor;
-
-        public static HeaderChildColors Default => new HeaderChildColors(CkColor.ElementHeader.Uint(), CkColor.ElementSplit.Uint(), CkColor.ElementBG.Uint());
-    }
-
     // used by ImGui.Child and ImGui.Group
     private struct EndUnconditionally(Action endAction, bool success) : ImRaii.IEndObject
     {

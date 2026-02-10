@@ -382,7 +382,7 @@ public class DynamicFilterCache<T> : IDisposable where T : class
                 ImGui.BulletText($"{cacheFolder.Folder.Name} ({cacheFolder.Children.Count} Children)");
         }
         // Divider
-        CkGui.SeparatorSpaced(CkColor.VibrantPink.Uint());
+        CkGui.SeparatorSpaced(CkCol.Divider.Uint());
     }
     #endregion DEBUGING
 }
