@@ -51,7 +51,7 @@ public static partial class CkGuiUtils
     public static void FramedEditDisplay(string id, float width, bool inEdit, string curLabel,
         Action<float> drawAct, uint editorBg = 0, float? height = null)
     {
-        uint col = inEdit ? editorBg : CkCol.CHeaderShadow.Uint();
+        uint col = inEdit ? editorBg : CkCol.CurvedHeaderFade.Uint();
         using (CkRaii.Child(id + "frameDisp", new Vector2(width, height ?? ImGui.GetFrameHeight()), col, 
             CkStyle.ChildRounding(), DFlags.RoundCornersAll))
         {

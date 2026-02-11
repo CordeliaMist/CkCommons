@@ -75,7 +75,7 @@ public static partial class CkGui
         AttachToolTip(helpText);
     }
 
-    public static void HelpText(string helpText, Vector4 tooltipCol, bool inner = false, uint? offColor = null)
+    public static void HelpText(string text, Vector4 tooltipCol, bool inner = false, uint? offColor = null)
     {
         if (inner)
             ImUtf8.SameLineInner();
@@ -84,7 +84,7 @@ public static partial class CkGui
 
         bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
         FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        AttachToolTip(helpText, color: tooltipCol);
+        AttachToolTip(text, color: tooltipCol);
     }
 
     public static void HelpText(string helpText, uint tooltipCol, bool inner = false, uint? offColor = null)
