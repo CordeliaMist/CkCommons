@@ -183,11 +183,11 @@ public class TagCollection
     public bool DrawTagsEditor(string id, IReadOnlyCollection<string> tags, out List<string> updatedTags, Vector4 tooltipCol)
     {
         using var _ = ImRaii.PushId(id);
-        using ImRaii.IEndObject group = ImRaii.Group();
+        using var group = ImRaii.Group();
 
         uint color = ImGui.GetColorU32(ImGuiCol.Button);
-        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
+        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
+        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
             .Push(ImGuiCol.ButtonActive, color, false)
             .Push(ImGuiCol.Button, color);
 
@@ -205,11 +205,11 @@ public class TagCollection
     public bool DrawTagsEditor(string id, string csvString, out string updatedCsvString, Vector4 tooltipCol)
     {
         using var _ = ImRaii.PushId(id);
-        using ImRaii.IEndObject group = ImRaii.Group();
+        using var group = ImRaii.Group();
 
         uint color = ImGui.GetColorU32(ImGuiCol.Button);
-        using ImRaii.Style style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
-        using ImRaii.Color c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
+        using var style = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, ImGui.GetStyle().ItemSpacing with { X = 4 * ImGuiHelpers.GlobalScale });
+        using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, color, false)
             .Push(ImGuiCol.ButtonActive, color, false)
             .Push(ImGuiCol.Button, color);
 

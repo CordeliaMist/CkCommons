@@ -56,7 +56,7 @@ public static partial class CkGui
         using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 6f)
             .Push(ImGuiStyleVar.WindowRounding, 4f)
             .Push(ImGuiStyleVar.PopupBorderSize, 1f);
-        using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedGold);
+        using var c = ImRaii.PushColor(ImGuiCol.Border, CkCol.TipFrame.Vec4Ref());
 
         ImGui.BeginTooltip();
         TextWrappedTooltipFormat(text, ImGui.GetFontSize() * 35f, color);
