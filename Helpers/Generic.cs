@@ -1,5 +1,8 @@
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
+using FFXIVClientStructs.FFXIV.Client.System.String;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +23,11 @@ public static class Generic
             return default!;
         // otherwise, return the item at the index.
         return list[index];
+    }
+
+    public static bool EqualsAny<T>(this T obj, params T[] values)
+    {
+        return values.Any(x => x.Equals(obj));
     }
 
     public static void SafeEnable<T>(this Hook<T>? hook) where T : Delegate
@@ -173,5 +181,44 @@ public static class Generic
     {
         cts?.SafeCancelDispose();
         cts = new CancellationTokenSource();
+    }
+
+    /// <summary>
+    /// Reads SeString.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static unsafe SeString Read(this Utf8String str) => ReadSeString(&str);
+
+    /// <summary>
+    /// Reads Span of bytes into <see langword="string"/>.
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public static unsafe string Read(this Span<byte> bytes)
+    {
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == 0)
+            {
+                fixed (byte* ptr = bytes)
+                {
+                    return Marshal.PtrToStringUTF8((nint)ptr, i);
+                }
+            }
+        }
+        fixed (byte* ptr = bytes)
+        {
+            return Marshal.PtrToStringUTF8((nint)ptr, bytes.Length);
+        }
+    }
+    public static unsafe SeString ReadSeString(Utf8String* utf8String)
+    {
+        if (utf8String != null)
+        {
+            return SeString.Parse(utf8String->AsSpan());
+        }
+
+        return string.Empty;
     }
 }
