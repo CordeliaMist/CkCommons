@@ -67,7 +67,7 @@ public abstract class ImageTabBar<ITab> where ITab : Enum
             if(isHovered && ImGui.IsItemClicked(ImGuiMouseButton.Left))
                 TabSelection = tab.TargetTab;
         }
-        CkGui.AttachToolTip(tab.Tooltip);
+        CkGui.AttachToolTip(tab.Tooltip, ImGuiColors.DalamudOrange);
     }
 
     public virtual void Draw(Vector2 region, Vector2? customPadding = null)
