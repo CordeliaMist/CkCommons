@@ -2,6 +2,7 @@ using CkCommons.Gui;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using Dalamud.Bindings.ImGui;
+using OtterGui.Text;
 
 namespace CkCommons.Raii;
 public static partial class CkRaii
@@ -16,11 +17,11 @@ public static partial class CkRaii
     /// <remarks> The IEOLabelContainer contains the size of the label region and the inner region. </remarks>
     public static IEOLabelContainer ChildLabelText(Vector2 size, float widthSpan, string text, float rounding, float stroke, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
     {
-        var labelWidth = size.X * Math.Clamp(widthSpan, 0f, 1f);
+        var width = size.X * Math.Clamp(widthSpan, 0f, 1f);
         var offset = (df & DFlags.RoundCornersTopLeft) != 0 ? rounding : ImGui.GetStyle().WindowPadding.X;
 
         // Calculate the drawn header size.
-        Vector2 hSize = new(labelWidth, ImGui.GetFrameHeight());
+        Vector2 hSize = new(width, ImGui.GetFrameHeight());
         var headerStrokeHeight = hSize.Y + stroke;
         // If size includes header, return size, otherwise, if we should add padding, add padding, but regardless, add header height.
         var outerHeight = ((lf & LabelFlags.SizeIncludesHeader) != 0)
@@ -39,13 +40,13 @@ public static partial class CkRaii
                 var min = ImGui.GetItemRectMin();
                 var wdl = ImGui.GetWindowDrawList();
                 // Draw out the child BG.
-                wdl.AddRectFilled(min, ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
+                wdl.AddRectFilled(min, ImGui.GetItemRectMax(), CkCol.LChildBg.Uint(), rounding, df);
                 // Partial-width: draw shadow + label
                 var labelDFlags =  DFlags.RoundCornersBottomRight | ((df & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
-                wdl.AddRectFilled(min, min + hSize + new Vector2(stroke), ColorsLC.Default.Shadow, rounding, labelDFlags);
-                wdl.AddRectFilled(min, min + hSize, ColorsLC.Default.Label, rounding, labelDFlags);
+                wdl.AddRectFilled(min, min + hSize + new Vector2(stroke), CkCol.LChildSplit.Uint(), rounding, labelDFlags);
+                wdl.AddRectFilled(min, min + hSize, CkCol.LChild.Uint(), rounding, labelDFlags);
                 // add the text, centered to the height of the header, left aligned.
-                wdl.AddText(min + new Vector2(offset, (hSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
+                wdl.AddText(min + new Vector2(offset, (hSize.Y - ImGuiNative.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
             },
             success,
             outerSize.WithoutWinPadding(),
@@ -86,16 +87,16 @@ public static partial class CkRaii
             var max = ImGui.GetItemRectMax();
             var wdl = ImGui.GetWindowDrawList();
 
-            wdl.AddRectFilled(min, ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
+            wdl.AddRectFilled(min, ImGui.GetItemRectMax(), CkCol.LChildBg.Uint(), rounding, df);
             // Determine where the label ends.
             var labelMax = new Vector2(max.X, min.Y + ImGui.GetFrameHeight());
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // Full-width: draw label + underline with thickness = fade
-            wdl.AddRectFilled(min, labelMax, ColorsLC.Default.Label, rounding, labelFlags);
+            wdl.AddRectFilled(min, labelMax, CkCol.LChild.Uint(), rounding, labelFlags);
             var underlineMin = new Vector2(min.X, labelMax.Y);
             var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
-            wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            wdl.AddRectFilled(underlineMin, underlineMax, CkCol.LChildSplit.Uint());
             // add the text, centered to the height of the header, left aligned.
             wdl.AddText(min + new Vector2(offset, (hSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
         },
@@ -148,13 +149,13 @@ public static partial class CkRaii
         {
             ImGui.EndChild();
             var wdl = ImGui.GetWindowDrawList();
-            wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
+            wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), CkCol.LChildBg.Uint(), rounding, df);
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
             // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
             var labelDFlags = DFlags.RoundCornersBottomRight | ((df & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
-            wdl.AddRectFilled(labelMin, labelMax + new Vector2(stroke), ColorsLC.Default.Shadow, rounding, labelDFlags);
-            var labelCol = hovered ? ColorsLC.Default.LabelHovered : ColorsLC.Default.Label;
+            wdl.AddRectFilled(labelMin, labelMax + new Vector2(stroke), CkCol.LChildSplit.Uint(), rounding, labelDFlags);
+            var labelCol = hovered ? CkCol.LChildHovered.Uint() : CkCol.LChild.Uint();
             wdl.AddRectFilled(labelMin, labelMax, labelCol, rounding, labelDFlags);
             // add the text, centered to the height of the header, left aligned.
             wdl.AddText(min + new Vector2(offset, (labelSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
@@ -208,7 +209,7 @@ public static partial class CkRaii
         {
             ImGui.EndChild();
             var wdl = ImGui.GetWindowDrawList();
-            wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), ColorsLC.Default.BG, rounding, df);
+            wdl.AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), CkCol.LChildBg.Uint(), rounding, df);
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
 
@@ -216,11 +217,11 @@ public static partial class CkRaii
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // Full-width: draw label + underline with thickness = fade
-            uint labelCol = hovered ? ColorsLC.Default.LabelHovered : ColorsLC.Default.Label;
+            var labelCol = hovered ? CkCol.LChildHovered.Uint() : CkCol.LChild.Uint();
             wdl.AddRectFilled(min, labelMax, labelCol, rounding, labelFlags);
             var underlineMin = new Vector2(min.X, labelMax.Y);
             var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
-            wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            wdl.AddRectFilled(underlineMin, underlineMax, CkCol.LChildSplit.Uint());
             // add the text, centered to the height of the header, left aligned.
             wdl.AddText(min + new Vector2(offset, (labelSize.Y - ImGui.GetTextLineHeight()) / 2), ImGui.GetColorU32(ImGuiCol.Text), text);
         },
@@ -279,13 +280,13 @@ public static partial class CkRaii
             ImGui.EndChild();
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
-            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df);
+            wdl.AddRectFilled(min, max, CkCol.LChildBg.Uint(), rounding, df);
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
             DFlags labelDFlags = DFlags.RoundCornersBottomRight | ((df & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
-            wdl.AddRectFilled(pos, labelMax + new Vector2(stroke), ColorsLC.Default.Shadow, rounding, labelDFlags);
-            uint labelCol = hovered ? ColorsLC.Default.LabelHovered : ColorsLC.Default.Label;
+            wdl.AddRectFilled(pos, labelMax + new Vector2(stroke), CkCol.LChildSplit.Uint(), rounding, labelDFlags);
+            var labelCol = hovered ? CkCol.LChildHovered.Uint() : CkCol.LChild.Uint();
             wdl.AddRectFilled(pos, labelMax, labelCol, rounding, labelDFlags);
             ImGui.EndGroup();
         },
@@ -350,14 +351,14 @@ public static partial class CkRaii
             var wdl = ImGui.GetWindowDrawList();
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
-            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df);
+            wdl.AddRectFilled(min, max, CkCol.LChildBg.Uint(), rounding, df);
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // Full-width: draw label + underline with thickness = fade
-            wdl.AddRectFilled(pos, labelMax, ColorsLC.Default.Label, rounding, labelFlags);
+            wdl.AddRectFilled(pos, labelMax, CkCol.LChild.Uint(), rounding, labelFlags);
             var underlineMin = new Vector2(min.X, labelMax.Y);
             var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
-            wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            wdl.AddRectFilled(underlineMin, underlineMax, CkCol.LChildSplit.Uint());
         },
             success,
             outerSize.WithoutWinPadding(),
@@ -401,13 +402,13 @@ public static partial class CkRaii
             ImGui.EndChild();
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
-            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df & ~DFlags.RoundCornersTop);
+            wdl.AddRectFilled(min, max, CkCol.LChildBg.Uint(), rounding, df & ~DFlags.RoundCornersTop);
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // make sure that if the dFlags include DFlags.RoundCornersTopLeft, to apply that flag.
             DFlags labelDFlags = DFlags.RoundCornersBottomRight | ((df & DFlags.RoundCornersTopLeft) != 0 ? DFlags.RoundCornersTopLeft : DFlags.None);
-            wdl.AddRectFilled(pos, labelMax + new Vector2(stroke), ColorsLC.Default.Shadow, rounding, labelDFlags);
-            wdl.AddRectFilled(pos, labelMax, ColorsLC.Default.Label, rounding, labelDFlags);
+            wdl.AddRectFilled(pos, labelMax + new Vector2(stroke), CkCol.LChildSplit.Uint(), rounding, labelDFlags);
+            wdl.AddRectFilled(pos, labelMax, CkCol.LChild.Uint(), rounding, labelDFlags);
             ImGui.EndGroup();
         },
             success,
@@ -459,14 +460,14 @@ public static partial class CkRaii
             ImGui.EndChild();
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
-            wdl.AddRectFilled(min, max, ColorsLC.Default.BG, rounding, df & ~DFlags.RoundCornersTop);
+            wdl.AddRectFilled(min, max, CkCol.LChildBg.Uint(), rounding, df & ~DFlags.RoundCornersTop);
             // we are only drawing the labels now, so adjust our flags for them.
             var labelFlags = df & ~DFlags.RoundCornersBottom;
             // Full-width: draw label + underline with thickness = fade
-            wdl.AddRectFilled(pos, labelMax, ColorsLC.Default.Label, rounding, labelFlags);
+            wdl.AddRectFilled(pos, labelMax, CkCol.LChild.Uint(), rounding, labelFlags);
             var underlineMin = new Vector2(min.X, labelMax.Y);
             var underlineMax = new Vector2(max.X, labelMax.Y + stroke);
-            wdl.AddRectFilled(underlineMin, underlineMax, ColorsLC.Default.Shadow);
+            wdl.AddRectFilled(underlineMin, underlineMax, CkCol.LChildSplit.Uint());
             ImGui.EndGroup();
         },
             success,
@@ -477,30 +478,25 @@ public static partial class CkRaii
 
 
 
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
-        => LabelHeaderChild(size, label, labelWidth, ImGui.GetFrameHeight(),  CkStyle.ChildRounding(), cFlags, lFlags);
+    public static IEOContainer LabelHeaderChild(Vector2 region, string label, float width, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
+        => LabelHeaderChild(region, label, width, ImUtf8.FrameHeight,  CkStyle.ChildRounding(), cFlags, lFlags);
 
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, float labelOffset, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
-        => LabelHeaderChild(size, label, labelWidth, labelOffset,  CkStyle.ChildRounding(), cFlags, lFlags);
+    public static IEOContainer LabelHeaderChild(Vector2 region, string label, float width, float offset, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
+        => LabelHeaderChild(region, label, width, offset, CkStyle.ChildRounding(), cFlags, lFlags);
 
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, float labelOffset, float rounding, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
-        => LabelHeaderChild(size, label, labelWidth, labelOffset, rounding, HeaderChildColors.Default, cFlags, lFlags);
+    public static IEOContainer LabelHeaderChild(Vector2 region, string label, float width, float offset, float rounding, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
+        => LabelHeaderChild(region, label, width, offset, rounding, cFlags, lFlags);
 
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, float labelOffset, float rounding, HeaderChildColors colors, DFlags cFlags = DFlags.None, DFlags lFlags = DFlags.None)
-        => LabelHeaderChild(size, label, labelWidth, labelOffset, rounding, ImGui.GetStyle().WindowPadding.X/2, colors, cFlags, lFlags);
-
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, float labelOffset, float rounding, float thickness, DFlags cFlags, DFlags lFlags)
-        => LabelHeaderChild(size, label, labelWidth, labelOffset, rounding, thickness, HeaderChildColors.Default, cFlags, lFlags);
-
-    /// <summary> Creates a child object (no padding) with a nice colored background and label. </summary>
-    /// <remarks> The label will not have a hitbox, and you will be able to draw overtop it. This is dont for cases that desire no padding. </remarks>
-    public static IEOContainer LabelHeaderChild(Vector2 size, string label, float labelWidth, float labelOffset, float rounding, float thickness,
-        HeaderChildColors colors, DFlags childFlags = DFlags.None, DFlags labelFlags = DFlags.RoundCornersBottomRight)
+    /// <summary>
+    ///     Creates a child object (no padding) with a nice colored background and label. <para />
+    ///     Label has no hitbox, you can draw overtop it. (Not for cases that desire 0 padding)
+    /// </summary>
+    public static IEOContainer LabelHeaderChild(Vector2 region, string label, float width, float offset, float rounding, float thickness, DFlags childFlags = DFlags.None, DFlags labelFlags = DFlags.RoundCornersBottomRight)
     {
         var labelH = ImGui.GetTextLineHeightWithSpacing();
         var textSize = ImGui.CalcTextSize(label);
         // Get inner height below header.
-        var innerHeight = Math.Min(size.Y, ImGui.GetContentRegionAvail().Y - labelH);
+        var innerHeight = Math.Min(region.Y, ImGui.GetContentRegionAvail().Y - labelH);
         // Get full childHeight.
         // The pos to know absolute min.
         var pos = ImGui.GetCursorScreenPos();
@@ -518,19 +514,19 @@ public static partial class CkRaii
                 var wdl = ImGui.GetWindowDrawList();
 
                 // Draw out the child BG.
-                wdl.AddRectFilled(pos, max, colors.BodyColor, rounding, childFlags);
+                wdl.AddRectFilled(pos, max, CkCol.LChildBg.Uint(), rounding, childFlags);
 
                 // Now draw out the label header.
-                var labelRectSize = new Vector2(labelWidth, labelH);
-                wdl.AddRectFilled(pos, pos + labelRectSize + new Vector2(thickness), colors.SplitColor, rounding, labelFlags);
-                wdl.AddRectFilled(pos, pos + labelRectSize, colors.HeaderColor, rounding, labelFlags);
+                var labelRectSize = new Vector2(width, labelH);
+                wdl.AddRectFilled(pos, pos + labelRectSize + new Vector2(thickness), CkCol.LChildSplit.Uint(), rounding, labelFlags);
+                wdl.AddRectFilled(pos, pos + labelRectSize, CkCol.LChild.Uint(), rounding, labelFlags);
 
                 // add the text, centered to the height of the header, left aligned.
-                var textStart = new Vector2(labelOffset, (labelH - textSize.Y) / 2);
+                var textStart = new Vector2(offset, (labelH - textSize.Y) / 2);
                 wdl.AddText(pos + textStart, ImGui.GetColorU32(ImGuiCol.Text), label);
             }, 
-            ImGui.BeginChild(label, size, false, WFlags.AlwaysUseWindowPadding),
-            size.WithoutWinPadding()
+            ImGui.BeginChild(label, region, false, WFlags.AlwaysUseWindowPadding),
+            region.WithoutWinPadding()
         );
     }
 

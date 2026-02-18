@@ -15,9 +15,9 @@ public static partial class CkGuiUtils
     /// <param name="progress">Progress value from 0.0 to 1.0.</param>
     /// <param name="size">Total size of the bar. Height should usually match font height.</param>
     /// <param name="text">Optional label text. If null, a percentage will be shown.</param>
-    /// <param name="fillColor">The color to fill the progress with.</param>
+    /// <param name="fillCol">The color to fill the progress with.</param>
     /// <param name="rounding">Optional rounding radius. Default is 25f.</param>
-    public static void DrawProgressBar(Vector2 size, string text, float progress, uint? fillColor = null, float rounding = 25f)
+    public static void DrawProgressBar(Vector2 size, string text, float progress, uint fillCol, float rounding = 25f)
     {
         // Clamp progress.
         progress = Math.Clamp(progress, 0f, 1f);
@@ -25,7 +25,6 @@ public static partial class CkGuiUtils
         var drawList = ImGui.GetWindowDrawList();
         var cursorStart = ImGui.GetCursorScreenPos();
         var textSize = ImGui.CalcTextSize(text);
-        var fillCol = fillColor.HasValue ? fillColor.Value : CkColor.VibrantPink.Uint();
 
         // Bg Layers.
         var bgStart = cursorStart;
@@ -48,10 +47,11 @@ public static partial class CkGuiUtils
         ImGui.Dummy(size);
     }
 
+    // Revise color, and maybe even make a new color for this, or just remove the method entirely and make it a GS-Exclusive helper.
     public static void FramedEditDisplay(string id, float width, bool inEdit, string curLabel,
         Action<float> drawAct, uint editorBg = 0, float? height = null)
     {
-        uint col = inEdit ? editorBg : CkColor.FancyHeaderContrast.Uint();
+        uint col = inEdit ? editorBg : CkCol.CurvedHeaderFade.Uint();
         using (CkRaii.Child(id + "frameDisp", new Vector2(width, height ?? ImGui.GetFrameHeight()), col, 
             CkStyle.ChildRounding(), DFlags.RoundCornersAll))
         {
@@ -73,7 +73,7 @@ public static partial class CkGuiUtils
     public static void DrawSingleGroupRadio(string groupName, string[] options, string current)
     {
         string newSelection = current; // Ensure assignment
-        using OtterGui.Text.EndObjects.Id id = ImUtf8.PushId(groupName);
+        using var id = ImUtf8.PushId(groupName);
         float minWidth = Widget.BeginFramedGroup(groupName);
 
         using (ImRaii.Disabled(false))
@@ -92,14 +92,14 @@ public static partial class CkGuiUtils
     /// <summary> Draw a multi group selector as a bordered set of checkboxes. (for previewing) </summary>
     public static void DrawMultiGroup(string groupName, string[] options, string[] current)
     {
-        using OtterGui.Text.EndObjects.Id id = ImUtf8.PushId(groupName);
+        using var id = ImUtf8.PushId(groupName);
         float minWidth = Widget.BeginFramedGroup(groupName);
 
         using (ImRaii.Disabled(false))
         {
             for (int idx = 0; idx < options.Length; ++idx)
             {
-                using OtterGui.Text.EndObjects.Id i = ImUtf8.PushId(idx);
+                using var i = ImUtf8.PushId(idx);
                 string option = options[idx];
                 bool isSelected = current.Contains(option);
                 ImUtf8.Checkbox(option, ref isSelected);

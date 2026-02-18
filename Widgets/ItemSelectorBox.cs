@@ -1,11 +1,12 @@
 using CkCommons.Gui;
 using CkCommons.Helpers;
 using CkCommons.Raii;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
 using OtterGui.Extensions;
+using System.Windows.Forms;
 
 namespace CkCommons.Widgets;
 
@@ -134,9 +135,9 @@ public class ItemSelectorBox<T>
     {
         _addItemIcon = addIcon;
         _addItemText = addTxt;
-        _colSelected = selectedCol ?? CkColor.VibrantPink.Uint();
-        _colHovered = hoveredCol ?? ImGui.GetColorU32(ImGuiCol.FrameBgHovered);
-        _bgCol = bgCol ?? CkColor.FancyHeaderContrast.Uint();
+        _colSelected = selectedCol ?? CkCol.BoxItemActive.Uint();
+        _colHovered = hoveredCol ?? CkCol.BoxItemHovered.Uint();
+        _bgCol = bgCol ?? CkCol.BoxItem.Uint();
 
         _allowShift = allowShift;
         OnAdd = onAdd;
@@ -180,7 +181,7 @@ public class ItemSelectorBox<T>
     ///     TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
     ///     This is currenly list so that changes to its order are performed on the passed in list.
     /// </summary>
-    public void DrawSelectorChildBox(string id, Vector2 region, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName)
+    public void DrawSelectorChildBox(string id, Vector2 region, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName, Vector4 tooltipCol)
     {
         using var _ = ImRaii.PushId(id);
         using var child = CkRaii.Child(id, region, wFlags: WFlags.NoScrollbar);
@@ -195,7 +196,7 @@ public class ItemSelectorBox<T>
         ImGui.SetCursorPosX(x);
         var rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        DrawSelectorInternal(x, rightEndOffset, lockFirst, items, selected, toName);
+        DrawSelectorInternal(x, rightEndOffset, lockFirst, items, selected, toName, tooltipCol);
     }
 
     /// <summary>
@@ -203,7 +204,7 @@ public class ItemSelectorBox<T>
     ///     TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
     ///     This is currenly list so that changes to its order are performed on the passed in list.
     /// </summary>
-    public void DrawSelectorBox(string id, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName)
+    public void DrawSelectorBox(string id, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName, Vector4 tooltipCol)
     {
         using var _ = ImRaii.PushId(id);
         using var group = ImRaii.Group();
@@ -217,7 +218,7 @@ public class ItemSelectorBox<T>
         ImGui.SetCursorPosX(x);
         var rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
-        DrawSelectorInternal(x, rightEndOffset, lockFirst, items, selected, toName);
+        DrawSelectorInternal(x, rightEndOffset, lockFirst, items, selected, toName, tooltipCol);
     }
 
     //public bool DrawHelpButtons(Vector2 botRight, string csvString, out string updatedCsvString, bool showSort)
@@ -253,7 +254,7 @@ public class ItemSelectorBox<T>
     //    return change;
     //}
 
-    private bool DrawSelectorInternal(float x, float rightEndOffset, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName)
+    private bool DrawSelectorInternal(float x, float rightEndOffset, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName, Vector4 tooltipCol)
     {
         var changeOccurred = false;
         var wdl = ImGui.GetWindowDrawList();
@@ -367,7 +368,7 @@ public class ItemSelectorBox<T>
             var lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
             var rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
             wdl.AddRect(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), selected ? _colSelected : _bgCol, padding, ImDrawFlags.RoundCornersAll, CkStyle.ThinThickness());
-            CkGui.AttachToolTip(_helpStringShort, color: CkColor.VibrantPink.Vec4());
+            CkGui.AttachToolTip(_helpStringShort, color: tooltipCol);
 
             // Rearrangement.
             if (lClicked)

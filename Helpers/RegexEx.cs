@@ -1,4 +1,6 @@
 using Dalamud.Game.Text.SeStringHandling;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace CkCommons.Helpers;
 
@@ -52,26 +54,26 @@ public static partial class RegexEx
         return newName;
     }
 
+    /// <summary>
+    ///     Removes all the BBCode from the color tags.
+    /// </summary>
     public static string StripColorTags(this string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return string.Empty;
-
         // Define a regex pattern to match any [color=...] and [/color] tags
         var pattern = @"\[\/?(color|glow)(=[^\]]*)?\]";
-
         // Use Regex.Replace to remove the tags
-        var result = Regex.Replace(input, pattern, string.Empty);
-
-        return result;
+        return Regex.Replace(input, pattern, string.Empty); 
     }
 
-    /// <summary> encapsulates the puppeteer command within '(' and ')' </summary>
+    /// <summary>
+    ///     Encapsulates the puppeteer command within '(' and ')'
+    /// </summary>
     public static SeString GetSubstringWithinParentheses(this SeString str, char startBracket = '(', char EndBracket = ')')
     {
         var startIndex = str.TextValue.IndexOf(startBracket);
         var endIndex = str.TextValue.IndexOf(EndBracket);
-
         // If both brackets are found and the end bracket is after the start bracket
         if (startIndex >= 0 && endIndex >= 0 && endIndex > startIndex)
             return str.TextValue.Substring(startIndex + 1, endIndex - startIndex - 1).Trim();
@@ -79,20 +81,46 @@ public static partial class RegexEx
         return str;
     }
 
-    /// <summary> Converts square brackets to angle brackets </summary>
+    /// <summary>
+    ///     Converts square brackets to angle brackets
+    /// </summary>
     public static SeString ConvertSquareToAngleBrackets(this SeString str)
+        => str.TextValue.Replace("[", "<").Replace("]", ">");
+
+
+    /// <summary>
+    ///     Attempts to convert an input string of a Vector4 as seen in the code editor to a Vector4 value. <para/>
+    ///     <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryParseVec4Code(this string input, out Vector4 result)
     {
-        try
-        {
-            return str.TextValue.Replace("[", "<").Replace("]", ">");
-        }
-        catch (Exception)
-        {
-            return str;
-        }
+        result = Vector4.Zero;
+        if (string.IsNullOrWhiteSpace(input)) return false;
+
+        var match = Vec4CodeRegex().Match(input);
+        if (!match.Success) return false;
+
+        return
+            float.TryParse(match.Groups["x"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var x) &&
+            float.TryParse(match.Groups["y"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var y) &&
+            float.TryParse(match.Groups["z"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var z) &&
+            float.TryParse(match.Groups["w"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var w)
+                ? (result = new Vector4(x, y, z, w)) != null : false;
     }
 
+    /// <summary>
+    ///     Seperates a BBCode into their individual components, such as the text and the color tags. <para/>
+    ///     Useful for CkRichText parsing.
+    /// </summary>
     [GeneratedRegex(@"(\[color=[0-9a-zA-Z]+\])|(\[\/color\])|(\[glow=[0-9a-zA-Z]+\])|(\[\/glow\])|(\[i\])|(\[\/i\])", RegexOptions.IgnoreCase, "en-US")]
     public static partial Regex SplitRegex();
+
+    /// <summary>
+    ///     Matches a Vector4 as displayed in a code editor. <para/>
+    ///     <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
+    /// </summary>
+    [GeneratedRegex(@"new\s+Vector4\s*\(\s*(?<x>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<y>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<z>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<w>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*\)$", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
+    public static partial Regex Vec4CodeRegex();
 }
 

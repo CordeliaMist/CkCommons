@@ -53,7 +53,7 @@ public class CkHeader
         var topRightPos = new Vector2(splitPos.X + splitWidth + winPadding.X, topLeftPos.Y);
         var botRightPos = topRightPos with { Y = botLeftPos.Y };
 
-        wdl.AddRectFilled(splitPos, new Vector2(splitPos.X + splitWidth, maxPos.Y - winPadding.Y), CkColor.FancyHeader.Uint());
+        wdl.AddRectFilled(splitPos, new Vector2(splitPos.X + splitWidth, maxPos.Y - winPadding.Y), CkCol.CurvedHeader.Uint());
         wdl.PopClipRect();
 
         // we need to return the content region struct, so create our end result content regions below.

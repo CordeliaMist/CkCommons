@@ -40,6 +40,9 @@ public static class FancyTabBar
     // If this ever REALLY becomes an issue we can switch to an array with ID-type casting. But for now, this is fine.
     private static readonly Dictionary<string, IFancyTab?> _selectedStorage = new();
 
+    public static IFancyTab? GetSelected(string id)
+        => _selectedStorage.ContainsKey(id) ? _selectedStorage[id] : null;
+
     public static void SelectTab(string id, IFancyTab toSelect, params IFancyTab[] tabs)
     {
         // do not select if the ID does not exist.
@@ -69,7 +72,7 @@ public static class FancyTabBar
             // Get the window draw list from the child of the tab bars row child.
             var childWdl = ImGui.GetWindowDrawList();
             childWdl.AddLine(ImGui.GetItemRectMin() + new ImVec2(0, BarHeight), ImGui.GetItemRectMin() + new ImVec2(width, BarHeight), col, 2f);
-            childWdl.AddLine(ImGui.GetItemRectMin() + new ImVec2(0, heightWithSplit), ImGui.GetItemRectMin() + new ImVec2(width, heightWithSplit), CkColor.ElementSplit.Uint(), 2f);
+            childWdl.AddLine(ImGui.GetItemRectMin() + new ImVec2(0, heightWithSplit), ImGui.GetItemRectMin() + new ImVec2(width, heightWithSplit), CkCol.TabBarSplit.Uint(), 2f);
 
             ImGui.SameLine(0, rounding);
             foreach (var tab in tabs)
