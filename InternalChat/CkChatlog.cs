@@ -5,13 +5,11 @@ using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using OtterGui.Extensions;
 using OtterGui.Text;
-using System.Drawing;
 using System.Globalization;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
 
 namespace CkCommons.Chat;
+
 public abstract class CkChatlog<T> where T : CkChatMessage
 {
     protected readonly int ID;

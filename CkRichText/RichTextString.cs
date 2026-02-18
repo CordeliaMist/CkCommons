@@ -117,7 +117,6 @@ public class RichTextString
         {
             _lineCount += payload.UpdateCache(font, wrapWidth, ref currentLineWidth, _lineCount);
             // update the previous width.
-            Svc.Log.Information($"Payload: {payload.GetType().Name}, CurrentLineWidth: {currentLineWidth}, PreviousLineWidth: {previousLineWidth}, WrapWidth: {wrapWidth}");
             previousLineWidth = currentLineWidth;
         }
     }
