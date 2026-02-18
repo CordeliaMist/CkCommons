@@ -5,9 +5,11 @@ using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
+using OtterGui.Extensions;
 using OtterGui.Text;
 using System.Drawing;
 using System.Globalization;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule;
 
 namespace CkCommons.Chat;
 public abstract class CkChatlog<T> where T : CkChatMessage
@@ -106,9 +108,11 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     {
         using var dis = ImRaii.Disabled(disableContent);
         using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
-        var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
-        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X);
 
+        // Inner child that respects the scrollbar offset, if scrollbar was enabled. (helpful safeguard)
+        var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
+        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X - ImGui.GetStyle().ScrollbarSize);
+        DrawChatEndDummy(messages.TakeLast(remainder), _.InnerRegion.X);
         HandleAutoScroll();
         // Attempt to handle any popups we may have had (within the same context)
         ShowPopups();
@@ -132,6 +136,19 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             OnMiddleClick(message);
         CkGui.AttachToolTip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
     }
+
+    private void DrawChatEndDummy(IEnumerable<T> data, float width)
+    {
+        var remaining = data.Count();
+        if (remaining is 0)
+            return;
+        var dummyH = 0;
+        foreach (var msg in data)
+            dummyH += CkRichText.GetRichTextLineHeight(msg.Message, ID);
+        Svc.Log.Information($"Total Dummy Height: {dummyH}");
+        ImGui.Dummy(new Vector2(width, dummyH * ImUtf8.TextHeightSpacing - ImUtf8.ItemSpacing.Y));
+    }
+
 
     public virtual void DrawChatInputRow()
     {
@@ -210,7 +227,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         if (ShouldScrollToBottom || (DoAutoScroll && unreadSinceScroll > 0))
         {
             ShouldScrollToBottom = false;
-            ImGui.SetScrollHereY();
+            ImGui.SetScrollHereY(1.0f);
             unreadSinceScroll = 0;
         }
     }

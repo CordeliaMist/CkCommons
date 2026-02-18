@@ -92,6 +92,14 @@ public class RichTextString
         }
     }
 
+    public void CheckUpdateCache(ImFontPtr font, float wrapWidth)
+    {
+        if (MatchesCachedState(font, wrapWidth))
+            return;
+        // Otherwise, update the caches.
+        UpdateCaches(font, wrapWidth);
+    }
+
     // must be manually invoked after construction.
     public unsafe void UpdateCaches(ImFontPtr font, float wrapWidth)
     {
