@@ -20,6 +20,6 @@ public class ColorPayload : RichPayload
             ImGui.PopStyleColor();
     }
 
-    public override int UpdateCache(ImFontPtr _, float __, ref float ___)
+    public override int UpdateCache(ImFontPtr _, float __, ref float ___, int ____)
         => 0;
 }

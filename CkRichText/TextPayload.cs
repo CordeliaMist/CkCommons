@@ -1,5 +1,6 @@
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility;
 
 namespace CkCommons.RichText;
 public class TextPayload : RichPayload
@@ -41,7 +42,7 @@ public class TextPayload : RichPayload
             }
         }
     }
-    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth, int curLines)
     {
         if (curLineWidth != 0f)
             _isInline = true;
@@ -64,6 +65,9 @@ public class TextPayload : RichPayload
 
             if (i > 0)
                 wordWidth += font.GetCharAdvance(' ');
+
+            // Multiply by global scale to account for UI scaling.
+            wordWidth *= ImGuiHelpers.GlobalScale;
 
             // If the word doesn't fit, we need to split the line.
             if (wordWidth > remainingWidth)
@@ -98,6 +102,8 @@ public class TextPayload : RichPayload
             // add space char if not the last word
             if (i < words.Length - 1)
                 charIndex += 1;
+
+            Svc.Log.Information($"Word: '{word}' | WordWidth: {wordWidth} | RemainingWidth: {remainingWidth} | CurLineWidth: {curLineWidth}");
         }
         // Add the last line
         if (lineStart < _text.Length)

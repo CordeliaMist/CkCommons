@@ -4,7 +4,7 @@ namespace CkCommons.RichText;
 
 public class SeparatorPayload : RichPayload
 {
-    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth, int curLines)
     {
         // reset the current line width to 0 since we move to a new line.
         curLineWidth = 0f;

@@ -107,8 +107,9 @@ public class RichTextString
         // Update the individual caches to respect the new font and wrap width.
         foreach (RichPayload payload in _payloads)
         {
-            _lineCount += payload.UpdateCache(font, wrapWidth, ref currentLineWidth);
+            _lineCount += payload.UpdateCache(font, wrapWidth, ref currentLineWidth, _lineCount);
             // update the previous width.
+            Svc.Log.Information($"Payload: {payload.GetType().Name}, CurrentLineWidth: {currentLineWidth}, PreviousLineWidth: {previousLineWidth}, WrapWidth: {wrapWidth}");
             previousLineWidth = currentLineWidth;
         }
     }

@@ -18,6 +18,6 @@ public class StrokePayload : RichPayload
             colorStrokes.Pop();
     }
 
-    public override int UpdateCache(ImFontPtr _, float __, ref float ___)
+    public override int UpdateCache(ImFontPtr _, float __, ref float ___, int ____)
         => 0;
 }

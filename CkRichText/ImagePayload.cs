@@ -25,21 +25,24 @@ public class ImagePayload : RichPayload
             ImGui.Dummy(new Vector2(ImGui.GetTextLineHeight())); // Fallback to dummy if texture is invalid.
     }
 
-    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth)
+    public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth, int lineCount)
     {
-        if (curLineWidth != 0f)
-            _isInline = true;
+        var prevLineWidth = curLineWidth;
 
         // assert the new curLineWidth
         float newLineWidth = curLineWidth + ImGui.GetTextLineHeight();
+        Svc.Log.Information($"NewLineWidth: {newLineWidth}, CurLineWidth: {curLineWidth}, WrapWidth: {wrapWidth}");
         if (newLineWidth > wrapWidth)
         {
             curLineWidth = 0f;
+            _isInline = false;
             return 1;
         }
         else
         {
             curLineWidth = newLineWidth;
+            // Inline is dependant on if the previous curLineWidth was 0 and us being on the first line.
+            _isInline = !(lineCount is 1 && prevLineWidth is 0f);
             return 0;
         }
     }

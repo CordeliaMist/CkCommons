@@ -2,9 +2,11 @@ using CkCommons.Classes;
 using CkCommons.Gui;
 using CkCommons.Raii;
 using CkCommons.RichText;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
+using OtterGui.Text;
+using System.Drawing;
 using System.Globalization;
 
 namespace CkCommons.Chat;
@@ -81,16 +83,16 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         => $"Sent @ {message.Timestamp.ToString("T", CultureInfo.CurrentCulture)}\n[Right-Click] View Interactions";
     protected abstract void OnMiddleClick(T message);
     protected abstract void OnSendMessage(string message);
-    public void DrawChat(Vector2 region)
+    public void DrawChat(Vector2 region, WFlags flags = WFlags.NoScrollbar)
     {
         // Create a windows drawlist here so we have the outermost drawlist.
         Vector2 inputMin;
 
         using (var c = CkRaii.Child($"##ChatLogFrame-{Label}", region))
         {   
-            var chatlogSize = c.InnerRegion - new Vector2(0, ImGui.GetFrameHeightWithSpacing());
+            var chatlogSize = c.InnerRegion - new Vector2(0, ImUtf8.FrameHeightSpacing);
             // temporarily cleave the PushClipRect so that the chatlog confines to it.
-            DrawChatLog(chatlogSize);
+            DrawChatLog(chatlogSize, flags);
 
             DrawChatInputRow();
             inputMin = ImGui.GetItemRectMin();
@@ -105,7 +107,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         using var dis = ImRaii.Disabled(disableContent);
         using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
         var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
-        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, region.X);
+        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X);
 
         HandleAutoScroll();
         // Attempt to handle any popups we may have had (within the same context)
@@ -208,7 +210,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         if (ShouldScrollToBottom || (DoAutoScroll && unreadSinceScroll > 0))
         {
             ShouldScrollToBottom = false;
-            ImGui.SetScrollHereY(1.0f);
+            ImGui.SetScrollHereY();
             unreadSinceScroll = 0;
         }
     }

@@ -19,6 +19,7 @@ public abstract class RichPayload
     /// <param name="font"> The font used to draw this out, allowing for it to work with any font or any size. </param>
     /// <param name="wrapWidth"> the wrap width that the cached item should abide by. </param>
     /// <param name="curLineWidth"> the current width of the line the item is being drawn on. Less than full wrap width. </param>
+    /// <param name="curLines"> The current line being updated at point of entry. </param>
     /// <returns> the number of lines to be added </returns>
-    public abstract int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth);
+    public abstract int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth, int curLines);
 }
