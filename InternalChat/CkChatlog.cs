@@ -143,7 +143,6 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         var dummyH = 0;
         foreach (var msg in data)
             dummyH += CkRichText.GetRichTextLineHeight(msg.Message, ID);
-        Svc.Log.Information($"Total Dummy Height: {dummyH}");
         ImGui.Dummy(new Vector2(width, dummyH * ImUtf8.TextHeightSpacing - ImUtf8.ItemSpacing.Y));
     }
 
