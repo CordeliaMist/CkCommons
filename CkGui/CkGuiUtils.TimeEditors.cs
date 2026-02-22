@@ -1,7 +1,9 @@
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.ManagedFontAtlas;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using OtterGui.Text;
 
 namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
@@ -179,6 +181,51 @@ public static partial class CkGuiUtils
 
             // Right Spacing
             ImGui.TableNextColumn();
+        }
+    }
+
+    public static void DrawTimeSpanLine(string id, TimeSpan maxTime, ref TimeSpan timeRef, string format, bool editorMode)
+    {
+        var regex = new Regex(@"hh|mm|ss|fff");
+        var matches = regex.Matches(format).Select(m => m.Value);
+        using var timeId = ImRaii.PushId(id);
+        using (ImRaii.Group())
+        {
+            ImGui.Dummy(new Vector2(ImUtf8.FramePadding.X, 0));
+            ImUtf8.SameLineInner();
+            foreach (var match in matches)
+            {
+                DrawUnit(match, ref timeRef, maxTime, editorMode);
+                ImGui.SameLine(0, 0);
+            }
+        }
+        ImGui.GetWindowDrawList().AddRect(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), ImGui.GetColorU32(ImGuiCol.Border), 5f * ImGuiHelpers.GlobalScale, ImGuiHelpers.GlobalScale);
+    }
+
+    private static void DrawUnit(string unit, ref TimeSpan timeRef, TimeSpan maxTime, bool editorMode)
+    {
+        var text = unit switch
+        {
+            "hh" => $"{timeRef.Hours:00}h",
+            "mm" => $"{timeRef.Minutes:00}m",
+            "ss" => $"{timeRef.Seconds:00}s",
+            "fff" => $"{timeRef.Milliseconds:000}ms",
+            _ => "?"
+        };
+
+        var size = ImGui.CalcTextSize(text);
+        // Create an item-sized invisible button
+        ImGui.InvisibleButton(text, new(size.X + ImUtf8.FramePadding.X * 2f, ImGui.GetFrameHeight()));
+        var isHovered = ImGui.IsItemHovered(ImGuiHoveredFlags.RectOnly);
+        var col = isHovered && editorMode ? CkCol.IconOn.Uint() : ImGui.GetColorU32(ImGuiCol.Text);
+        var drawPos = ImGui.GetItemRectMin();
+        drawPos.Y += (ImGui.GetFrameHeight() - size.Y) * 0.5f;
+        ImGui.GetWindowDrawList().AddText(drawPos, col, text);
+
+        if (editorMode && isHovered)
+        {
+            AdjustTimeSpan(ref timeRef, maxTime, unit);
+            CkGui.AttachToolTip($"Adjust time with mouse wheel");
         }
     }
 

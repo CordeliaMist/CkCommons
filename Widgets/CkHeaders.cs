@@ -95,7 +95,7 @@ public class CkHeader
         var contentPosTL = contentRect.Min;
         var contentPosBL = contentPosTL + new Vector2(0, paddedHeight);
         var topSizeInner = new Vector2((contentWidthInner - dividerSpace) / 2, height);
-        var botSizeInner = new Vector2(topSizeInner.X, contentRect.Max.Y - winPadding.Y - contentPosBL.Y);
+        var botSizeInner = new Vector2(topSizeInner.X, contentRect.Max.Y - contentPosBL.Y);
 
         var expandedPosTR = innerMaxPos with { Y = innerMinPos.Y };
         var circleLeftCenter = innerMinPos + new Vector2(radius, paddedHeight + radius);
