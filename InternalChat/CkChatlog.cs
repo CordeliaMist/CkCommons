@@ -4,6 +4,7 @@ using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 using System.Globalization;
@@ -119,7 +120,10 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     private void DrawChatMessage(T message, float width)
     {
         if (SilenceList.Contains(message.UID))
+        {
+            DrawIgnoredMessageRow(width);
             return;
+        }
 
         // use CkRichText for enhanced display.
         CkRichText.Text(width, message.Message, ID);
@@ -133,6 +137,18 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         if (ImGui.IsItemClicked(ImGuiMouseButton.Middle))
             OnMiddleClick(message);
         CkGui.AttachToolTip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
+    }
+
+    private void DrawIgnoredMessageRow(float width)
+    {
+        var txtWidth = ImGui.CalcTextSize("Ignored Message");
+        var lineW = (width - ImUtf8.ItemInnerSpacing.X * 2 - txtWidth.X) / 2;
+        var min = ImGui.GetCursorScreenPos();
+        var lineY = min.Y + (ImUtf8.TextHeight / 2);
+
+        ImGui.GetWindowDrawList().AddLine(new Vector2(min.X, lineY), new Vector2(min.X + lineW, lineY), ImGuiColors.ParsedGrey.ToUint(), 2f);
+        CkGui.ColorTextCentered("Ignored Message", ImGuiColors.ParsedGrey);
+        ImGui.GetWindowDrawList().AddLine(new Vector2(min.X + width - lineW, lineY), new Vector2(min.X + width, lineY), ImGuiColors.ParsedGrey.ToUint(), 2f);
     }
 
     private void DrawChatEndDummy(IEnumerable<T> data, float width)
