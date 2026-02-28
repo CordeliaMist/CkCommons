@@ -115,10 +115,8 @@ public static partial class CkGui
     {
         var pos = ImGui.GetCursorScreenPos();
         var size = ImGui.CalcTextSize(text);
-        var fPad = ImGui.GetStyle().FramePadding;
-        pos.Y += fPad.Y;
+        var tagPadX = padding ?? ImUtf8.FramePadding.X;
         var tagCol = col ?? ImGui.GetColorU32(ImGuiCol.Button);
-        var tagPadX = padding ?? fPad.X;
         var padWidth = new Vector2(tagPadX, 0);
         // Draw out the text and stuff.
         ImGui.GetWindowDrawList().AddRectFilled(pos - padWidth, pos + size + padWidth, tagCol, ImGui.GetStyle().FrameRounding);

@@ -251,6 +251,15 @@ public static partial class CkGui
     public static bool IconTextButtonCentered(FAI icon, string text, float width, bool isInPopup = false, bool disabled = false, string id = "Identifier")
         => IconTextButtonCenteredInternal(icon, text, width, isInPopup ? new Vector4(1.0f, 1.0f, 1.0f, 0.0f) : null, disabled, id);
 
+    // Variant of the selectable that has a disabled state.
+    public static bool SelectableEx(ImU8String label, bool disabled, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2 size = default)
+    {
+        using var dis = ImRaii.Disabled(disabled);
+        return ImGui.Selectable(label, selected, flags, size);
+    }
+
+
+
     // Try to adjust overtime for simplification, so that it does not take up as much processing power.
     // At the moment while it is pretty it lacks proper performance optimizations and design caching.
     // See if we can manage better displays for it down the line if possible.

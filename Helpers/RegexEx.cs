@@ -27,10 +27,10 @@ public static partial class RegexEx
         return true;
     }
 
-    public static Match TryMatchTriggerWord(string message, string triggerWord)
+    public static Match TryMatchTriggerWord(string message, string triggerWord, bool ignoreCase = false)
     {
         var triggerRegex = $@"(?<=^|\s){triggerWord}(?=[^a-z])";
-        return Regex.Match(message, triggerRegex);
+        return Regex.Match(message, triggerRegex, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
     }
 
     public static string EnsureUniqueName<T>(string baseName, IEnumerable<T> collection, Func<T, string> nameSelector)

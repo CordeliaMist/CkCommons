@@ -4,12 +4,13 @@ using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
-using System.Drawing;
 using System.Globalization;
 
 namespace CkCommons.Chat;
+
 public abstract class CkChatlog<T> where T : CkChatMessage
 {
     protected readonly int ID;
@@ -106,9 +107,11 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     {
         using var dis = ImRaii.Disabled(disableContent);
         using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
-        var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
-        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X);
 
+        // Inner child that respects the scrollbar offset, if scrollbar was enabled. (helpful safeguard)
+        var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
+        var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X - ImGui.GetStyle().ScrollbarSize);
+        DrawChatEndDummy(messages.TakeLast(remainder), _.InnerRegion.X);
         HandleAutoScroll();
         // Attempt to handle any popups we may have had (within the same context)
         ShowPopups();
@@ -117,7 +120,10 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     private void DrawChatMessage(T message, float width)
     {
         if (SilenceList.Contains(message.UID))
+        {
+            DrawIgnoredMessageRow(width);
             return;
+        }
 
         // use CkRichText for enhanced display.
         CkRichText.Text(width, message.Message, ID);
@@ -132,6 +138,30 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             OnMiddleClick(message);
         CkGui.AttachToolTip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
     }
+
+    private void DrawIgnoredMessageRow(float width)
+    {
+        var txtWidth = ImGui.CalcTextSize("Ignored Message");
+        var lineW = (width - ImUtf8.ItemInnerSpacing.X * 2 - txtWidth.X) / 2;
+        var min = ImGui.GetCursorScreenPos();
+        var lineY = min.Y + (ImUtf8.TextHeight / 2);
+
+        ImGui.GetWindowDrawList().AddLine(new Vector2(min.X, lineY), new Vector2(min.X + lineW, lineY), ImGuiColors.ParsedGrey.ToUint(), 2f);
+        CkGui.ColorTextCentered("Ignored Message", ImGuiColors.ParsedGrey);
+        ImGui.GetWindowDrawList().AddLine(new Vector2(min.X + width - lineW, lineY), new Vector2(min.X + width, lineY), ImGuiColors.ParsedGrey.ToUint(), 2f);
+    }
+
+    private void DrawChatEndDummy(IEnumerable<T> data, float width)
+    {
+        var remaining = data.Count();
+        if (remaining is 0)
+            return;
+        var dummyH = 0;
+        foreach (var msg in data)
+            dummyH += CkRichText.GetRichTextLineHeight(msg.Message, ID);
+        ImGui.Dummy(new Vector2(width, dummyH * ImUtf8.TextHeightSpacing - ImUtf8.ItemSpacing.Y));
+    }
+
 
     public virtual void DrawChatInputRow()
     {
@@ -210,7 +240,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         if (ShouldScrollToBottom || (DoAutoScroll && unreadSinceScroll > 0))
         {
             ShouldScrollToBottom = false;
-            ImGui.SetScrollHereY();
+            ImGui.SetScrollHereY(1.0f);
             unreadSinceScroll = 0;
         }
     }

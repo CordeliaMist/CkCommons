@@ -24,10 +24,16 @@ public static partial class CkRichText
     // may be prone to flickering if done mid-text edit, look into more later.
     public static int GetRichTextLineHeight(string text, int cloneId)
     {
-        if (!_cache.TryGetValue(new RichTextKey(cloneId, text), out var richString))
-            return 0; // No size for empty text
-        // Return the size of the rich text.
-        return richString.RichTextLineCount;
+        if (_cache.TryGetValue(new RichTextKey(cloneId, text), out var richString))
+            return richString.RichTextLineCount;
+        // Otherwise we need to process and cache it.
+        var key = new RichTextKey(cloneId, text);
+        _accessedKeys.Add(key);
+        var newRichString = new RichTextString(text);
+        _cache[key] = newRichString;
+        // Process it once for a cache update.
+        newRichString.CheckUpdateCache(_currentFont, _currentWidth);
+        return newRichString.RichTextLineCount;
     }
 
     /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>

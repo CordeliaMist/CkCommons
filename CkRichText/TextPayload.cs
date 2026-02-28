@@ -102,8 +102,6 @@ public class TextPayload : RichPayload
             // add space char if not the last word
             if (i < words.Length - 1)
                 charIndex += 1;
-
-            Svc.Log.Information($"Word: '{word}' | WordWidth: {wordWidth} | RemainingWidth: {remainingWidth} | CurLineWidth: {curLineWidth}");
         }
         // Add the last line
         if (lineStart < _text.Length)

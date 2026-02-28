@@ -31,7 +31,6 @@ public class ImagePayload : RichPayload
 
         // assert the new curLineWidth
         float newLineWidth = curLineWidth + ImGui.GetTextLineHeight();
-        Svc.Log.Information($"NewLineWidth: {newLineWidth}, CurLineWidth: {curLineWidth}, WrapWidth: {wrapWidth}");
         if (newLineWidth > wrapWidth)
         {
             curLineWidth = 0f;

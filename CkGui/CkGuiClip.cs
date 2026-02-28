@@ -24,7 +24,7 @@ public static class CkGuiClip
         while (enumerator.MoveNext())
         {
             // draw to check for visibility.
-            using ImRaii.IEndObject endObject = ImRaii.Group();
+            using var endObject = ImRaii.Group();
             draw(enumerator.Current, usedWidth);
             endObject.Dispose();
             // If the item is not visible, we can skip it.
@@ -43,8 +43,7 @@ public static class CkGuiClip
             index++;
         }
 
-        return (lastVisible >= firstVisible && firstVisible != -1)
-            ? (lastVisible - firstVisible + 1) : 0;
+        return (lastVisible >= firstVisible && firstVisible != -1) ? (data.Count() - lastVisible -1) : 0;
     }
 
     /// <summary>
