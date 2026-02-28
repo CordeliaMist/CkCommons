@@ -1,4 +1,5 @@
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using System.Runtime.CompilerServices;
@@ -25,9 +26,27 @@ public static class Generic
         return list[index];
     }
 
+    /// <summary>
+    ///     Attempt to remove an item from a list as if it was a Queue.
+    /// </summary>
+    public static bool TryDequeue<T>(this IList<T> List, out T result)
+    {
+        if (List.Count > 0)
+        {
+            result = List[0];
+            List.RemoveAt(0);
+            return true;
+        }
+        else
+        {
+            result = default!;
+            return false;
+        }
+    }
+
     public static bool EqualsAny<T>(this T obj, params T[] values)
     {
-        return values.Any(x => x.Equals(obj));
+        return values.Any(x => x!.Equals(obj));
     }
 
     public static void SafeEnable<T>(this Hook<T>? hook) where T : Delegate
@@ -220,5 +239,22 @@ public static class Generic
         }
 
         return string.Empty;
+    }
+
+    public static string GetText(this SeString seStr, bool onlyFirst = false)
+    {
+        StringBuilder sb = new();
+        foreach (var x in seStr.Payloads)
+        {
+            if (x is TextPayload tp)
+            {
+                sb.Append(tp.Text);
+                if (onlyFirst)
+                    break;
+            }
+            if (x.Type == PayloadType.Unknown && x.Encode().SequenceEqual<byte>([0x02, 0x1d, 0x01, 0x03]))
+                sb.Append(' ');
+        }
+        return sb.ToString();
     }
 }

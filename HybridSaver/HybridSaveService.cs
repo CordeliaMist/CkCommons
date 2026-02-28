@@ -1,3 +1,4 @@
+using Dalamud.Plugin.Services;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,41 +77,58 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     private void SaveConfigAsync(IHybridConfig<T> config)
     {
         var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
+
         if (uniquePerAccount && !FileNames.HasValidProfileConfigs)
         {
             Svc.Log.Warning($"[SaveService] UID is null for {configPath}. Not saving.");
             return;
         }
-        // define a temporary filepath.
-        var temp = configPath + ".tmp";
+
+        var directory = Path.GetDirectoryName(configPath)!;
+        Directory.CreateDirectory(directory);
+
+        var antiCorruptionPath = $"{configPath}.new";
 
         try
         {
-            switch (config.SaveType)
+            // Recover from previous failed save
+            if (File.Exists(antiCorruptionPath))
             {
-                // If JSON, perform the File.WriteAllText method, with a serialize overload.
-                case HybridSaveType.Json:
-                    var json = config.JsonSerialize();
-                    File.WriteAllText(temp, json);
-                    break;
-                // If StreamWrite, perform the StreamWriter method, with a write overload.
-                case HybridSaveType.StreamWrite:
-                    var file = new FileInfo(temp);
-                    file.Directory?.Create();
-                    using (var s = file.Exists ? file.Open(FileMode.Truncate) : file.Open(FileMode.CreateNew))
-                    {
-                        using var w = new StreamWriter(s, Encoding.UTF8);
-                        config.WriteToStream(w);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+                Svc.Log.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
+                File.Move(antiCorruptionPath, saveTo);
+                Svc.Log.Warning($"Success. Please manually check {saveTo} file contents.");
             }
-            File.Move(temp, configPath, true);
+            // Write to antiCorruption file
+            WriteTempFile(config, antiCorruptionPath);
+            // Atomically move to real file after.
+            File.Move(antiCorruptionPath, configPath, overwrite: true);
         }
         catch (Exception ex)
         {
             Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
+        }
+    }
+
+    private static void WriteTempFile(IHybridConfig<T> config, string fullPath)
+    {
+        switch (config.SaveType)
+        {
+            case HybridSaveType.Json:
+                {
+                    var json = config.JsonSerialize();
+                    File.WriteAllText(fullPath, json, Encoding.UTF8);
+                    break;
+                }
+            case HybridSaveType.StreamWrite:
+                {
+                    using var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    using var writer = new StreamWriter(fs, Encoding.UTF8);
+                    config.WriteToStream(writer);
+                    break;
+                }
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
