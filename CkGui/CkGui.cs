@@ -295,16 +295,21 @@ public static partial class CkGui
     public static void SetCursorXtoCenter(float width)
         => ImGui.SetCursorPosX((ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X) / 2 - width / 2);
 
-    // make a non-framed variant of this soon.
-    public static void BooleanToColoredIcon(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
+    public static void BoolIcon(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
-        if (inline)
-            ImUtf8.SameLineInner();
+        if (inline) ImUtf8.SameLineInner();
+        var toPush = value ? ((colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue) : ((colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse);
+        using var col = ImRaii.PushColor(ImGuiCol.Text, toPush);
+        IconText(value ? trueIcon : falseIcon);
+    }
 
-        if (value)
-            using (ImRaii.PushColor(ImGuiCol.Text, (colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue)) FramedIconText(trueIcon);
-        else
-            using (ImRaii.PushColor(ImGuiCol.Text, (colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse)) FramedIconText(falseIcon);
+    // make a non-framed variant of this soon.
+    public static void BoolIconFramed(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
+    {
+        if (inline) ImUtf8.SameLineInner();
+        var toPush = value ? ((colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue) : ((colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse);
+        using var col = ImRaii.PushColor(ImGuiCol.Text, toPush);
+        FramedIconText(value ? trueIcon : falseIcon);
     }
 
     private static void CenterWindow(float width, float height, ImGuiCond cond = ImGuiCond.None)

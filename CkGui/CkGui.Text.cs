@@ -442,7 +442,7 @@ public static partial class CkGui
         // Get the text size.
         var pos = ImGui.GetCursorScreenPos();
         ImGui.Dummy(region);
-        if (ImGui.IsItemHovered())
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.RectOnly))
             col = hoverCol;
         ImGui.GetWindowDrawList().AddText(pos, col, icon.ToIconString());
     }
@@ -463,7 +463,7 @@ public static partial class CkGui
         var iconPosition = currentPos + (region - iconSize) * 0.5f;
         // Draw a dummy to fill the frame region.
         ImGui.Dummy(region);
-        if (ImGui.IsItemHovered())
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.RectOnly))
             col = hoverCol;
         ImGui.GetWindowDrawList().AddText(iconPosition, col, text);
     }

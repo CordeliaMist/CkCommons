@@ -1,4 +1,5 @@
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using System.Runtime.CompilerServices;
@@ -102,25 +103,4 @@ public static unsafe class AddonHelp
         Array.Copy(tmp, trimmed, written);
         return trimmed;
     }
-
-    public static string GetVfxPathByID(uint iconID)
-    {
-        foreach (var x in Svc.Data.GetExcelSheet<Status>())
-        {
-            if (x.Icon == iconID)
-                return x.HitEffect.ValueNullable?.Location.ValueNullable?.Location.ExtractText() ?? string.Empty;
-
-            if (x.MaxStacks > 1 && iconID >= x.Icon + 1 && iconID < x.Icon + x.MaxStacks)
-                return x.HitEffect.ValueNullable?.Location.ValueNullable?.Location.ExtractText() ?? string.Empty;
-        }
-        return string.Empty;
-    }
-
-    /// <summary>
-    ///     Get a VFX related path from a given .avfx name.
-    /// </summary>
-    /// <remarks> Can return an empty string if not found. </remarks>
-    public static string GetVfxPath(string path)
-        => string.IsNullOrEmpty(path) ? string.Empty : $"vfx/common/eff/{path}.avfx";
-
 }

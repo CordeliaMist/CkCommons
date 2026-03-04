@@ -20,7 +20,6 @@ public class FancySearchBar
         bool ret = false;
         bool needsClear = false;
 
-
         using var group = ImRaii.Group();
         var pos = ImGui.GetCursorScreenPos();
         // Mimic a child window, because if we use one, any button actions are blocked, and wont display the popups.

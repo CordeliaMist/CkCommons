@@ -56,7 +56,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Parameters are start position for the filter input field and selector width. </remarks>
     /// <returns> The remaining width for the text input. </returns>
     protected virtual float CustomFiltersWidth(float width)
-        => width;
+        => 0;
 
     protected virtual void DrawCustomFilters() { }
 
@@ -65,11 +65,11 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Also contains the buttons to add new items and folders if desired. </remarks>
     public void DrawFilterRow(float width)
     {
-        using ImRaii.IEndObject group = ImRaii.Group();
-        float searchW   = CustomFiltersWidth(width);
-        string tmp       = FilterValue;
-        string tooltip   = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
-        bool change    = FancySearchBar.Draw("Filter", width, ref tmp, tooltip, 128, width - searchW, DrawCustomFilters);
+        using var group = ImRaii.Group();
+        var buttonWidth = CustomFiltersWidth(width);
+        var tmp = FilterValue;
+        var tooltip = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
+        var change = FancySearchBar.Draw("Filter", width, ref tmp, tooltip, 128, buttonWidth, DrawCustomFilters);
 
         // the filter box had its value updated.
         if (change)

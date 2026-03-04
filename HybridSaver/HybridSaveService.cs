@@ -1,4 +1,3 @@
-using Dalamud.Plugin.Services;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,24 +17,31 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         FileNames = fileNameStructure;
     }
 
+    private Task? _saveLoopTask;
+
     public void Init()
     {
-        _ = Task.Run(async () =>
+        _saveLoopTask = Task.Run(async () =>
         {
             while (!_cts.Token.IsCancellationRequested)
             {
                 try
                 {
-                    await CheckDirtyConfigs();
-                    await Task.Delay(2000, _cts.Token); // Wait for 2 seconds before checking again
-                }
-                catch (TaskCanceledException)
-                {
-                    break;
+                    await FlushDirtyConfigs().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    Svc.Log.Error(ex, "[SaveService] Error while checking dirty configs.");
+                    Svc.Log.Error(ex, "[SaveService] Error flushing dirty configs. Will retry on next tick.");
+                }
+
+                try
+                {
+                    await Task.Delay(2000, _cts.Token).ConfigureAwait(false);
+                }
+                catch (TaskCanceledException)
+                {
+                    // expected when stopping
+                    break;
                 }
             }
         }, _cts.Token);
@@ -43,36 +49,67 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 
     public async Task Dispose()
     {
-        // wait for the save lock to finish, then cancel the cts and exit.
-        await _saveLock.WaitAsync().ConfigureAwait(false);
+        // Stop the background loop
         await _cts.CancelAsync().ConfigureAwait(false);
+
+        // wait for the loop to exit
+        if (_saveLoopTask != null)
+        {
+            try
+            {
+                await _saveLoopTask.ConfigureAwait(false);
+            }
+            catch (TaskCanceledException) { }
+        }
+
+        // Flush remaining dirty configs before exiting.
+        Svc.Log.Information("Flushing out remaining configs to save before stopping");
+        await FlushDirtyConfigs().ConfigureAwait(false);
         _cts.Dispose();
     }
 
     public void Save(IHybridConfig<T> config)
     {
+        if (_cts.IsCancellationRequested)
+            return;
+
         _saveLock.Wait();
-        _dirtyConfigs.Add(config);
-        //_logger.LogDebug($"Config {config.GetType().Name} marked as dirty.");
-        _saveLock.Release();
+        try
+        {
+            //_logger.LogDebug($"Config {config.GetType().Name} marked as dirty.");
+            _dirtyConfigs.Add(config);
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
     }
 
-    private async Task CheckDirtyConfigs()
+    private async Task FlushDirtyConfigs()
     {
-        if (_dirtyConfigs.Count == 0)
-            return;
+        List<IHybridConfig<T>> configs;
 
         // _logger.LogDebug("Checking for dirty configs.");
         // await for the current semaphore to be released.
         await _saveLock.WaitAsync().ConfigureAwait(false);
-        var configs = _dirtyConfigs.ToList();
-        _dirtyConfigs.Clear();
-        _saveLock.Release();
+        try
+        {
+            if (_dirtyConfigs.Count == 0)
+                return;
 
-        // Process each config
+            configs = _dirtyConfigs.ToList();
+            _dirtyConfigs.Clear();
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+
+        // Perform the config saves
         foreach (var config in configs)
             SaveConfigAsync(config);
     }
+
 
     private void SaveConfigAsync(IHybridConfig<T> config)
     {
@@ -88,7 +125,6 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         Directory.CreateDirectory(directory);
 
         var antiCorruptionPath = $"{configPath}.new";
-
         try
         {
             // Recover from previous failed save

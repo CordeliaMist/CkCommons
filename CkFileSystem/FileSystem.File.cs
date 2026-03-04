@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OtterGui.Log;
 using System.IO;
 
 namespace CkCommons.FileSystem;
@@ -91,7 +92,7 @@ public partial class CkFileSystem<T>
             changes = false;
             try
             {
-                Dictionary<string, string> data         = jObject["Data"]?.ToObject<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+                Dictionary<string, string> data = jObject["Data"]?.ToObject<Dictionary<string, string>>() ?? new Dictionary<string, string>();
                 string[] emptyFolders = jObject["EmptyFolders"]?.ToObject<string[]>() ?? Array.Empty<string>();
 
                 foreach (T value in objects)
@@ -144,6 +145,56 @@ public partial class CkFileSystem<T>
 
         Changed?.Invoke(FileSystemChangeType.Reload, Root, null, null);
         return changes;
+    }
+
+    public bool MigrateAndReloadFsFile(FileInfo fsToMerge, FileInfo baseFsFile, IEnumerable<T> objects, Func<T, string> toIdentifier, Func<T, string> toName)
+    {
+        if (!File.Exists(fsToMerge.FullName))
+            return false;
+
+        if (!File.Exists(baseFsFile.FullName))
+            return false;
+
+        try
+        {
+            // Load both JSON files
+            var sourceJson = JObject.Parse(File.ReadAllText(fsToMerge.FullName));
+            var baseJson = JObject.Parse(File.ReadAllText(baseFsFile.FullName));
+
+            // Merge 'Data' dictionaries without overwriting existing keys
+            var mergedData = new Dictionary<string, string>();
+            var sourceData = sourceJson["Data"]?.ToObject<Dictionary<string, string>>() ?? new();
+            var baseData = baseJson["Data"]?.ToObject<Dictionary<string, string>>() ?? new();
+
+            foreach (var kvp in baseData)
+                mergedData[kvp.Key] = kvp.Value;
+            foreach (var kvp in sourceData)
+                if (!mergedData.ContainsKey(kvp.Key))
+                    mergedData[kvp.Key] = kvp.Value;
+
+            // Merge 'EmptyFolders'
+            var mergedFolders = new HashSet<string>();
+            foreach (var folder in baseJson["EmptyFolders"]?.ToObject<string[]>() ?? Array.Empty<string>())
+                mergedFolders.Add(folder);
+            foreach (var folder in sourceJson["EmptyFolders"]?.ToObject<string[]>() ?? Array.Empty<string>())
+                mergedFolders.Add(folder);
+
+            // Create a single JObject to pass to your original Load function
+            var mergedJObject = new JObject
+            {
+                ["Data"] = JObject.FromObject(mergedData),
+                ["EmptyFolders"] = JArray.FromObject(mergedFolders.ToArray())
+            };
+
+            Svc.Log.Information($"Performing Load with the following JObject: {mergedJObject}");
+            // Call original Load
+            return Load(mergedJObject, objects, toIdentifier, toName);
+        }
+        catch (Exception ex)
+        {
+            Svc.Log.Error(ex, $"Error merging FS from {fsToMerge.FullName} and {baseFsFile.FullName}");
+            return false;
+        }
     }
 
     /// <summary>

@@ -9,10 +9,10 @@ namespace CkCommons.Gui;
 public static partial class CkGui
 {
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
-    public static unsafe void SetDragDropPayload<T>(ImU8String type, T data, ImGuiCond cond = 0) where T : struct
+    public static unsafe bool SetDragDropPayload<T>(ImU8String type, T data, ImGuiCond cond = 0) where T : struct
     {
         var span = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref data, 1));
-        ImGui.SetDragDropPayload(type, span, cond);
+        return ImGui.SetDragDropPayload(type, span, cond);
     }
 
     public static unsafe bool AcceptDragDropPayload<T>(string type, out T payload, ImGuiDragDropFlags flags = ImGuiDragDropFlags.None) where T : struct
