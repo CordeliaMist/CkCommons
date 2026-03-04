@@ -144,11 +144,11 @@ public static partial class CkGuiUtils
     /// <returns> True if the value was changed. </returns>
     /// <remarks> Useful for non-enum based dropdowns for simplistic options. </remarks>
     public static bool StringCombo(string label, float width, string current, out string newValue,
-        IEnumerable<string> options, string defaultText = "Select Item...")
+        IEnumerable<string> options, string defaultText = "Select Item...", CFlags flags = CFlags.None)
     {
         ImGui.SetNextItemWidth(width);
         var previewText = options.Contains(current) ? current.ToString() : defaultText;
-        using var combo = ImRaii.Combo(label, previewText);
+        using var combo = ImRaii.Combo(label, previewText, flags);
         if (combo)
             foreach (var data in options)
             {
