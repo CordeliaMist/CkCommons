@@ -137,6 +137,8 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             }
             // Write to antiCorruption file
             WriteTempFile(config, antiCorruptionPath);
+            // Backup if nessisary before we attempt to move.
+            CreateBackupIfNeeded(configPath);
             // Atomically move to real file after.
             File.Move(antiCorruptionPath, configPath, overwrite: true);
         }
@@ -165,6 +167,48 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 }
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    // Temp solution until we migrate to IReliableStorage.
+    private static void CreateBackupIfNeeded(string configPath)
+    {
+        if (!File.Exists(configPath))
+            return;
+
+        var directory = Path.GetDirectoryName(configPath)!;
+        var fileName = Path.GetFileName(configPath);
+
+        var bakFiles = Directory.GetFiles(directory, $"{fileName}.bak*")
+            .Select(f => new FileInfo(f))
+            .OrderByDescending(f => f.LastWriteTimeUtc)
+            .ToList();
+
+        // Check if we should create a new backup
+        if (bakFiles.Count > 0)
+        {
+            var newest = bakFiles[0];
+            if (DateTime.UtcNow - newest.LastWriteTimeUtc < TimeSpan.FromHours(2))
+                return;
+        }
+
+        var backupPath = Path.Combine(directory, $"{fileName}.bak{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
+
+        File.Copy(configPath, backupPath, overwrite: true);
+
+        // Refresh list and trim to 2 backups
+        bakFiles = Directory.GetFiles(directory, $"{fileName}.bak*")
+            .Select(f => new FileInfo(f))
+            .OrderByDescending(f => f.LastWriteTimeUtc)
+            .ToList();
+
+        for (int i = 2; i < bakFiles.Count; i++)
+        {
+            try
+            {
+                bakFiles[i].Delete();
+            }
+            catch { }
         }
     }
 }
