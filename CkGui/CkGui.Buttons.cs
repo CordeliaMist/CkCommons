@@ -4,7 +4,6 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 using OtterGuiInternal;
-using System.Drawing;
 namespace CkCommons.Gui;
 
 // Primary Partial Class

@@ -1,7 +1,6 @@
 using Dalamud.Bindings.ImGui;
 using OtterGui.Raii;
 using OtterGui.Text;
-using System;
 
 namespace CkCommons.Gui;
 

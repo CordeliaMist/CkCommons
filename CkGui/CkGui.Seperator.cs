@@ -1,9 +1,5 @@
 using Dalamud.Bindings.ImGui;
-using Dalamud.Interface;
-using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using OtterGui;
 using OtterGui.Text;
 
 namespace CkCommons.Gui;

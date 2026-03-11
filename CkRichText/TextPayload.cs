@@ -1,7 +1,6 @@
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
-using OtterGuiInternal;
 
 namespace CkCommons.RichText;
 public class TextPayload : RichPayload

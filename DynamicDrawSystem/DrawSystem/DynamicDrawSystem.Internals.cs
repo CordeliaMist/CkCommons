@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace CkCommons.DrawSystem;
 
 // the internal, private operations for the dynamic file system.

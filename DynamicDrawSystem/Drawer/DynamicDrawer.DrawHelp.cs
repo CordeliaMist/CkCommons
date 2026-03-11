@@ -6,7 +6,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
-using OtterGui.Text.EndObjects;
 
 namespace CkCommons.DrawSystem.Selector;
 

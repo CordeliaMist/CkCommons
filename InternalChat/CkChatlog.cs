@@ -4,7 +4,6 @@ using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 using System.Globalization;

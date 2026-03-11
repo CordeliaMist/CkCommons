@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OtterGui.Log;
 using System.IO;
 
 namespace CkCommons.FileSystem;
