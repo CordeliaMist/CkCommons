@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using static FFXIVClientStructs.STD.Helper.IStaticMemorySpace;
 
 namespace CkCommons;
 

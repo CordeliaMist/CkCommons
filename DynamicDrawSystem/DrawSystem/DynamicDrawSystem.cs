@@ -202,6 +202,30 @@ public abstract partial class DynamicDrawSystem<T> where T : class
         return false;
     }
 
+    public void SetShowIfEmptyState(string folderName, bool newVal)
+    {
+        if (_folderMap.TryGetValue(folderName, out var folder))
+            SetShowIfEmptyState(folder, newVal);
+    }
+
+    public bool SetShowIfEmptyState(IDynamicCollection<T> folder, bool showIfEmpty)
+    {
+        if (folder is DynamicFolderGroup<T> fc && fc.ShowIfEmpty != showIfEmpty)
+        {
+            fc.SetShowEmpty(showIfEmpty);
+            CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
+            return true;
+        }
+        else if (folder is DynamicFolder<T> f && f.ShowIfEmpty != showIfEmpty)
+        {
+            f.SetShowEmpty(showIfEmpty);
+            CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
+            return true;
+        }
+        // Fail otherwise.
+        return false;
+    }
+
     /// <summary>
     ///     Sets the opened state of multiple folders by name. <para />
     ///     This works on <b>FolderGroup's AND Folder's</b>.
@@ -217,9 +241,9 @@ public abstract partial class DynamicDrawSystem<T> where T : class
 
             // Set the open state.
             if (collection is DynamicFolderGroup<T> fc)
-                fc.SetIsOpen(newState);
+                fc.SetShowEmpty(newState);
             else if (collection is DynamicFolder<T> f)
-                f.SetIsOpen(newState);
+                f.SetShowEmpty(newState);
 
             anyOpened = true;
         }

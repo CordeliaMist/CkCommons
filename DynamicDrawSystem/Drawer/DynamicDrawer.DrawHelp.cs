@@ -6,7 +6,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
-using OtterGui.Text.EndObjects;
 
 namespace CkCommons.DrawSystem.Selector;
 
@@ -83,6 +82,9 @@ public partial class DynamicDrawer<T>
     /// <param name="flags"> The dynamic draw flags. </param>
     protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
+        if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
+            return;
+
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
@@ -104,6 +106,9 @@ public partial class DynamicDrawer<T>
     protected void DrawClippedCacheNode<TFolder>(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
         where TFolder : DynamicFolder<T>
     {
+        if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
+            return;
+
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
@@ -120,6 +125,9 @@ public partial class DynamicDrawer<T>
     /// <returns> True if the parent folder was visible, false otherwise. </returns>
     protected void DrawClippedCacheNode(DynamicFolderCache<T> cf, float indent, DynamicFlags flags)
     {
+        if (cf.Folder.TotalChildren is 0 && !cf.Folder.ShowIfEmpty)
+            return;
+
         using var id = ImRaii.PushId($"DDS_{Label}_{cf.Folder.ID}");
         DrawFolderBanner(cf.Folder, flags, _hoveredNode == cf.Folder || Selector.Selected.Contains(cf.Folder));
         if (flags.HasAny(DynamicFlags.DragDropFolders))
