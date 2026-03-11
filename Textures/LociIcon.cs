@@ -37,6 +37,10 @@ public static class LociIcon
     public static IDalamudTextureWrap? GetGameIconOrDefault(int iconId, int stacks, bool hiRes = true)
         => Svc.Texture.GetFromGameIcon(new((uint)(iconId + stacks - 1), hiRes: hiRes)).GetWrapOrDefault();
 
+
+    public static void Draw(int iconId, int stacks, Vector2 size)
+        => Draw((uint)iconId, stacks, size);
+
     /// <summary>
     ///     Draws the Loci icon. This only draw a single image so you can use IsItemHovered() outside.
     /// </summary>
