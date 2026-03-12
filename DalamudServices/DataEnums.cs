@@ -77,7 +77,9 @@ public enum IntendedUseEnum : byte
     Blunderville,
     CosmicExploration,
     OccultCrescent,
-    Unknown62
+    Unknown62,
+
+    UNK = byte.MaxValue
 }
 
 public class CommonlyUsedAttribute : Attribute { }
