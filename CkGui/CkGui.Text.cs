@@ -105,6 +105,43 @@ public static partial class CkGui
         ImUtf8.TextFrameAligned(text);
     }
 
+    public static void TextUnderlined(string text, uint color)
+    {
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        TextUnderlined(text);
+    }
+
+    public static void TextUnderlined(string text, Vector4 color)
+    {
+        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
+        TextUnderlined(text);
+    }
+
+    public static void TextUnderlined(string text)
+    {
+        var size = ImGui.CalcTextSize(text);
+        var cur = ImGui.GetCursorScreenPos();
+        cur.Y += size.Y;
+        ImGui.GetWindowDrawList().PathLineTo(cur);
+        cur.X += size.X;
+        ImGui.GetWindowDrawList().PathLineTo(cur);
+        ImGui.GetWindowDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
+        ImGui.TextUnformatted(text);
+    }
+
+    private static void TextUnderlinedInternal(string text, uint color)
+    {
+        var size = ImGui.CalcTextSize(text);
+        var cur = ImGui.GetCursorScreenPos();
+        cur.Y += size.Y;
+        ImGui.GetWindowDrawList().PathLineTo(cur);
+        cur.X += size.X;
+        ImGui.GetWindowDrawList().PathLineTo(cur);
+        ImGui.GetWindowDrawList().PathStroke(color);
+        ImGui.TextUnformatted(text);
+    }
+
+
     /// <summary> An Unformatted Text version of ImGui.TextColored accepting UINT </summary>
     public static void ColorText(string text, uint color)
     {
