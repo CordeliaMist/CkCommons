@@ -91,7 +91,7 @@ public partial class CkFileSystem<T> where T : class
     public (Leaf, int) CreateDuplicateLeaf(Folder parent, string name, T data)
     {
         name = name.FixName();
-        while (Search(parent, name) > 0)
+        while (Search(parent, name) >= 0)
             name = name.IncrementDuplicate();
         return CreateLeaf(parent, name, data);
     }
