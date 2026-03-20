@@ -218,7 +218,7 @@ public class TagCollection
         float rightEndOffset = 4 * ImGuiHelpers.GlobalScale;
 
         bool changed = DrawEditorCore(x, rightEndOffset, tooltipCol);
-        updatedCsvString = string.Join(", ", _latestStringTags);
+        updatedCsvString = string.Join(",", _latestStringTags);
         return changed;
     }
 
