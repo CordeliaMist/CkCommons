@@ -51,7 +51,7 @@ public class TagCollection
             return;
 
         _latestStringTags = tagList;
-        _latestString = string.Join(", ", tagList);
+        _latestString = string.Join(",", tagList);
     }
 
     /// <summary> 
@@ -141,7 +141,7 @@ public class TagCollection
         }
         CkGui.HelpText(HELP_TEXT, tooltipCol);
 
-        updatedCsvString = string.Join(", ", _latestStringTags);
+        updatedCsvString = string.Join(",", _latestStringTags);
         return change;
     }
 
