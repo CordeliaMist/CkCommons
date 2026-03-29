@@ -275,7 +275,7 @@ public class RichTextString
             }
         }
         // otherwise, it might be a named color, so try that.
-        else if (Enum.TryParse<XlDataUiColor>(value, true, out XlDataUiColor namedColor))
+        else if (Enum.TryParse<XlDataUiColor>(value, true, out var namedColor))
         {
             // if valid, grab the rowId of that result.
             rowId = (ushort)namedColor;
