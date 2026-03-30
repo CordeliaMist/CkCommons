@@ -263,8 +263,12 @@ public class RichTextString
     private bool TryParseColor(string value, out uint color)
     {
         color = 0;
-        // attempt to get the row id.
-        if (ushort.TryParse(value, out ushort rowId))
+
+        // Attempt first to see if it's a hexadecimal value, and if so, parse the direct hex from it
+        if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase) && uint.TryParse(value[2..], System.Globalization.NumberStyles.HexNumber, null, out color))
+            return true;
+        // Otherwise, attempt to get the row id.
+        else if (ushort.TryParse(value, out ushort rowId))
         {
             // if it was vaid, get the UIColor row.
             if (Svc.Data.GetExcelSheet<UIColor>().GetRowOrDefault(rowId) is { } row && rowId != 0)

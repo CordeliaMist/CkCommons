@@ -41,7 +41,7 @@ public abstract class IconTextTabBar<ITab> where ITab : Enum
 
         if (CkGui.IconTextButtonCentered(tab.Icon, tab.Text, buttonSize.X, true, isDisabled))
             TabSelection = tab.TargetTab;
-        CkGui.AttachToolTip(tab.Tooltip);
+        CkGui.AttachTooltip(tab.Tooltip);
 
         ImGui.SameLine();
         var xPost = ImGui.GetCursorScreenPos();

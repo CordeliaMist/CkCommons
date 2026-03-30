@@ -9,6 +9,7 @@ global using System.Text.RegularExpressions;
 
 global using CFlags = Dalamud.Bindings.ImGui.ImGuiComboFlags;
 global using DFlags = Dalamud.Bindings.ImGui.ImDrawFlags;
+global using HFlags = Dalamud.Bindings.ImGui.ImGuiHoveredFlags;
 global using FAI = Dalamud.Interface.FontAwesomeIcon;
 global using ITFlags = Dalamud.Bindings.ImGui.ImGuiInputTextFlags;
 global using WFlags = Dalamud.Bindings.ImGui.ImGuiWindowFlags;

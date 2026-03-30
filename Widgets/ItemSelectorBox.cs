@@ -243,7 +243,7 @@ public class ItemSelectorBox<T>
     //            items.Sort();
     //            change = true;
     //        }
-    //        CkGui.AttachToolTip("Sort Tags Alphabetically");
+    //        CkGui.AttachTooltip("Sort Tags Alphabetically");
     //        ImGui.SameLine();
     //    }
     //    CkGui.HelpText(HELP_TEXT, CkColor.VibrantPink.Uint());
@@ -355,7 +355,7 @@ public class ItemSelectorBox<T>
                     _currentName = string.Empty;
                 }   
             }
-            CkGui.AttachToolTip("Add Item...");
+            CkGui.AttachTooltip("Add Item...");
         }
 
         return changeOccurred;
@@ -366,7 +366,7 @@ public class ItemSelectorBox<T>
             var lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
             var rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
             wdl.AddRect(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), selected ? _colSelected : _bgCol, padding, ImDrawFlags.RoundCornersAll, CkStyle.ThinThickness());
-            CkGui.AttachToolTip(_helpStringShort, color: tooltipCol);
+            CkGui.AttachTooltip(_helpStringShort, color: tooltipCol);
 
             // Rearrangement.
             if (lClicked)

@@ -280,50 +280,6 @@ public static partial class CkGui
         TextWrapped(text);
     }
 
-    public static void TextWrappedTooltipFormat(string text, float wrapWidth, Vector4? color = null)
-    {
-        ImGui.PushTextWrapPos(wrapWidth);
-        // Split the text by regex.
-        var tokens = TooltipTokenRegex().Split(text);
-        // if there were no tokens, just print the text unformatted
-        if (tokens.Length <= 1)
-        {
-            ImGui.TextUnformatted(text);
-            ImGui.PopTextWrapPos();
-            return;
-        }
-
-        // Otherwise, parse it!
-        var useColor = false;
-        var firstLineSegment = true;
-
-        foreach (var token in tokens)
-        {
-            switch (token)
-            {
-                case TipSep: ImGui.Separator(); break;
-                case TipNL: ImGui.NewLine(); break;
-                case TipCol: useColor = !useColor; break;
-
-                default:
-                    if (string.IsNullOrEmpty(token))
-                        continue; // Skip empty tokens
-
-                    if (!firstLineSegment)
-                        ImGui.SameLine(0, 0);
-
-                    if (useColor && color.HasValue)
-                        ColorText(token, color.Value);
-                    else
-                        ImGui.TextUnformatted(token);
-
-                    firstLineSegment = false;
-                    break;
-            }
-        }
-        ImGui.PopTextWrapPos();
-    }
-
     public static void FontTextWrapped(string text, IFontHandle font, Vector4? color = null)
     {
         using var pushedFont = font.Push();
@@ -423,7 +379,7 @@ public static partial class CkGui
         {
             ImGui.SetClipboardText(text);
         }
-        AttachToolTip(tooltip);
+        AttachTooltip(tooltip);
     }
 
     public static void TextWrapped(string text)

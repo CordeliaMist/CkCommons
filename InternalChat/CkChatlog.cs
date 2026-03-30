@@ -135,7 +135,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         // Optional Middle click function.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Middle))
             OnMiddleClick(message);
-        CkGui.AttachToolTip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
+        CkGui.AttachTooltip(ToTooltip(message), disableContent, ImGuiColors.ParsedGold);
     }
 
     private void DrawIgnoredMessageRow(float width)

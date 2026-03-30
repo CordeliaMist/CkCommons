@@ -39,7 +39,7 @@ public class TriStateBoolCheckbox(uint crossColor = 0xFF0000FF, uint checkColor 
             if (Draw(label, ref newValue))
                 return true;
         }
-        CkGui.AttachToolTip("This attribute will " + (newValue.Value switch
+        CkGui.AttachTooltip("This attribute will " + (newValue.Value switch
         {
             true => "be enabled.",
             false => "be disabled.",

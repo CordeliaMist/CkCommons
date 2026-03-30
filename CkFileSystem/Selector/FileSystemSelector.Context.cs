@@ -97,7 +97,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
     {
         if (ImGui.MenuItem("Dissolve Folder"))
             _fsActions.Enqueue(() => CkFileSystem.Merge(folder, folder.Parent));
-        CkGui.AttachToolTip("Remove this folder and move all its children to its parent-folder, if possible.");
+        CkGui.AttachTooltip("Remove this folder and move all its children to its parent-folder, if possible.");
     }
 
     /// <summary> Expand all descendants of the folder by making them part of the statestruct list. </summary>
@@ -110,7 +110,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
             _fsActions.Enqueue(() => ToggleDescendants(folder, idx, true));
         }
 
-        CkGui.AttachToolTip("Successively expand all folders that descend from this folder, including itself.");
+        CkGui.AttachTooltip("Successively expand all folders that descend from this folder, including itself.");
     }
 
     /// <summary> Collapse all descendants of the folder by removing them from the statestruct list. </summary>
@@ -123,7 +123,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
             _fsActions.Enqueue(() => ToggleDescendants(folder, idx, false));
         }
 
-        CkGui.AttachToolTip("Successively collapse all folders that descend from this folder, including itself.");
+        CkGui.AttachTooltip("Successively collapse all folders that descend from this folder, including itself.");
     }
 
     /// <summary> Renames the label given for the folder. </summary>
@@ -138,14 +138,14 @@ public partial class CkFileSystemSelector<T, TStateStorage>
                 _filterDirty |= ExpandAncestors(folder);
             });
 
-        CkGui.AttachToolTip("Enter a full path here to move or rename the folder. Creates all required parent directories, if possible.");
+        CkGui.AttachTooltip("Enter a full path here to move or rename the folder. Creates all required parent directories, if possible.");
     }
 
     protected void SetQuickMove(CkFileSystem<T>.Folder folder, int which, string current, Action<string> onSelect)
     {
         if (ImGui.MenuItem($"Set as Quick Move Folder #{which + 1}"))
             onSelect(folder.FullName());
-        CkGui.AttachToolTip($"Set this folder as a quick move location{(current.Length > 0 ? $"instead of {current}." : ".")}");
+        CkGui.AttachTooltip($"Set this folder as a quick move location{(current.Length > 0 ? $"instead of {current}." : ".")}");
     }
 
     protected void ClearQuickMove(int which, string current, Action onSelect)
@@ -155,7 +155,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
 
         if (ImGui.MenuItem($"Clear Quick Move Folder #{which + 1}"))
             onSelect();
-        CkGui.AttachToolTip($"Clear the current quick move assignment of {current}.");
+        CkGui.AttachTooltip($"Clear the current quick move assignment of {current}.");
     }
 
     protected void QuickMove(CkFileSystem<T>.Leaf leaf, params string[] folders)
@@ -179,7 +179,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
                 });
         }
 
-        CkGui.AttachToolTip("Move the selected objects to a previously set-up quick move location, if possible.");
+        CkGui.AttachTooltip("Move the selected objects to a previously set-up quick move location, if possible.");
     }
 
     protected void RenameLeaf(CkFileSystem<T>.Leaf leaf)
@@ -198,7 +198,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
             ImGui.CloseCurrentPopup();
         }
 
-        CkGui.AttachToolTip("Enter a full path here to move or rename the search path of the leaf. " +
+        CkGui.AttachTooltip("Enter a full path here to move or rename the search path of the leaf. " +
             "Creates all required parent directories, if possible.\n\nDoes NOT rename the actual data!");
     }
 

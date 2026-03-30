@@ -225,7 +225,7 @@ public static partial class CkGuiUtils
         if (editorMode && isHovered)
         {
             AdjustTimeSpan(ref timeRef, maxTime, unit);
-            CkGui.AttachToolTip($"Adjust time with mouse wheel");
+            CkGui.AttachTooltip($"Adjust time with mouse wheel");
         }
     }
 

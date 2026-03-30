@@ -33,7 +33,7 @@ public static partial class CkRaii
 
         // The Icon section of the row.
         CkGui.FramedIconText(icon);
-        CkGui.AttachToolTip(iconTT);
+        CkGui.AttachTooltip(iconTT);
 
         // Ensure action is drawn beside.
         ImUtf8.SameLineInner();

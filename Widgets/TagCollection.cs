@@ -136,7 +136,7 @@ public class TagCollection
                 _latestStringTags.Sort();
                 change = true;
             }
-            CkGui.AttachToolTip("Sort Tags Alphabetically");
+            CkGui.AttachTooltip("Sort Tags Alphabetically");
             ImGui.SameLine();
         }
         CkGui.HelpText(HELP_TEXT, tooltipCol);
@@ -168,11 +168,11 @@ public class TagCollection
                 _latestStringTags.Sort();
                 change = true;
             }
-            CkGui.AttachToolTip("Sort Tags Alphabetically");
+            CkGui.AttachTooltip("Sort Tags Alphabetically");
             ImGui.SameLine(0, 0);
         }
         CkGui.FramedHoverIconText(FAI.QuestionCircle, CkCol.HelpHovered.Uint(), ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        CkGui.AttachToolTip(HELP_TEXT, color: tooltipCol);
+        CkGui.AttachTooltip(HELP_TEXT, color: tooltipCol);
 
         updatedTags = _latestStringTags;
         return change;
@@ -250,7 +250,7 @@ public class TagCollection
                 Button(tag, idx, true);
                 bool lClicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
                 bool rClicked = ImGui.IsItemClicked(ImGuiMouseButton.Right);
-                CkGui.AttachToolTip(HELP_TEXT_SHORT, color: tooltipCol);
+                CkGui.AttachTooltip(HELP_TEXT_SHORT, color: tooltipCol);
                 // Rearrangement.
                 if(ImGui.IsItemHovered() && ImGui.GetIO().KeyShift)
                 {
@@ -327,7 +327,7 @@ public class TagCollection
                 _setFocus = true;
                 _currentTag = string.Empty;
             }
-            CkGui.AttachToolTip("Add Tag...");
+            CkGui.AttachTooltip("Add Tag...");
         }
 
         return changeOccurred;

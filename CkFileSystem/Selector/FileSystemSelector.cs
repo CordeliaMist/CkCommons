@@ -204,7 +204,7 @@ public partial class CkFileSystemSelector<T, TStateStorage> where T : class wher
         const string newFolderName = "folderName";
         if (CkGui.IconButton(FAI.FolderPlus, inPopup: true))
             ImGui.OpenPopup(newFolderName);
-        CkGui.AttachToolTip("Create a new, empty folder. Can contain '/' to create a directory structure.");
+        CkGui.AttachTooltip("Create a new, empty folder. Can contain '/' to create a directory structure.");
 
         // Does not need to be delayed since it is not in the iteration itself.
         CkFileSystem<T>.Folder? folder = null;

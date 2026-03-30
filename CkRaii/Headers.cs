@@ -149,7 +149,7 @@ public static partial class CkRaii
 
         // tooltip handling.
         if (isHovered && !string.IsNullOrEmpty(tt))
-            CkGui.AttachToolTip(tt);
+            CkGui.AttachTooltip(tt);
 
         // Adjust the cursor.
         ImGui.SetCursorScreenPos(min + new Vector2(0, headerSize.Y));

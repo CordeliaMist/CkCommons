@@ -60,7 +60,7 @@ public abstract class IconTabBar<ITab> where ITab : Enum
                     ImGui.GetColorU32(ImGuiCol.Separator), 2f);
             }
         }
-        CkGui.AttachToolTip(tab.Tooltip);
+        CkGui.AttachTooltip(tab.Tooltip);
 
         // invoke action if we should.
         tab.CustomAction?.Invoke();

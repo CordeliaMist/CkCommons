@@ -399,15 +399,15 @@ public partial class DynamicDrawer<T>
     {
         if (ImGui.MenuItem("Expand Descendants"))
             AddPostDrawLogic(() => ToggleDescendants(node, true));
-        CkGui.AttachToolTip("Expand all child collection nodes.");
+        CkGui.AttachTooltip("Expand all child collection nodes.");
 
         if (ImGui.MenuItem("Collapse Descendants"))
             AddPostDrawLogic(() => ToggleDescendants(node, false));
-        CkGui.AttachToolTip("Collapse all child collection nodes.");
+        CkGui.AttachTooltip("Collapse all child collection nodes.");
 
         if (ImGui.MenuItem("Dissolve", enabled: ImGui.GetIO().KeyShift))
             AddPostDrawLogic(() => DrawSystem.Delete(node));
-        CkGui.AttachToolTip("Remove this FolderGroup, then move all children to the parent node." +
+        CkGui.AttachTooltip("Remove this FolderGroup, then move all children to the parent node." +
             "--SEP----COL--Hold SHIFT to delete.--COL--", ImGuiColors.DalamudYellow);
     }
 

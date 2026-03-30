@@ -16,7 +16,7 @@ public partial class CkFileSystemSelector<T, TStateStorage>
 
         if (CkGui.IconButton(FAI.FolderPlus))
             ImGui.OpenPopup(newFolderName);
-        CkGui.AttachToolTip("Create a new, empty folder. Can contain '/' to create a directory structure.");
+        CkGui.AttachTooltip("Create a new, empty folder. Can contain '/' to create a directory structure.");
 
         // Does not need to be delayed since it is not in the iteration itself.
         CkFileSystem<T>.Folder? folder = null;
@@ -53,6 +53,6 @@ public partial class CkFileSystemSelector<T, TStateStorage>
                 foreach (CkFileSystem<T>.Leaf leaf in _selectedPaths.OfType<CkFileSystem<T>.Leaf>())
                     delete(leaf.Value);
         }
-        CkGui.AttachToolTip(tt);
+        CkGui.AttachTooltip(tt);
     }
 }
