@@ -7,7 +7,7 @@ namespace CkCommons.HybridSaver;
 /// <summary> The Base Class for the hybrid save service, not wrapped. </summary>
 public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 {
-    private readonly HashSet<IHybridConfig<T>> _dirtyConfigs = [];
+    private readonly HashSet<IHybridSavable<T>> _dirtyConfigs = [];
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private readonly CancellationTokenSource _cts = new();
 
@@ -68,7 +68,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         _cts.Dispose();
     }
 
-    public void Save(IHybridConfig<T> config)
+    public void Save(IHybridSavable<T> config)
     {
         if (_cts.IsCancellationRequested)
             return;
@@ -87,7 +87,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 
     private async Task FlushDirtyConfigs()
     {
-        List<IHybridConfig<T>> configs;
+        List<IHybridSavable<T>> configs;
 
         // _logger.LogDebug("Checking for dirty configs.");
         // await for the current semaphore to be released.
@@ -111,15 +111,9 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     }
 
 
-    private void SaveConfigAsync(IHybridConfig<T> config)
+    private void SaveConfigAsync(IHybridSavable<T> config)
     {
-        var configPath = config.GetFileName(FileNames, out var uniquePerAccount);
-
-        if (uniquePerAccount && !FileNames.HasValidProfileConfigs)
-        {
-            // Svc.Log.Warning($"[SaveService] UID is null for {configPath}. Not saving.");
-            return;
-        }
+        var configPath = config.ToFilePath(FileNames);
 
         // This should be handled by the config file provider, not the saver.
         // We dont want to enforce directory creation if it does not exist.
@@ -144,7 +138,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             // Write to antiCorruption file
             WriteTempFile(config, antiCorruptionPath);
             // Backup if nessisary before we attempt to move.
-            CreateBackupIfNeeded(configPath);
+            CreateBackupIfNeeded(config, configPath);
             // Atomically move to real file after.
             File.Move(antiCorruptionPath, configPath, overwrite: true);
         }
@@ -154,7 +148,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
     }
 
-    private static void WriteTempFile(IHybridConfig<T> config, string fullPath)
+    private static void WriteTempFile(IHybridSavable<T> config, string fullPath)
     {
         switch (config.SaveType)
         {
@@ -177,7 +171,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     }
 
     // Temp solution until we migrate to IReliableStorage.
-    private static void CreateBackupIfNeeded(string configPath)
+    private static void CreateBackupIfNeeded(IHybridSavable<T> config, string configPath)
     {
         if (!File.Exists(configPath))
             return;
@@ -190,31 +184,34 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             .OrderByDescending(f => f.LastWriteTimeUtc)
             .ToList();
 
-        // Check if we should create a new backup
+        // if 0, cleanup any orphaned backups.
+        if (config.MaxBackups <= 0)
+        {
+            foreach (var file in bakFiles)
+                try { file.Delete(); } catch { }
+            return;
+        }
+
+        // Determine if backup is needed
+        var needsBackup = true;
         if (bakFiles.Count > 0)
         {
             var newest = bakFiles[0];
             if (DateTime.UtcNow - newest.LastWriteTimeUtc < TimeSpan.FromHours(2))
-                return;
+                needsBackup = false;
         }
 
-        var backupPath = Path.Combine(directory, $"{fileName}.bak{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
-
-        File.Copy(configPath, backupPath, overwrite: true);
-
-        // Refresh list and trim to 2 backups
-        bakFiles = Directory.GetFiles(directory, $"{fileName}.bak*")
-            .Select(f => new FileInfo(f))
-            .OrderByDescending(f => f.LastWriteTimeUtc)
-            .ToList();
-
-        for (int i = 2; i < bakFiles.Count; i++)
+        // Create the backup if required, and track it in our existing list
+        if (needsBackup)
         {
-            try
-            {
-                bakFiles[i].Delete();
-            }
-            catch { }
+            var backupPath = Path.Combine(directory, $"{fileName}.bak{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
+            File.Copy(configPath, backupPath, overwrite: true);
+            // Insert at the top of the list since it's the newest, avoiding a second disk read
+            bakFiles.Insert(0, new FileInfo(backupPath));
         }
+
+        // Populate a unified cleanup loop enforces the MaxBackups limit
+        for (int i = config.MaxBackups; i < bakFiles.Count; i++)
+            try { bakFiles[i].Delete(); } catch { }
     }
 }

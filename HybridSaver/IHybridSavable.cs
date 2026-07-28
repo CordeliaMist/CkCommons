@@ -2,7 +2,7 @@ using System.IO;
 
 namespace CkCommons.HybridSaver;
 
-public interface IHybridConfig<in T> where T : IConfigFileProvider
+public interface IHybridSavable<in T> where T : IConfigFileProvider
 {
     /// <summary> The current version of the configuration file. </summary>
     public int ConfigVersion { get; }
@@ -14,7 +14,9 @@ public interface IHybridConfig<in T> where T : IConfigFileProvider
     /// <remarks> Used for knowing when to make a backup of the file. </remarks>
     public DateTime LastWriteTimeUTC { get; }
 
-    public string GetFileName(T filenameService, out bool uniquePerAccount);
+    public int MaxBackups { get; }
+
+    public string ToFilePath(T filenameService);
 
     /// <summary> The Save method used if SaveType is Json. </summary>
     /// <returns> The JSON Object </returns>
@@ -23,4 +25,8 @@ public interface IHybridConfig<in T> where T : IConfigFileProvider
     /// <summary> The Save method used if SaveType is StreamWrite. </summary>
     /// <param name="writer"> the writer passed in from the SaveService. </param>
     public void WriteToStream(StreamWriter writer);
+
+    /// <summary> The displayed name of the type. </summary>
+    public string TypeName
+        => GetType().Name;
 }
