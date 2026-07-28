@@ -5,19 +5,19 @@ namespace CkCommons.Classes;
 ///     Yoinked from NightmareXIV's ECommons project, as it efficiently helps with datastreaming.
 ///     https://github.com/NightmareXIV/ECommons/blob/e5c432fcaecb340b246a187bbf174c61318fbd28/ECommons/CircularBuffers/CircularBuffer.cs
 /// </summary>
-public class CircularBuffer<T> : IEnumerable<T>
+public class CircularBuffer<T> : IEnumerable<T>, IReadOnlyCollection<T>
 {
-    private readonly T[] _buffer;
+    private T[] _buffer;
     private int _start;
     private int _end;
     private int _size;
 
     public CircularBuffer(int capacity)
-    : this((uint)capacity, new T[] { })
+    : this((uint)capacity, [])
     { }
 
     public CircularBuffer(uint capacity)
-        : this(capacity, new T[] { })
+        : this(capacity, [])
     { }
 
     /// <param name='items'>
@@ -51,13 +51,13 @@ public class CircularBuffer<T> : IEnumerable<T>
     public int Capacity => _buffer.Length;
 
     /// <summary> If the capacity has been reached, triggering the circular behavior. </summary>
-    public bool IsFull => Size == Capacity;
+    public bool IsFull => Count == Capacity;
 
     /// <summary> If the buffer has no elements. <para/>
-    public bool IsEmpty => Size == 0;
+    public bool IsEmpty => Count == 0;
 
     /// <summary> The number of items present in the buffer. </summary>
-    public int Size => _size;
+    public int Count => _size;
 
     /// <summary> First item in the circular buffer. (this[0]) </summary>
     /// <returns> The value of the element of type T at the front of the buffer. </returns>
@@ -162,6 +162,28 @@ public class CircularBuffer<T> : IEnumerable<T>
         --_size;
     }
 
+    public void Resize(int newCapacity)
+    {
+        if (newCapacity < 1) throw new ArgumentException("Capacity must be greater than zero.", nameof(newCapacity));
+
+        if (newCapacity == Capacity)
+            return;
+
+        var newBuffer = new T[newCapacity];
+        // Decide how many items survive
+        int itemsToCopy = Math.Min(_size, newCapacity);
+        // Copy newest items
+        int startIndex = _size - itemsToCopy;
+
+        for (int i = 0; i < itemsToCopy; i++)
+            newBuffer[i] = this[startIndex + i];
+
+        _buffer = newBuffer;
+        _start = 0;
+        _size = itemsToCopy;
+        _end = itemsToCopy == newCapacity ? 0 : itemsToCopy;
+    }
+
     /// <summary> Cleans up the buffer, removing all elements. Capacity will remain the same. </summary>
     public void Clear()
     {
@@ -183,7 +205,7 @@ public class CircularBuffer<T> : IEnumerable<T>
     /// <remarks>Segments may be empty.</remarks>
     /// <returns>An IList with 2 segments corresponding to the buffer content.</returns>
     public IList<ArraySegment<T>> ToArraySegments()
-        => new[] { ArrayOne(), ArrayTwo() };
+        => [ArrayOne(), ArrayTwo()];
 
     /// <summary> Returns an enumerator that iterates through this buffer. </summary>
     public IEnumerator<T> GetEnumerator()

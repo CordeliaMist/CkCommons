@@ -305,9 +305,9 @@ public static class CkColors
             CkCol.TipFrame          => new Vector4(0.977f, 0.380f, 0.640f, 0.914f),
 
             // CkGui.ColorSeperator
-            CkCol.Divider           => new Vector4(0.000f, 0.000f, 0.000f, 0.000f), // ADD_LATER
-            CkCol.DividerHovered    => new Vector4(0.000f, 0.000f, 0.000f, 0.000f), // ADD_LATER
-            CkCol.DividerActive     => new Vector4(0.000f, 0.000f, 0.000f, 0.000f), // ADD_LATER
+            CkCol.Divider           => new Vector4(0.145f, 0.157f, 0.204f, 1.000f),
+            CkCol.DividerHovered    => new Vector4(0.180f, 0.195f, 0.255f, 1.000f),
+            CkCol.DividerActive     => new Vector4(0.220f, 0.240f, 0.320f, 1.000f),
 
             // Favorite Star Utils
             CkCol.Favorite          => new Vector4(0.816f, 0.816f, 0.251f, 1.000f),
@@ -515,4 +515,16 @@ public static class CkColors
 
         Clipboard.SetText(sb.ToString());
     }
+
+    /// <summary>
+    ///   Inverts the RGB values of a uint color, excluding opacity. 
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint InvertColor(this uint x) => x ^ 0x00FFFFFFu;
+
+    /// <summary>
+    ///   Inverts the RGB values of a uint color, including opacity. 
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint InvertColorFull(this uint x) => x ^ 0xFFFFFFFFu;
 }
