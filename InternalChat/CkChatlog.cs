@@ -113,7 +113,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         using var _ = CkRaii.Child($"##ChatLog-{Label}", region, wFlags: flags);
 
         // Inner child that respects the scrollbar offset, if scrollbar was enabled. (helpful safeguard)
-        var messages = Messages.Skip(Math.Max(0, Messages.Size - 250)).Take(250);
+        var messages = Messages.Skip(Math.Max(0, Messages.Count - 250)).Take(250);
         var remainder = CkGuiClip.DynamicClippedDraw(messages, DrawChatMessage, _.InnerRegion.X - ImGui.GetStyle().ScrollbarSize);
         DrawChatEndDummy(messages.TakeLast(remainder), _.InnerRegion.X);
         HandleAutoScroll();
@@ -130,7 +130,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
         }
 
         // use CkRichText for enhanced display.
-        CkRichText.Text(width, message.Message, ID);
+        CkRichText.Text(width, message.Message, ID.ToString());
         // Attach popup if clicked.
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -162,7 +162,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             return;
         var dummyH = 0;
         foreach (var msg in data)
-            dummyH += CkRichText.GetRichTextLineHeight(msg.Message, ID);
+            dummyH += CkRichText.GetRichTextLineHeight(msg.Message, ID.ToString());
         ImGui.Dummy(new Vector2(width, dummyH * ImUtf8.TextHeightSpacing - ImUtf8.ItemSpacing.Y));
     }
 
@@ -205,7 +205,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
     protected void DrawTextPreview(string message, Vector2 textInputMinPos)
     {
         // we need to firstly get the calculated height of the CkRichText message.
-        var fetchedHeight = CkRichText.GetRichTextLineHeight(message, ID);
+        var fetchedHeight = CkRichText.GetRichTextLineHeight(message, ID.ToString());
 
         // if it is between frames calculating, for 1 draw frame the value can be 0.
         // This occurs because when we type a new character for our input string, we
@@ -234,7 +234,7 @@ public abstract class CkChatlog<T> where T : CkChatMessage
             wdl.AddRectFilled(winPos, winPos + c.InnerRegion.WithWinPadding(), 0xCC000000, 5, DFlags.RoundCornersAll);
             wdl.AddRect(winPos, winPos + c.InnerRegion.WithWinPadding(), ImGuiColors.ParsedGold.ToUint(), 5, DFlags.RoundCornersAll);
             wdl.PopClipRect();
-            CkRichText.Text(message, ID);
+            CkRichText.Text(message, ID.ToString());
         }
 
     }

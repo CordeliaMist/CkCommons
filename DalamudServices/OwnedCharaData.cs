@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 namespace CkCommons;
 
 /// <summary> 
-///     Static accessors for FFXIVClientStructs in regards to owned client objects.
+///   Static accessors for FFXIVClientStructs in regards to owned client objects.
 /// </summary>
 public static unsafe class OwnedObjects
 {

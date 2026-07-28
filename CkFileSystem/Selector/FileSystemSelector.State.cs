@@ -68,8 +68,8 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
         using var group = ImRaii.Group();
         var buttonWidth = CustomFiltersWidth(width);
         var tmp = FilterValue;
-        var tooltip = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
-        var change = FancySearchBar.Draw("Filter", width, ref tmp, tooltip, 128, buttonWidth, DrawCustomFilters);
+        var hint = FilterTooltip.Length > 0 ? FilterTooltip : string.Empty;
+        var change = FancySearchBar.DrawWithButtons("filter", hint, width, ref tmp, 128, buttonWidth, DrawCustomFilters);
 
         // the filter box had its value updated.
         if (change)
