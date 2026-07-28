@@ -1,10 +1,11 @@
 using CkCommons.Helpers;
 using CkCommons.Textures;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Lumina.Excel.Sheets;
 using System.Buffers.Binary;
 using System.Diagnostics;
-using Dalamud.Interface.Utility.Raii;
 
 namespace CkCommons.RichText;
 
@@ -21,6 +22,7 @@ public class RichTextString
     private Stack<uint> _strokeColors = new();
     private bool _isValid;
     private ImFontPtr _lastFont;
+    private float _lastStartX;
     private float _lastWrapWidth;
     private int _lineCount;
     private uint? CurrentStroke => _strokeColors.Count > 0 ? _strokeColors.Peek() : null;
@@ -37,9 +39,15 @@ public class RichTextString
     public int RichTextLineCount => _lineCount;
 
     /// <summary> Renders the combined richText for display. It is up to you to make sure the caches are valid. </summary>
-    public void Render(ImFontPtr font, float wrapWidth)
+    public void RenderTextWrappedDummy(ImFontPtr font, float wrapWidth)
     {
         using var _ = ImRaii.Group();
+        ImGui.Text(wrapWidth.ToString());
+        ImGui.SameLine();
+        var startX = ImGui.GetCursorStartPos().X;
+        var startXCursor = ImGui.GetCursorPosX();
+        ImGui.Text($"PosX={startXCursor},StartX={startX}");
+        ImGui.SameLine();
         // if there is a missmatch with the font pointer and wrapwidth, recalculate.
         if (!MatchesCachedState(font, wrapWidth))
         {
@@ -51,7 +59,9 @@ public class RichTextString
         // If not valid, just display the textwrap unformatted.
         if (!_isValid)
         {
-            ImGui.TextWrapped(RawText);
+            var splitIdx = ImGui.CalcWordWrapPositionA(font, ImGuiHelpers.GlobalScale, RawText, ImGui.GetContentRegionAvail().X);
+            ImGui.TextUnformatted(RawText[..splitIdx]);
+            ImGui.TextWrapped(RawText[splitIdx..]);
             return;
         }
 
@@ -81,7 +91,7 @@ public class RichTextString
                     image.Draw();
                     break;
 
-                case NewLinePayload:
+                case NewlinePayload:
                     ImGui.Spacing();
                     break;
 
@@ -155,7 +165,7 @@ public class RichTextString
                         _payloads.Add(new SeparatorPayload());
                         continue;
                     case "[para]":
-                        _payloads.Add(new NewLinePayload());
+                        _payloads.Add(new NewlinePayload());
                         continue;
                     case "[/color]" or "[/rawcolor]":
                         _payloads.Add(ColorPayload.Off);
@@ -289,6 +299,11 @@ public class RichTextString
                 return true;
             }
         }
+
+        // Raw AABBGGRR fallback
+        if (uint.TryParse(value, out color))
+            return true;
+
         return false;
     }
 }

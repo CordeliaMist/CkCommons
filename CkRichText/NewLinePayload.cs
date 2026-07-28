@@ -2,7 +2,7 @@ using Dalamud.Bindings.ImGui;
 
 namespace CkCommons.RichText;
 
-public class NewLinePayload : RichPayload
+public class NewlinePayload : RichPayload
 {
     public override int UpdateCache(ImFontPtr font, float wrapWidth, ref float curLineWidth, int curLines)
     {

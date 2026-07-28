@@ -18,16 +18,17 @@ public static partial class CkRichText
     public static void DrawColorHelpText()
     {
         var tooltip = $"--COL--Named Color Codes:--COL----SEP--{string.Join(", ", Enum.GetNames<XlDataUiColor>())}";
-        CkGui.HelpText(tooltip, ImGuiColors.TankBlue);
+        CkGui.HelpTextFramed(tooltip, ImGuiColors.TankBlue);
     }
 
     // may be prone to flickering if done mid-text edit, look into more later.
-    public static int GetRichTextLineHeight(string text, int cloneId)
+    public static int GetRichTextLineHeight(string text, string? id = null)
     {
-        if (_cache.TryGetValue(new RichTextKey(cloneId, text), out var richString))
+        id ??= string.Empty;
+        if (_cache.TryGetValue(new RichTextKey(id, text), out var richString))
             return richString.RichTextLineCount;
         // Otherwise we need to process and cache it.
-        var key = new RichTextKey(cloneId, text);
+        var key = new RichTextKey(id, text);
         _accessedKeys.Add(key);
         var newRichString = new RichTextString(text);
         _cache[key] = newRichString;
@@ -36,17 +37,17 @@ public static partial class CkRichText
         return newRichString.RichTextLineCount;
     }
 
-    /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
-    public static void Text(string text, int cloneId = 0)
-        => Text(_currentFont, _currentWidth, text, cloneId);
+    /// <inheritdoc cref="Text(ImFontPtr, float, string, string)"/>/>
+    public static void Text(string text, string? id = null)
+        => Text(_currentFont, _currentWidth, text, id);
 
-    /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
-    public static void Text(float wrapWidth, string text, int cloneId = 0)
-        => Text(_currentFont, wrapWidth, text, cloneId);
+    /// <inheritdoc cref="Text(ImFontPtr, float, string, string)"/>/>
+    public static void Text(float wrapWidth, string text, string? id = null)
+        => Text(_currentFont, wrapWidth, text, id);
 
-    /// <inheritdoc cref="Text(ImFontPtr, float, string, int)"/>/>
-    public static void Text(ImFontPtr fontPtr, string text, int cloneId = 0)
-        => Text(fontPtr, _currentWidth, text, cloneId);
+    /// <inheritdoc cref="Text(ImFontPtr, float, string, string)"/>/>
+    public static void Text(ImFontPtr fontPtr, string text, string? id = null)
+        => Text(fontPtr, _currentWidth, text, id);
 
     /// <summary>
     ///     Renders a rich text string, using the window as a cache key identifier.
@@ -62,9 +63,10 @@ public static partial class CkRichText
     ///     
     ///     For color number values, type the command "/xldata uicolor" into the in-game chat.
     /// </summary>
-    public static void Text(ImFontPtr fontPtr, float wrapWidth, string text, int cloneId = 0)
+    public static void Text(ImFontPtr fontPtr, float wrapWidth, string text, string? id = null)
     {
-        var key = new RichTextKey(cloneId, text);
+        id ??= string.Empty;
+        var key = new RichTextKey(id, text);
         _accessedKeys.Add(key); // Mark as accessed
 
         // If not cached, construct a new cache along with its internal payloads, and store it.
@@ -74,7 +76,7 @@ public static partial class CkRichText
             _cache[key] = richString;
         }
         // Render the thingy.
-        richString.Render(fontPtr, wrapWidth);
+        richString.RenderTextWrappedDummy(fontPtr, wrapWidth);
     }
 
     /// <summary>

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace CkCommons.RichText;
 
+// Likely will sunset this soon for a better method later, but keep for now.
+
 /// <summary>
 ///     A class dedicated to mimicing the structure of dalamuds SeString composition but for ImGui. <para/>
 ///     CkRichText allows for composed strings of colors, normal text, outlined text, images, and emotes. <para/>
@@ -14,7 +16,7 @@ public static partial class CkRichText
 {
     /// <summary> Represents a key for caching rich text strings. </summary>
     /// <remarks> The <paramref name="cloneId"/> helps stop rapid caching if in multiple windows. </remarks>
-    internal record RichTextKey(int cloneId, string rawText);
+    internal record RichTextKey(string id, string rawText);
 
     /// <summary> Cache for RichTextStrings to avoid re-creating them if already cached. </summary>
     internal static ConcurrentDictionary<RichTextKey, RichTextString> _cache = new();
