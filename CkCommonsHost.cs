@@ -12,10 +12,11 @@ public enum CkLogFilter
 {
     None        = 0,
     AudioSystem = 1 << 0,
-    RichText    = 1 << 1,
-    DrawSystem  = 1 << 2,
+    Emojis      = 1 << 1,
+    RichText    = 1 << 2,
+    DrawSystem  = 1 << 3,
 
-    All = AudioSystem | RichText | DrawSystem,
+    All = AudioSystem | Emojis | RichText | DrawSystem,
 }
 
 
@@ -30,13 +31,15 @@ public static class CkCommonsHost
 {
     public static IDalamudPlugin Instance = null;
     public static bool Disposed { get; private set; } = false;
-    
+    public static CkLogFilter LogFilter { get; private set; } = CkLogFilter.All;
+
     /// <summary>
     ///     CkCommons sections that use <see cref="IDalamudPlugin"/> accessors WON'T WORK calling this on plugin entry.
     /// </summary>
     public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, CkLogFilter logFilter = CkLogFilter.All)
     {
         Instance = instance;
+        LogFilter = logFilter;
         Svc.Init(pluginInterface);
 
         Svc.Log.MinimumLogLevel = LogEventLevel.Debug;
@@ -45,6 +48,7 @@ public static class CkCommonsHost
 
         // AudioSystem.Init();
         CkRichText.Init(logFilter.HasFlag(CkLogFilter.RichText));
+        NewRichText.Init();
     }
 
     public static void CheckForObfuscation()
@@ -64,6 +68,7 @@ public static class CkCommonsHost
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
         // Generic.Safe(AudioSystem.Dispose);
         Generic.Safe(CkRichText.Dispose);
+        Generic.Safe(NewRichText.Dispose);
         Generic.Safe(TextureManager.Dispose);
     }
 }

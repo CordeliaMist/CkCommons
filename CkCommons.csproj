@@ -56,4 +56,8 @@
         <!--For Internal Audio Channel Management to interface with the game until we can get direct scd edit access.-->
         <PackageReference Include="NAudio" Version="2.2.1" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="RichChatLog\" />
+	</ItemGroup>
 </Project>
