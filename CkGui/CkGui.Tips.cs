@@ -1,4 +1,3 @@
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
@@ -12,49 +11,48 @@ public static partial class CkGui
     public const string TipSep = "--SEP--";
     public const string TipNL = "--NL--";
     public const string TipCol = "--COL--";
-    public const HFlags TipHoverFlags = HFlags.AllowWhenDisabled;
 
     private static bool ShowTooltip(string? text, HFlags hoverFlags)
         => ImGui.IsItemHovered(hoverFlags) && !string.IsNullOrWhiteSpace(text);
 
     /// <summary> A helper function to attach a tooltip to a section in the UI currently hovered. </summary>
     /// <remarks> If the string is null, empty, or whitespace, will do early return at no performance impact. </remarks>
-    public static void AttachTooltip(string? text, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, HFlags hoverFlags = HFlags.None)
     {
         if (ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!);
     }
 
     /// <inheritdoc cref="AttachTooltip(string?, HFlags)"/>"
-    public static void AttachTooltip(string? text, uint color, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, uint color, HFlags hoverFlags = HFlags.None)
     {
         if (ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!, colorUint: color);
     }
 
     /// <inheritdoc cref="AttachTooltip(string?, HFlags)"/>"
-    public static void AttachTooltip(string? text, Vector4 color, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, Vector4 color, HFlags hoverFlags = HFlags.None)
     {
         if (ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!, color);
     }
 
     /// <inheritdoc cref="AttachTooltip(string?, HFlags)"/>"
-    public static void AttachTooltip(string? text, bool disabled, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, bool disabled, HFlags hoverFlags = HFlags.None)
     {
         if (!disabled && ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!);
     }
 
     /// <inheritdoc cref="AttachTooltip(string?, HFlags)"/>"
-    public static void AttachTooltip(string? text, bool disabled, uint color, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, bool disabled, uint color, HFlags hoverFlags = HFlags.None)
     {
         if (!disabled && ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!, colorUint: color);
     }
 
     /// <inheritdoc cref="AttachTooltip(string?, HFlags)"/>"
-    public static void AttachTooltip(string? text, bool disabled, Vector4 color, HFlags hoverFlags = TipHoverFlags)
+    public static void AttachTooltip(string? text, bool disabled, Vector4 color, HFlags hoverFlags = HFlags.None)
     {
         if (!disabled && ShowTooltip(text, hoverFlags))
             ToolTipInternal(text!, color);
@@ -225,41 +223,63 @@ public static partial class CkGui
         ImGui.PopTextWrapPos();
     }
 
-    public static void HelpText(string helpText, bool inner = false, uint? offColor = null)
+    public static void HelpText(string helpText, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextInternal(helpText, null, inner, offColor, hFlags);
+
+    public static void HelpText(string text, Vector4 tooltipCol, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextInternal(text, tooltipCol, inner, offColor, hFlags);
+
+    public static void HelpText(string helpText, uint tooltipCol, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextInternal(helpText, CkColors.ToVec4(tooltipCol), inner, offColor, hFlags);
+
+
+    public static void HelpTextFramed(string helpText, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextFramedInternal(helpText, null, inner, offColor, hFlags);
+
+    public static void HelpTextFramed(string text, Vector4 tooltipCol, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextFramedInternal(text, tooltipCol, inner, offColor, hFlags);
+
+    public static void HelpTextFramed(string helpText, uint tooltipCol, bool inner = false, uint? offColor = null, ImGuiHoveredFlags hFlags = ImGuiHoveredFlags.None)
+        => HelpTextFramedInternal(helpText, CkColors.ToVec4(tooltipCol), inner, offColor, hFlags);
+
+    private static void HelpTextInternal(string text, Vector4? tooltipColor, bool inner, uint? offColor, ImGuiHoveredFlags hFlags)
     {
         if (inner)
             ImUtf8.SameLineInner();
         else
             ImGui.SameLine();
 
-        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
-        FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        AttachTooltip(helpText);
+        var cursor = ImGui.GetCursorScreenPos();
+        var hoverBB = new ImRect(cursor, cursor + new Vector2(ImGui.GetTextLineHeight()));
+        bool hovering = ImGui.IsMouseHoveringRect(hoverBB.Min, hoverBB.Max);
+        IconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
+
+        if (tooltipColor.HasValue)
+            AttachTooltip(text, color: tooltipColor.Value, hFlags);
+        else
+            AttachTooltip(text, hFlags);
     }
 
-    public static void HelpText(string text, Vector4 tooltipCol, bool inner = false, uint? offColor = null)
+    private static void HelpTextFramedInternal(string text, Vector4? tooltipColor, bool inner, uint? offColor, ImGuiHoveredFlags hFlags)
     {
         if (inner)
             ImUtf8.SameLineInner();
         else
             ImGui.SameLine();
 
-        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
-        FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        AttachTooltip(text, color: tooltipCol);
-    }
+        var cursor = ImGui.GetCursorScreenPos();
+        var hoverBB = new ImRect(cursor, cursor + new Vector2(ImGui.GetTextLineHeight()));
+        bool hovering = ImGui.IsMouseHoveringRect(hoverBB.Min, hoverBB.Max);
 
-    public static void HelpText(string helpText, uint tooltipCol, bool inner = false, uint? offColor = null)
-    {
-        if (inner)
-            ImUtf8.SameLineInner();
+        FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
+
+        if (tooltipColor.HasValue)
+            AttachTooltip(text, color: tooltipColor.Value);
         else
-            ImGui.SameLine();
-
-        bool hovering = ImGui.IsMouseHoveringRect(ImGui.GetCursorScreenPos(), ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetTextLineHeight()));
-        FramedIconText(FAI.QuestionCircle, hovering ? ImGui.GetColorU32(ImGuiColors.TankBlue) : offColor ?? ImGui.GetColorU32(ImGuiCol.TextDisabled));
-        AttachTooltip(helpText, color: ColorHelpers.RgbaUintToVector4(tooltipCol));
+            AttachTooltip(text);
     }
+
+
 
 
     [GeneratedRegex($"({TipSep}|{TipNL}|{TipCol})", RegexOptions.Compiled | RegexOptions.CultureInvariant)]

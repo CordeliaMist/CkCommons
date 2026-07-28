@@ -10,7 +10,7 @@ public static partial class CkRaii
         => ChildPaddedH(id, width, height, bgCol,  CkStyle.ChildRounding(), rFlags, wFlags);
 
     /// <summary>
-    ///     ImRaii.Child variant, accepting <paramref name="width"/> as the InnerContentRegion().X dimension, and internally handles padding.
+    ///   ImRaii.Child variant, accepting <paramref name="width"/> as the InnerContentRegion().X dimension, and internally handles padding.
     /// </summary>
     /// <remarks> The passed in <paramref name="width"/> will have its winPaddingX appended before the child is made. </remarks>
     public static IEOContainer ChildPaddedH(string id, float width, float height, uint bgCol, float rounding, DFlags rFlags = DFlags.None, WFlags wFlags = WFlags.None)
@@ -28,7 +28,7 @@ public static partial class CkRaii
         => ChildPaddedW(id, width, height, bgCol,  CkStyle.ChildRounding(), rFlags, wFlags);
 
     /// <summary> 
-    ///     ImRaii.Child variant, accepting <paramref name="height"/> as the InnerContentRegion().Y dimension, and internally handles padding.
+    ///   ImRaii.Child variant, accepting <paramref name="height"/> as the InnerContentRegion().Y dimension, and internally handles padding.
     /// </summary>
     /// <remarks> The passed in <paramref name="height"/> will have its winPaddingY appended before the child is made. </remarks>
     public static IEOContainer ChildPaddedW(string id, float width, float height, uint bgCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
@@ -37,16 +37,16 @@ public static partial class CkRaii
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
 
-    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, uint, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, float, DFlags, WFlags)"/>/>
     public static IEOContainer ChildPadded(string id, Vector2 size, DFlags dFlags = DFlags.None)
         => ChildPadded(id, size, 0,  CkStyle.ChildRounding(), dFlags);
 
-    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, uint, float, DFlags, WFlags)"/>/>
+    /// <inheritdoc cref="ChildPadded(string, Vector2, uint, float, DFlags, WFlags)"/>/>
     public static IEOContainer ChildPadded(string id, Vector2 size, uint bgCol, DFlags dFlags = DFlags.None)
         => ChildPadded(id, size, bgCol,  CkStyle.ChildRounding(), dFlags);
 
     /// <summary> 
-    ///     ImRaii.Child variant that accepts InnerContentRegion dimensions, handling padding internally. 
+    ///   ImRaii.Child variant that accepts InnerContentRegion dimensions, handling padding internally. 
     /// </summary>
     /// <remarks> In this method, <paramref name="size"/> is expected to be the innerContentRegion() </remarks>
     public static IEOContainer ChildPadded(string id, Vector2 size, uint bgCol, float rounding, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
@@ -64,7 +64,7 @@ public static partial class CkRaii
         => FramedChildPaddedH(id, width, height, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags);
 
     /// <summary> 
-    ///     ImRaii.Child variant, accepting <paramref name="width"/> as the InnerContentRegion().X dimension, and internally handles padding.
+    ///   ImRaii.Child variant, accepting <paramref name="width"/> as the InnerContentRegion().X dimension, and internally handles padding.
     /// </summary>
     /// <remarks> The passed in <paramref name="width"/> will have its winPaddingX appended before the child is made. </remarks>
     public static IEOContainer FramedChildPaddedH(string id, float width, float height, uint bgCol, uint frameCol, float rounding, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
@@ -82,7 +82,7 @@ public static partial class CkRaii
         => FramedChildPaddedW(id, width, height, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags);
 
     /// <summary> 
-    ///     ImRaii.Child variant, accepting <paramref name="height"/> as the InnerContentRegion().Y dimension, and internally handles padding. 
+    ///   ImRaii.Child variant, accepting <paramref name="height"/> as the InnerContentRegion().Y dimension, and internally handles padding. 
     /// </summary>
     /// <remarks> The passed in <paramref name="height"/> will have its winPaddingY appended before the child is made. </remarks>
     public static IEOContainer FramedChildPaddedW(string id, float width, float height, uint bgCol, uint frameCol, float rounding, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
@@ -100,7 +100,7 @@ public static partial class CkRaii
         => FramedChild(id, size, bgCol, frameCol, rounding, CkStyle.ThinThickness(), dFlags, wFlags.WithPadding());
 
     /// <summary> 
-    ///     ImRaii.Child variant, accepting the size as the ContentRegion(), and internally handles padding. 
+    ///   ImRaii.Child variant, accepting the size as the ContentRegion(), and internally handles padding. 
     /// </summary>
     public static IEOContainer FramedChildPaddedWH(string id, Vector2 size, uint bgCol, uint frameCol, float rounding, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)
         => FramedChild(id, size, bgCol, frameCol, rounding, thickness, dFlags, wFlags.WithPadding());
@@ -117,7 +117,7 @@ public static partial class CkRaii
         => FrameChildPadded(id, size, bgCol, frameCol, CkStyle.ChildRounding(), CkStyle.ThinThickness(), dFlags, wFlags);
 
     /// <summary>
-    ///     ImRaii.Child variant that accepts InnerContentRegion dimensions, handling padding internally.
+    ///   ImRaii.Child variant that accepts InnerContentRegion dimensions, handling padding internally.
     /// </summary>
     /// <remarks> In this method, <paramref name="size"/> is expected to be the InnerContentRegion(), that will be padded. </remarks>
     public static IEOContainer FrameChildPadded(string id, Vector2 size, uint bgCol, uint frameCol, float rounding, float thickness, DFlags dFlags = DFlags.None, WFlags wFlags = WFlags.None)

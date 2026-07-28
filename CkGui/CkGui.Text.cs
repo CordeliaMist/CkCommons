@@ -105,43 +105,6 @@ public static partial class CkGui
         ImUtf8.TextFrameAligned(text);
     }
 
-    public static void TextUnderlined(string text, uint color)
-    {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
-        TextUnderlined(text);
-    }
-
-    public static void TextUnderlined(string text, Vector4 color)
-    {
-        using var _ = ImRaii.PushColor(ImGuiCol.Text, color);
-        TextUnderlined(text);
-    }
-
-    public static void TextUnderlined(string text)
-    {
-        var size = ImGui.CalcTextSize(text);
-        var cur = ImGui.GetCursorScreenPos();
-        cur.Y += size.Y;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        cur.X += size.X;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        ImGui.GetWindowDrawList().PathStroke(ImGuiColors.DalamudWhite.ToUint());
-        ImGui.TextUnformatted(text);
-    }
-
-    private static void TextUnderlinedInternal(string text, uint color)
-    {
-        var size = ImGui.CalcTextSize(text);
-        var cur = ImGui.GetCursorScreenPos();
-        cur.Y += size.Y;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        cur.X += size.X;
-        ImGui.GetWindowDrawList().PathLineTo(cur);
-        ImGui.GetWindowDrawList().PathStroke(color);
-        ImGui.TextUnformatted(text);
-    }
-
-
     /// <summary> An Unformatted Text version of ImGui.TextColored accepting UINT </summary>
     public static void ColorText(string text, uint color)
     {
@@ -343,6 +306,12 @@ public static partial class CkGui
         using (fontHandle.Push())
             return ImGui.CalcTextSize(text);
     }
+    
+    public static Vector2 CalcFontTextSize(string text, ImFontPtr fontToPush)
+    {
+        using (ImRaii.PushFont(fontToPush))
+            return ImGui.CalcTextSize(text);
+    }
 
     // Because ImGui.CalcTextSize is unreliable for larger font scales.
     public static unsafe Vector2 CalcTextSizeFontPtr(ImFontPtr fontPtr, string text)
@@ -382,9 +351,12 @@ public static partial class CkGui
         AttachTooltip(tooltip);
     }
 
-    public static void TextWrapped(string text)
+    public static void TextWrapped(string text, float wrapWidth = 0)
     {
-        ImGui.PushTextWrapPos(0);
+        if (wrapWidth > 0)
+            ImGui.PushTextWrapPos(ImGui.GetCursorPos().X + wrapWidth);
+        else
+            ImGui.PushTextWrapPos(0);
         ImGui.TextUnformatted(text);
         ImGui.PopTextWrapPos();
     }

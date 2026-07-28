@@ -139,7 +139,7 @@ public class TagCollection
             CkGui.AttachTooltip("Sort Tags Alphabetically");
             ImGui.SameLine();
         }
-        CkGui.HelpText(HELP_TEXT, tooltipCol);
+        CkGui.HelpTextFramed(HELP_TEXT, tooltipCol);
 
         updatedCsvString = string.Join(",", _latestStringTags);
         return change;

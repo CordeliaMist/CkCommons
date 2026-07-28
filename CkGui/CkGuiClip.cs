@@ -1,48 +1,66 @@
 using Dalamud.Bindings.ImGui;
 using OtterGui.Raii;
 using OtterGui.Text;
+using OtterGuiInternal;
 
 namespace CkCommons.Gui;
 
 // ClippedDraw Methods are taken from OtterGui's ImGuiClip func, and modified to allow for a width parameter.
 public static class CkGuiClip
 {
+    public static bool IsNextItemVisible(Vector2 estimatedSize)
+    {
+        var win = ImGuiInternal.GetCurrentWindow();
+        var clip = win.ClipRect;
+        var pos = win.DC.CursorPos;
+        var rect = new ImRect(pos, pos + estimatedSize);
+        return rect.Overlaps(clip);
+    }
+
+    public static unsafe bool WasItemVisible()
+    {
+        var clipRect = ImGuiInternal.GetCurrentWindow().ClipRect;
+        var itemRect = ImGuiNative.GetCurrentContext()->LastItemData.Rect;
+        return itemRect.Overlaps(clipRect);
+    }
+
     /// <summary>
-    ///     A variant of ImGuiClip that works with unfixed heights, allowing it to draw large performance friendly lists.
+    ///   A variant of ImGuiClip that works with unfixed heights, allowing it to draw large performance friendly lists.
     /// </summary>
-    /// <returns> Returns the remainder index. </returns>
+    /// <returns> The remaining data that is not drawn on the UI. Note the data drawn to know this still exists. </returns>
     public static int DynamicClippedDraw<T>(IEnumerable<T> data, Action<T, float> draw, float? width = null)
     {
-        using IEnumerator<T> enumerator = data.GetEnumerator();
-        float usedWidth = width ?? ImGui.GetContentRegionAvail().X;
-
-        int index = 0;
-        int firstVisible = -1;
-        int lastVisible = -1;
-
-        while (enumerator.MoveNext())
+        using var it = data.GetEnumerator();
+        
+        var usedWidth = width ?? ImGui.GetContentRegionAvail().X;
+        var count = data.Count();
+        var visible = false;
+        var idx = 0;
+        while (it.MoveNext())
         {
-            // draw to check for visibility.
-            using var endObject = ImRaii.Group();
-            draw(enumerator.Current, usedWidth);
-            endObject.Dispose();
-            // If the item is not visible, we can skip it.
-            if (ImGui.IsItemVisible())
-            {
-                if (firstVisible == -1)
-                    firstVisible = index;
+            // Draw each item within a group to capture it.
+            using var _ = ImRaii.Group();
+            draw(it.Current, usedWidth);
+            _.Dispose();
 
-                lastVisible = index;
-            }
-            else if (firstVisible != -1)
+            // Then detect if that drawn rect was visible in the view space.
+            if (!WasItemVisible())
             {
-                // went beyond the total visible range, so break out.
-                break;
+                // If not visible, but was marked as visible, we drew the last visible item,
+                // so return the remaining count.
+                if (visible)
+                    return Math.Max(0, count - idx - 1);
             }
-            index++;
+            else
+            {
+                // If it was, mark it as visible.
+                visible = true;
+            }
+
+            ++idx;
         }
-
-        return (lastVisible >= firstVisible && firstVisible != -1) ? (data.Count() - lastVisible -1) : 0;
+        // If everything was draw just return the negative count.
+        return ~idx;
     }
 
     /// <summary>

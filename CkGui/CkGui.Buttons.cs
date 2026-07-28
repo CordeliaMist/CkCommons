@@ -4,6 +4,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 using OtterGuiInternal;
+using System.Runtime.CompilerServices;
 namespace CkCommons.Gui;
 
 // Primary Partial Class
@@ -36,23 +37,91 @@ public static partial class CkGui
         return ImGuiHelpers.GetButtonSize(icon.ToIconString());
     }
 
+    public static Vector2 IconButtonsSize(params FAI[] icons)
+    {
+        using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
+        var text = string.Concat(icons.Select(i => i.ToIconString()));
+        var padding = ImUtf8.FramePadding * 2 * icons.Length;
+        return ImGuiHelpers.GetButtonSize(text) + padding;
+    }
+
     public static Vector2 IconSize(FAI icon)
     {
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         return ImGui.CalcTextSize(icon.ToIconString());
     }
 
-    public static Vector2 IconsSize(FAI[] icons)
+    public static Vector2 IconsSize(params FAI[] icons)
     {
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         var text = string.Concat(icons.Select(i => i.ToIconString()));
         return ImGui.CalcTextSize(text);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool ButtonEx(string label, Vector2 size = default, bool disabled = false)
+    {
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.Button(label, size);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool ButtonEx(string label, uint color, Vector2 size = default, bool disabled = false)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Button, color);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.Button(label, size);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool ButtonEx(string label, Vector4 color, Vector2 size = default, bool disabled = false)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Button, color);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.Button(label, size);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool SmallButtonEx(string label, bool disabled = false)
+    {
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.SmallButton(label);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool SmallButtonEx(string label, uint color, bool disabled = false)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Button, color);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.SmallButton(label);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool SmallButtonEx(string label, Vector4 color, bool disabled = false)
+    {
+        using var col = ImRaii.PushColor(ImGuiCol.Button, color);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
+        var ret = ImGui.SmallButton(label);
+        dis.Pop();
+        return ret && !disabled;
+    }
+
+
+
     public static bool IconButtonFramed(FAI icon, string? id = null, bool disabled = false, bool inPopup = false)
     {
         using var col = ImRaii.PushColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f), inPopup);
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
 
         var iconText = (id == null) ? icon.ToIconString() : id + icon.ToIconString();
@@ -82,7 +151,7 @@ public static partial class CkGui
 
     private static bool IconButtonInternal(FAI icon, uint? buttonCol = null, bool disabled = false, float? height = null, string? id = null)
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         
         var text = icon.ToIconString();
         var num = 0;
@@ -115,7 +184,7 @@ public static partial class CkGui
 
     private static bool IconTextButtonInternal(FAI icon, string text, Vector4? defaultColor = null, float? width = null, bool disabled = false, string id = "")
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         var num = 0;
         if (defaultColor.HasValue)
         {
@@ -158,7 +227,7 @@ public static partial class CkGui
 
     private static bool SmallIconTextButtonInternal(FAI icon, string text, Vector4? defaultColor = null, float? width = null, bool disabled = false, string id = "")
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         var num = 0;
         if (defaultColor.HasValue)
         {
@@ -207,7 +276,7 @@ public static partial class CkGui
 
     private static bool IconTextButtonCenteredInternal(FAI icon, string text, float width, Vector4 ? defaultColor = null, bool disabled = false, string id = "")
     {
-        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, disabled ? 0.5f : 1f);
+        using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         var num = 0;
         if (defaultColor.HasValue)
         {
