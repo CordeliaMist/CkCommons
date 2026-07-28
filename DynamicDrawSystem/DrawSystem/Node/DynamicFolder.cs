@@ -12,11 +12,11 @@ public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
 
     public string StringSplitter => "/";
     public DynamicFolderGroup<T> Parent { get; internal set; }
-    public int         Priority => 1;
-    public uint        ID       { get; internal set; }
-    public string      Name     { get; internal set; }
-    public string      FullPath { get; internal set; } = string.Empty;
-    public FolderFlags Flags    { get; private set; } = FolderFlags.None;
+    public int      Priority => 1;
+    public uint     ID       { get; internal set; }
+    public string   Name     { get; internal set; }
+    public string   FullPath { get; internal set; } = string.Empty;
+    public bool     Expanded { get; private set; } = false;
 
     // Stylizations.
     // (Can be protected as the cached folder uses the base ref)
@@ -30,14 +30,14 @@ public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
     protected internal DynamicSorter<DynamicLeaf<T>> Sorter;
     protected internal List<DynamicLeaf<T>> Children = [];
 
-    public DynamicFolder(DynamicFolderGroup<T> parent, FAI icon, string name, uint id,
-        DynamicSorter<DynamicLeaf<T>>? sorter = null, FolderFlags flags = FolderFlags.None)
+    public DynamicFolder(DynamicFolderGroup<T> parent, uint id, FAI icon, string name,
+        bool expanded = false, DynamicSorter<DynamicLeaf<T>>? sorter = null)
     {
         ID = id;
         Parent = parent;
         Icon = icon;
         Name = name.FixName();
-        Flags = flags;
+        Expanded = expanded;
         Sorter = sorter ?? new();
         UpdateFullPath();
         //Svc.Logger.Information($"Created Folder:\n" +
@@ -56,12 +56,6 @@ public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
 
     public bool IsRoot
         => false;
-
-    public bool IsOpen
-        => Flags.HasAny(FolderFlags.Expanded);
-
-    public bool ShowIfEmpty
-        => Flags.HasAny(FolderFlags.ShowIfEmpty);
 
     public IReadOnlyList<DynamicLeaf<T>> GetChildren()
         => Children;
@@ -112,11 +106,8 @@ public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
         UpdateFullPath();
     }
 
-    internal void SetIsOpen(bool value)
-        => Flags = value ? Flags | FolderFlags.Expanded : Flags & ~FolderFlags.Expanded;
-
-    internal void SetShowEmpty(bool value)
-        => Flags = value ? Flags | FolderFlags.ShowIfEmpty : Flags & ~FolderFlags.ShowIfEmpty;
+    internal void SetExpandedState(bool value)
+        => Expanded = value;
 
     internal void UpdateFullPath()
     {

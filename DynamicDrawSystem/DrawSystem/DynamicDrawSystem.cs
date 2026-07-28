@@ -79,23 +79,18 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     public bool TryGetFolder(string name, [NotNullWhen(true)] out IDynamicCollection<T>? folder)
         => _folderMap.TryGetValue(name, out folder);
 
-    // Dunno why this is needed anymore.
-    //public bool Equal(ReadOnlySpan<char> lhs, ReadOnlySpan<char> rhs)
-    //    => _nameComparer.BaseComparer.Compare(lhs, rhs) is 0;
-
     // Useful for dynamic folders wanting to contain their own nested folders.
     protected DynamicFolderGroup<T> GetFolderGroupByName(string parentName)
-       => _folderMap.TryGetValue(parentName, out var f) && f is DynamicFolderGroup<T> fg
-        ? fg : root;
+       => _folderMap.TryGetValue(parentName, out var f) && f is DynamicFolderGroup<T> fg ? fg : root;
 
-    protected bool AddFolderGroup(string name, DynamicFolderGroup<T>? requestedParent = null, FolderFlags flags = FolderFlags.None)
+    protected bool AddFolderGroup(string name, DynamicFolderGroup<T>? requestedParent = null)
     {
         // If the folder under the same name already exists, abort creation.
         if (_folderMap.ContainsKey(name))
             return false;
 
         var parent = requestedParent != null ? GetFolderGroupByName(requestedParent.Name) : root;
-        var folderGroup = new DynamicFolderGroup<T>(parent, idCounter + 1u, name, flags: flags);
+        var folderGroup = new DynamicFolderGroup<T>(parent, idCounter + 1u, name);
 
         // Folder is valid, attempt to assign it. If it fails, throw an exception.
         if (folderGroup.Parent.Children.Contains(folderGroup))
@@ -197,39 +192,15 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     // Sets the expanded state of a folder to a new value.
     public bool SetOpenState(IDynamicCollection<T> folder, bool isOpen)
     {
-        if (folder is DynamicFolderGroup<T> fc && fc.IsOpen != isOpen)
+        if (folder is DynamicFolderGroup<T> fc && fc.Expanded != isOpen)
         {
-            fc.SetIsOpen(isOpen);
+            fc.SetExpandedState(isOpen);
             CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
             return true;
         }
-        else if (folder is DynamicFolder<T> f && f.IsOpen != isOpen)
+        else if (folder is DynamicFolder<T> f && f.Expanded != isOpen)
         {
-            f.SetIsOpen(isOpen);
-            CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
-            return true;
-        }
-        // Fail otherwise.
-        return false;
-    }
-
-    public void SetShowIfEmptyState(string folderName, bool newVal)
-    {
-        if (_folderMap.TryGetValue(folderName, out var folder))
-            SetShowIfEmptyState(folder, newVal);
-    }
-
-    public bool SetShowIfEmptyState(IDynamicCollection<T> folder, bool showIfEmpty)
-    {
-        if (folder is DynamicFolderGroup<T> fc && fc.ShowIfEmpty != showIfEmpty)
-        {
-            fc.SetShowEmpty(showIfEmpty);
-            CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
-            return true;
-        }
-        else if (folder is DynamicFolder<T> f && f.ShowIfEmpty != showIfEmpty)
-        {
-            f.SetShowEmpty(showIfEmpty);
+            f.SetExpandedState(isOpen);
             CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, folder, null);
             return true;
         }
@@ -238,23 +209,17 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     }
 
     /// <summary>
-    ///     Sets the opened state of multiple folders by name. <para />
-    ///     This works on <b>FolderGroup's AND Folder's</b>.
+    ///   Sets the opened state of multiple folders by name. <para />
+    ///   This works on <b>FolderGroup's AND Folder's</b>.
     /// </summary>
-    protected void OpenFolders(List<string> toOpen, bool newState)
+    protected void OpenFolders(List<string> toOpen)
     {
         bool anyOpened = false;
         foreach (var collectionName in toOpen)
         {
             // Attempt to locate the collection.
-            if (!_folderMap.TryGetValue(collectionName, out var collection) || collection.IsOpen)
+            if (!_folderMap.TryGetValue(collectionName, out var collection) || collection.Expanded)
                 continue;
-
-            // Set the open state.
-            if (collection is DynamicFolderGroup<T> fc)
-                fc.SetShowEmpty(newState);
-            else if (collection is DynamicFolder<T> f)
-                f.SetShowEmpty(newState);
 
             anyOpened = true;
         }
@@ -265,8 +230,8 @@ public abstract partial class DynamicDrawSystem<T> where T : class
 
 
     /// <summary>
-    ///     Internally rename a defined folder in the DDS. <para />
-    ///     Auto-Sorts the parent folder's children if enabled. <para />
+    ///   Internally rename a defined folder in the DDS. <para />
+    ///   Auto-Sorts the parent folder's children if enabled. <para />
     /// </summary>
     public void Rename(IDynamicCollection<T> node, string newName)
     {
@@ -280,8 +245,8 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     }
 
     /// <summary>
-    ///     Splits path into successive subfolders of root and finds or creates the topmost folder. <para />
-    ///     <b> WARNING: Very unstable, not tested with non-FolderGroup paths. Could break things. </b>
+    ///   Splits path into successive subfolders of root and finds or creates the topmost folder. <para />
+    ///   <b> WARNING: Very unstable, not tested with non-FolderGroup paths. Could break things. </b>
     /// </summary>
     /// <returns> The topmost folder. </returns>
     /// <exception cref="Exception"> If a folder can't be found or created due to an existing non-folder child with the same name. </exception>
@@ -346,9 +311,9 @@ public abstract partial class DynamicDrawSystem<T> where T : class
             case Result.Success:
                 DDSChanged?.Invoke(DDSChange.BulkMove, newParent, null, null);
                 // If the folder is closed, open it.
-                if (!newParent.IsOpen)
+                if (!newParent.Expanded)
                 {
-                    newParent.SetIsOpen(true);
+                    newParent.SetExpandedState(true);
                     CollectionUpdated?.Invoke(CollectionUpdate.OpenStateChange, newParent, null);
                 }
                 break;

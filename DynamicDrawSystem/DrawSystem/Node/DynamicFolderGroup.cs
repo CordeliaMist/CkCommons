@@ -11,11 +11,11 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
 {
     public string StringSplitter => "//";
     public DynamicFolderGroup<T> Parent { get; internal set; }
-    public int          Priority => 0;
-    public uint         ID       { get; }
-    public string       Name     { get; internal set; }
-    public string       FullPath { get; internal set; } = string.Empty;
-    public FolderFlags  Flags    { get; internal set; } = FolderFlags.None;
+    public int      Priority => 0;
+    public uint     ID       { get; }
+    public string   Name     { get; internal set; }
+    public string   FullPath { get; internal set; } = string.Empty;
+    public bool     Expanded { get; internal set; } = false;
 
     // Stylizations.
     public uint NameColor     { get; internal set; } = uint.MaxValue;
@@ -29,16 +29,15 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
     internal DynamicSorter<IDynamicCollection<T>> Sorter;
     internal List<IDynamicCollection<T>> Children = [];
 
-    internal DynamicFolderGroup(DynamicFolderGroup<T> parent, uint id, string name, 
-        FAI icon = FAI.Folder, FAI iconOpen = FAI.FolderOpen, 
-        DynamicSorter<IDynamicCollection<T>>? sorter = null, FolderFlags flags = FolderFlags.None)
+    internal DynamicFolderGroup(DynamicFolderGroup<T> parent, uint id, string name, bool expanded = false,
+        FAI icon = FAI.Folder, FAI iconOpen = FAI.FolderOpen, DynamicSorter<IDynamicCollection<T>>? sorter = null)
     {
         Parent = parent;
         Icon = icon;
         IconOpen = iconOpen;
         Name = name.FixName();
         ID = id;
-        Flags = flags;
+        Expanded = expanded;
         Sorter = sorter ?? new();
         UpdateFullPath();
 
@@ -55,8 +54,6 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
 
     public int TotalChildren => Children.Count;
     public bool IsRoot => string.Equals(Name, DDSHelpers.RootName, StringComparison.Ordinal);
-    public bool IsOpen => Flags.HasAny(FolderFlags.Expanded);
-    public bool ShowIfEmpty => Flags.HasAny(FolderFlags.ShowIfEmpty);
 
     public IReadOnlyList<IDynamicCollection<T>> GetChildren()
         => Children;
@@ -189,11 +186,8 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
     internal void SortChildren()
         => Children.Sort((a, b) => a.Priority.CompareTo(b.Priority));
 
-    internal void SetIsOpen(bool value)
-        => Flags = value ? Flags | FolderFlags.Expanded : Flags & ~FolderFlags.Expanded;
-
-    internal void SetShowEmpty(bool value)
-        => Flags = value ? Flags | FolderFlags.ShowIfEmpty : Flags & ~FolderFlags.ShowIfEmpty;
+    internal void SetExpandedState(bool value)
+        => Expanded = value;
 
     internal void UpdateFullPath()
     {
@@ -217,5 +211,5 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
 
     // Creates the root folder collection of the dynamic folder system.
     public static DynamicFolderGroup<T> CreateRoot(IEnumerable<ISortMethod<IDynamicCollection<T>>>? sorter = null)
-        => new(null!, 0, DDSHelpers.RootName, FAI.Folder, sorter: new(sorter ?? []), flags: FolderFlags.All);
+        => new(null!, 0, DDSHelpers.RootName, true, FAI.Folder, sorter: [.. sorter ?? []]);
 }

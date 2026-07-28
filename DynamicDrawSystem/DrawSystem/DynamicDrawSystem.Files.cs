@@ -34,7 +34,7 @@ public partial class DynamicDrawSystem<T>
             j.WritePropertyName(group.Name);
             j.WriteValue(group.FullPath);
 
-            if (group.IsOpen)
+            if (group.Expanded)
                 opened.Add(group);
         }
         j.WriteEndObject();
@@ -46,7 +46,7 @@ public partial class DynamicDrawSystem<T>
         foreach (var folder in rootFolders.OfType<IDynamicFolder<T>>())
         {
             // Skip if the parent was root.
-            if (folder.IsOpen)
+            if (folder.Expanded)
                 opened.Add(folder);
 
             if (folder.Parent.IsRoot)
@@ -129,7 +129,7 @@ public partial class DynamicDrawSystem<T>
 
                 // Now we must ensure that these Folders or FolderGroups have the correct expanded state.
                 // This can affect what is displayed but we can process it internally if desired only.
-                OpenFolders(openedCollections, true);
+                OpenFolders(openedCollections);
             }
             catch (Exception ex)
             {
@@ -146,6 +146,18 @@ public partial class DynamicDrawSystem<T>
         // The entire reload process is now complete, and we can notify listeners of such.
         DDSChanged?.Invoke(DDSChange.FullReloadFinished, root, null, null);
         return foldersCreated;
+    }
+
+    // Temporary placeholder while DDS figures out how to reload with new data,
+    // while also ensuring a reset occurs regardless.
+    protected virtual void ResetData()
+    {
+        DDSChanged?.Invoke(DDSChange.FullReloadStarting, root, null, null);
+        // Reset all data, completely.
+        idCounter = 0;
+        _folderMap.Clear();
+        root.Children.Clear();
+        DDSChanged?.Invoke(DDSChange.FullReloadFinished, root, null, null);
     }
 
     /// <summary>

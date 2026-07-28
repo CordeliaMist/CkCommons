@@ -91,10 +91,8 @@ public class DynamicSelections<T> : IDisposable where T : class
         => DeselectInternal(entity);
 
     /// <summary>
-    ///     Selects an entity in the DDS. <para /> 
-    ///     Supports CTRL / SHIFT multi-selection behavior and updates accordingly. <para />
-    ///     <b>NOTICE:</b>
-    ///     This is very much pulled directly from Sundouleia's prototype model. It could be very prone to errors.
+    ///   Selects an entity in the DDS. <para /> 
+    ///   Supports CTRL / SHIFT multi-selection behavior and updates accordingly. <para />
     /// </summary>
     /// <param name="entity"> The entity being selected. </param>
     /// <param name="canAnchorSelect"> If we allow CTRL based multi-selection. </param>

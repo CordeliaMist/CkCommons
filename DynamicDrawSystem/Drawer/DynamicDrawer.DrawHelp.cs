@@ -30,7 +30,7 @@ public partial class DynamicDrawer<T>
     protected virtual void DrawSearchBar(float width, int length)
     {
         var tmp = FilterCache.Filter;
-        if (FancySearchBar.Draw("Filter", width, ref tmp, string.Empty, length))
+        if (FancySearchBar.Draw("##filter", width, ref tmp, length))
             FilterCache.Filter = tmp;
     }
 
@@ -73,8 +73,8 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the drawer.<br/>
-    ///     This node is expected to be filtered by the drawer / cache. <para />
+    ///   Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the drawer.<br/>
+    ///   This node is expected to be filtered by the drawer / cache. <para />
     /// </summary>
     /// <param name="cfg"> The CachedFolderGroup node to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
@@ -82,8 +82,9 @@ public partial class DynamicDrawer<T>
     /// <param name="flags"> The dynamic draw flags. </param>
     protected void DrawClippedCacheNode(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
     {
-        if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
-            return;
+        // This should be done in the override of buildCache
+        //if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
+        //    return;
 
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
@@ -95,9 +96,9 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
-    ///     This node is expected to be filtered by the drawer / cache. <para />
-    ///     Any folder not matching <typeparamref name="TFolder"/> is skipped.
+    ///   Draws a cached <see cref="DynamicFolderGroupCache{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
+    ///   This node is expected to be filtered by the drawer / cache. <para />
+    ///   Any folder not matching <typeparamref name="TFolder"/> is skipped.
     /// </summary>
     /// <param name="cfg"> The CachedFolderGroup node to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
@@ -106,8 +107,9 @@ public partial class DynamicDrawer<T>
     protected void DrawClippedCacheNode<TFolder>(DynamicFolderGroupCache<T> cfg, float groupIndent, float indent, DynamicFlags flags)
         where TFolder : DynamicFolder<T>
     {
-        if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
-            return;
+        // This should be done in the override of buildCache
+        //if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
+        //    return;
 
         using var id = ImRaii.PushId(Label + cfg.Folder.ID);
         DrawFolderGroupBanner(cfg.Folder, flags, _hoveredNode == cfg.Folder || Selector.Selected.Contains(cfg.Folder));
@@ -119,14 +121,15 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The clipped draw method for folder groups. <para />
-    ///     The parent's children are not drawn if the parent's children are not visible.
+    ///   The clipped draw method for folder groups. <para />
+    ///   The parent's children are not drawn if the parent's children are not visible.
     /// </summary>
     /// <returns> True if the parent folder was visible, false otherwise. </returns>
     protected void DrawClippedCacheNode(DynamicFolderCache<T> cf, float indent, DynamicFlags flags)
     {
-        if (cf.Folder.TotalChildren is 0 && !cf.Folder.ShowIfEmpty)
-            return;
+        // This should be done in the override of buildCache
+        //if (cfg.Folder.TotalChildren is 0 && !cfg.Folder.ShowIfEmpty)
+        //    return;
 
         using var id = ImRaii.PushId($"DDS_{Label}_{cf.Folder.ID}");
         DrawFolderBanner(cf.Folder, flags, _hoveredNode == cf.Folder || Selector.Selected.Contains(cf.Folder));
@@ -140,7 +143,6 @@ public partial class DynamicDrawer<T>
         using var _ = ImRaii.PushIndent(indent, false, indent != 0);
         DrawFolderLeaves(cf, flags);
     }
-
     #endregion Top Level CacheNodes Drawers
 
     #region DrawFolder Headers / Banners
@@ -172,7 +174,7 @@ public partial class DynamicDrawer<T>
 
         // Back to the start of the line, then draw the folder display contents.
         ImGui.SameLine(pos.X);
-        CkGui.FramedIconText(fg.IsOpen ? fg.IconOpen : fg.Icon);
+        CkGui.FramedIconText(fg.Expanded ? fg.IconOpen : fg.Icon);
         CkGui.ColorTextFrameAlignedInline(fg.Name, fg.NameColor);
     }
 
@@ -229,8 +231,8 @@ public partial class DynamicDrawer<T>
 
 
     /// <summary>
-    ///     Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
-    ///     You can use a <typeparamref name="TFolder"/> arguement make the drawer only display folders of that type.
+    ///   Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
+    ///   You can use a <typeparamref name="TFolder"/> arguement make the drawer only display folders of that type.
     /// </summary>
     /// <param name="cfg"> The cached folder group to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
@@ -266,7 +268,7 @@ public partial class DynamicDrawer<T>
 
         // Back to the start of the line, then draw the folder display contents.
         ImGui.SameLine(pos.X);
-        CkGui.FramedIconText(f.IsOpen ? FAI.CaretDown : FAI.CaretRight);
+        CkGui.FramedIconText(f.Expanded ? FAI.CaretDown : FAI.CaretRight);
         ImGui.SameLine();
         CkGui.IconTextAligned(f.Icon, f.IconColor);
         CkGui.ColorTextFrameAlignedInline(f.Name, f.NameColor);
@@ -322,7 +324,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Context Menu displayed when the selector background is right-clicked. <br/>
+    ///   Context Menu displayed when the selector background is right-clicked. <br/>
     /// </summary>
     protected void HandleMainContext()
     {
@@ -381,7 +383,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The Selector's Context Menu.
+    ///   The Selector's Context Menu.
     /// </summary>
     protected virtual void DrawContextMenu()
     {
@@ -393,7 +395,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The FolderGroup Context Menu.
+    ///   The FolderGroup Context Menu.
     /// </summary>
     protected virtual void DrawContextMenu(IDynamicFolderGroup<T> node)
     {
@@ -412,7 +414,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The Folder Context Menu.
+    ///   The Folder Context Menu.
     /// </summary>
     protected virtual void DrawContextMenu(IDynamicFolder<T> node)
     {
@@ -421,7 +423,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The Leaf Context Menu.
+    ///   The Leaf Context Menu.
     /// </summary>
     protected virtual void DrawContextMenu(IDynamicLeaf<T> node)
     {
@@ -430,17 +432,17 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Left-Click handling is processed seperately from detections.
-    ///     This is because based on what's drawn by the DrawInner() func,
-    ///     how a completed 'click' is determined can differ. <para />
-    ///     Buttons return true after OnMousePressed() -> OnMouseRelease(), while IsItemClicked() 
-    ///     is true on MouseDown() <para />
-    ///     <b> Overriding these implies you know what you are doing. </b>
+    ///   Left-Click handling is processed seperately from detections.
+    ///   This is because based on what's drawn by the DrawInner() func,
+    ///   how a completed 'click' is determined can differ. <para />
+    ///   Buttons return true after OnMousePressed() -> OnMouseRelease(), while IsItemClicked() 
+    ///   is true on MouseDown() <para />
+    ///   <b> Overriding these implies you know what you are doing. </b>
     /// </summary>
     protected virtual void HandleLeftClick(IDynamicCollection<T> node, DynamicFlags flags)
     {
         // Handle Folder Toggle.
-        DrawSystem.SetOpenState(node, !node.IsOpen);
+        DrawSystem.SetOpenState(node, !node.Expanded);
 
         // Handle Selection.
         if (flags.HasAny(DynamicFlags.SelectableFolders))
@@ -456,7 +458,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Defines hover, drag-drop, and other detection logic for a node. <para />
+    ///   Defines hover, drag-drop, and other detection logic for a node. <para />
     /// </summary>
     protected virtual void HandleDetections(IDynamicCollection<T> node, DynamicFlags flags)
     {

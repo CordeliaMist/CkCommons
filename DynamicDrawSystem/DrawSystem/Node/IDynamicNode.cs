@@ -72,7 +72,7 @@ public interface IDynamicCollection<T> : IDynamicNode<T> where T : class
     /// <summary>
     ///     Associated Flags.
     /// </summary>
-    public FolderFlags Flags { get; }
+    public bool Expanded { get; }
 
     /// <summary>
     ///     The color on the folder label when drawn.
@@ -113,16 +113,6 @@ public interface IDynamicCollection<T> : IDynamicNode<T> where T : class
     ///     If this folder is the root folder. (Root has ID 0)
     /// </summary>
     public bool IsRoot { get; }
-
-    /// <summary>
-    ///     If the folder is expanded.
-    /// </summary>
-    public bool IsOpen { get; }
-
-    /// <summary>
-    ///     If this folder should render even when 0 children are present. (A helper for drawers)
-    /// </summary>
-    public bool ShowIfEmpty { get; }
 
     internal static bool Concat(IDynamicCollection<T> path, StringBuilder sb)
     {

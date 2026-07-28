@@ -1,18 +1,5 @@
 namespace CkCommons.DrawSystem;
 
-/// <summary>
-///     Flags that determine a folder's display behavior.
-/// </summary>
-[Flags]
-public enum FolderFlags : byte
-{
-    None        = 0 << 0,
-    Expanded    = 1 << 0, // If the folder is expanded.
-    ShowIfEmpty = 1 << 1, // If the folder should display even with 0 children.
-
-    All = Expanded | ShowIfEmpty, // Default flags for the root folder.
-}
-
 [Flags]
 public enum DynamicFlags : uint
 {

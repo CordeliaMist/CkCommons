@@ -186,8 +186,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
             lock (_updateLock)
             {
                 toSort.Clear();
-            // Update the flat cache.
-            flatNodeCache = [RootCache.Folder, .. RootCache.GetAllDescendants()];
+                // Update the flat cache.
+                flatNodeCache = [RootCache.Folder, .. RootCache.GetAllDescendants()];
             }
         }
     }
@@ -210,7 +210,7 @@ public class DynamicFilterCache<T> : IDisposable where T : class
             // Firstly, get if the folder itself is visible.
             visible |= IsVisible(fc.Folder);
             // If the folder is opened, recursively process all children.
-            if (fc.Folder.IsOpen)
+            if (fc.Folder.Expanded)
             {
                 // Pre-sort the children until we find a better solution for this.
                 // Computation is minimal performance impact due to it only updating on dirty filters.
@@ -240,7 +240,7 @@ public class DynamicFilterCache<T> : IDisposable where T : class
                 else
                 {
                     fc.Children = [.. fc.Folder.Sorter
-                        .SortItems(childNodes.Select(c => c.Folder))
+                    .SortItems(childNodes.Select(c => c.Folder))
                         .Select(sorted => childNodes.First(c => c.Folder == sorted))];
                 }
             }
@@ -257,7 +257,7 @@ public class DynamicFilterCache<T> : IDisposable where T : class
             // Firstly, get if the folder itself is visible.
             visible |= IsVisible(folder.Folder);
             // If opened, recursively process all children.
-            if (folder.Folder.IsOpen)
+            if (folder.Folder.Expanded)
             {
                 // Update the cached folder's children.
                 folder.Children = folder.Folder.Sorter.SortItems(folder.Folder.Children.Where(IsVisible)).ToList();
