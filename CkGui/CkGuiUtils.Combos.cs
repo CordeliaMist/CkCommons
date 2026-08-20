@@ -33,7 +33,7 @@ public static partial class CkGuiUtils
             ImGui.SetNextWindowPos(ImGui.GetItemRectMin() with { Y = ImGui.GetItemRectMax().Y });
             using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One * 8f)
                 .Push(ImGuiStyleVar.WindowRounding, 4f).Push(ImGuiStyleVar.PopupBorderSize, 1);
-            using var c = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedPink);
+            using var c = ImRaii.PushColor(ImGuiCol.Border, CkCol.TipFrame.Vec4());
             using var popup = ImRaii.Popup(popupId);
             if (popup)
             {

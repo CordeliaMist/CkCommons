@@ -4,6 +4,7 @@ using CkCommons.Widgets;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
 
@@ -286,7 +287,7 @@ public partial class DynamicDrawer<T>
         wdl.ChannelsSetCurrent(1);
 
         // Should make this have variable heights later.
-        ClippedDraw(cf.Children, DrawLeafClipped, ImUtf8.FrameHeightSpacing, flags);
+        ImGuiClip.ClippedDraw(cf.Children, leaf => DrawLeafClipped(leaf, flags), ImUtf8.FrameHeightSpacing);
 
         wdl.ChannelsSetCurrent(0); // Background.
         var gradientTL = new Vector2(folderMin.X, folderMax.Y);
@@ -495,26 +496,7 @@ public partial class DynamicDrawer<T>
             ImGui.OpenPopup(node.FullPath);
     }
 
-    // Special clipped draw just for the DynamicDrawer.
-    protected void ClippedDraw<I>(IReadOnlyList<I> data, Action<I, DynamicFlags> draw, float lineHeight, DynamicFlags flags)
-    {
-        using var clipper = ImUtf8.ListClipper(data.Count, lineHeight);
-        while (clipper.Step())
-        {
-            for (var actualRow = clipper.DisplayStart; actualRow < clipper.DisplayEnd; actualRow++)
-            {
-                if (actualRow >= data.Count)
-                    return;
-
-                if (actualRow < 0)
-                    continue;
-
-                draw(data[actualRow], flags);
-            }
-        }
-    }
-
-    // For drawing recursive FolderGroups
+    // For drawing recursive FolderGroups (Obsolute?)
     protected void DynamicClippedDraw<I>(IReadOnlyList<I> data, Action<I, DynamicFlags> draw, DynamicFlags flags)
     {
         using IEnumerator<I> enumerator = data.GetEnumerator();

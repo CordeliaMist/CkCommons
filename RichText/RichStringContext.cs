@@ -14,7 +14,7 @@ public struct RichStringContext(ImFontPtr font, float initX, float startX, float
     public float InitX = initX;
     public float LineStartX = startX;
     public float LineEndX = endX;
-    public float CurrLineWidth = initX;
+    public float CurrLineWidth = initX - startX;
 
     public int LineCount = 1;
 

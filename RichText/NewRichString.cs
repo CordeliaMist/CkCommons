@@ -40,6 +40,8 @@ public class NewRichString
     /// </summary>
     public bool OnlyEmojis => _payloads.Count > 0 && _payloads.All(p => p is EomjiSegment);
     
+    public bool IsValid => _isValid;
+
     /// <summary>
     ///   Renders the text similar to ImGui.TextWrapped, with a customizable font display.
     /// </summary>
@@ -228,8 +230,8 @@ public class NewRichString
     {
         // update the payload to convert the \n and \r\n into paragraph and newline splits.
         rawText = rawText.Replace("\r\n", "\n"); // normalize newlines
-        rawText = rawText.Replace("\n\n", "[para]");
-        rawText = rawText.Replace("\n", "[para]");
+        //rawText = rawText.Replace("\n\n", "[para]"); // Double newline are large gaps
+        rawText = rawText.Replace("\n", "[br]"); // Single newline are line breaks
 
         string[] result = CkRichText.RichTextRegex().Split(rawText); // [color, stroke]
         int[] valid = new int[2]; // [0] = color, [1] = stroke
@@ -254,8 +256,11 @@ public class NewRichString
                     case "[line]":
                         _payloads.Add(new SeparatorSegment());
                         continue;
+                    case "[br]":
+                        _payloads.Add(new LineBreakSegment());
+                        continue;
                     case "[para]":
-                        _payloads.Add(new NewlineSegment());
+                        _payloads.Add(new ParagraphSegment());
                         continue;
                     case "[/color]" or "[/rawcolor]":
                         _payloads.Add(ColorSegment.Off);

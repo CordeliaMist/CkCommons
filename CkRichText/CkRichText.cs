@@ -107,6 +107,7 @@ public static partial class CkRichText
                 {
                     "[line]" => (allowed & RichTextFilter.Line) != 0,
                     "[para]" => (allowed & RichTextFilter.Paragraph) != 0,
+                    "[br]" => (allowed & RichTextFilter.Paragraph) != 0,
                     "[/color]" => (allowed & RichTextFilter.Color) != 0,
                     "[/rawcolor]" => (allowed & RichTextFilter.RawColor) != 0,
                     "[/stroke]" => (allowed & RichTextFilter.Stroke) != 0,
@@ -130,7 +131,7 @@ public static partial class CkRichText
     }
 
 
-    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])|(\[br\])", RegexOptions.IgnoreCase)]
     public static partial Regex RichTextRegex();
 
     // Compressed Version below, still untested.

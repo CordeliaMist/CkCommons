@@ -41,7 +41,7 @@ public static partial class CkGui
     {
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
         var text = string.Concat(icons.Select(i => i.ToIconString()));
-        var padding = ImUtf8.FramePadding * 2 * icons.Length;
+        var padding = ImUtf8.FramePadding * 2 * (icons.Length - 1);
         return ImGuiHelpers.GetButtonSize(text) + padding;
     }
 
@@ -116,11 +116,9 @@ public static partial class CkGui
         return ret && !disabled;
     }
 
-
-
     public static bool IconButtonFramed(FAI icon, string? id = null, bool disabled = false, bool inPopup = false)
     {
-        using var col = ImRaii.PushColor(ImGuiCol.Button, new Vector4(1.0f, 1.0f, 1.0f, 0.0f), inPopup);
+        using var col = ImRaii.PushColor(ImGuiCol.Button, 0x00FFFFFF, inPopup);
         using var dis = ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, disabled);
         using var font = Svc.PluginInterface.UiBuilder.IconFontFixedWidthHandle.Push();
 
@@ -145,9 +143,6 @@ public static partial class CkGui
     /// </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
         => IconButtonInternal(icon, inPopup ? 0 : null, disabled, height, id);
-
-    public static bool IconButtonColored(FAI icon, uint buttonCol, bool disabled = false, float ? height = null, string? id = null)
-        => IconButtonInternal(icon, buttonCol, disabled, height, id);
 
     private static bool IconButtonInternal(FAI icon, uint? buttonCol = null, bool disabled = false, float? height = null, string? id = null)
     {

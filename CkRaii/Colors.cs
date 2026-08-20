@@ -5,7 +5,7 @@ namespace CkCommons.Raii;
 public static partial class CkRaii
 {
     /// <summary>
-    ///     Push a CkCol temporarily and automatically pop on Dispose.
+    ///   Push a CkCol temporarily and automatically pop on Dispose.
     /// </summary>
     public static Color PushColor(CkCol var, Vector4 color, bool condition = true)
         => new Color().Push(var, color, condition);

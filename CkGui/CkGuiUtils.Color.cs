@@ -12,7 +12,7 @@ public static partial class CkGuiUtils
         var spacing = ImUtf8.ItemInnerSpacing.X;
         var fgCol = ConvertColor(colors.Foreground);
         var glowCol = ConvertColor(colors.Glow);
-        var tooltipCol = tipCol.HasValue ? tipCol.Value : CkCol.TipText.Uint();
+        var tooltipCol = tipCol.HasValue ? tipCol.Value : ImGui.GetColorU32(ImGuiCol.Text);
 
         var ret = ImGui.ColorEdit3("###foreground", ref fgCol, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.Uint8);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
@@ -43,7 +43,7 @@ public static partial class CkGuiUtils
         using var imId = ImRaii.PushId(label);
         var spacing = ImUtf8.ItemInnerSpacing.X;
         var fgCol = ConvertColor(colors.Foreground);
-        var tooltipCol = tipCol.HasValue ? tipCol.Value : CkCol.TipText.Uint();
+        var tooltipCol = tipCol.HasValue ? tipCol.Value : ImGui.GetColorU32(ImGuiCol.Text);
         var ret = ImGui.ColorEdit3("###foreground", ref fgCol, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.Uint8);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -63,7 +63,7 @@ public static partial class CkGuiUtils
         using var imId = ImRaii.PushId(label);
         var spacing = ImUtf8.ItemInnerSpacing.X;
         var glowCol = ConvertColor(colors.Glow);
-        var tooltipCol = tipCol.HasValue ? tipCol.Value : CkCol.TipText.Uint();
+        var tooltipCol = tipCol.HasValue ? tipCol.Value : ImGui.GetColorU32(ImGuiCol.Text);
         var ret = ImGui.ColorEdit3("###glow", ref glowCol, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.Uint8);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -84,7 +84,7 @@ public static partial class CkGuiUtils
         var spacing = ImUtf8.ItemInnerSpacing.X;
         var fgCol = ConvertColor(colors.Foreground);
         var glowCol = ConvertColor(colors.Glow);
-        var tooltipCol = tipCol.HasValue ? tipCol.Value : CkCol.TipText.Uint();
+        var tooltipCol = tipCol.HasValue ? tipCol.Value : ImGui.GetColorU32(ImGuiCol.Text);
 
         var ret = ImGui.ColorEdit3($"{label}###foreground", ref fgCol, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.Uint8);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))

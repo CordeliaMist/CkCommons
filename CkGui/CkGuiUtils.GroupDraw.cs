@@ -3,6 +3,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
 using OtterGui.Text;
 using OtterGui.Widgets;
+using Dalamud.Interface.Utility;
 
 namespace CkCommons.Gui.Utility;
 
@@ -41,7 +42,7 @@ public static partial class CkGuiUtils
 
         // Centered text
         var textPos = bgStart + new Vector2((size.X - textSize.X) / 2f, (size.Y - textSize.Y) / 2f);
-        drawList.OutlinedFont(text, textPos, CkGui.Color(255, 255, 255, 255), CkGui.Color(53, 24, 39, 255), 1);
+        drawList.AddTextShadowed(text, textPos, ImGui.GetColorU32(ImGuiCol.Text), 0xFF000000, Vector2.Zero, 2f, 8);
 
         // Reserve space so ImGui continues correctly
         ImGui.Dummy(size);

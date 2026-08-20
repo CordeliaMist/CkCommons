@@ -124,17 +124,10 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             return;
         }
 
-        var antiCorruptionPath = $"{configPath}.new";
+        // Use a unique anti-corruption file to avoid overwriting a previous failed save.
+        var antiCorruptionPath = $"{configPath}.new.{Guid.NewGuid():N}";
         try
         {
-            // Recover from previous failed save
-            if (File.Exists(antiCorruptionPath))
-            {
-                var saveTo = $"{antiCorruptionPath}.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
-                Svc.Log.Warning($"Detected unsuccessfully saved file {antiCorruptionPath}: moving to {saveTo}");
-                File.Move(antiCorruptionPath, saveTo);
-                Svc.Log.Warning($"Success. Please manually check {saveTo} file contents.");
-            }
             // Write to antiCorruption file
             WriteTempFile(config, antiCorruptionPath);
             // Backup if nessisary before we attempt to move.
@@ -145,6 +138,15 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         catch (Exception ex)
         {
             Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
+        }
+        finally
+        {
+            // Cleanup the antiCorruption file if it still exists.
+            if (File.Exists(antiCorruptionPath))
+            {
+                Svc.Log.Warning($"[SaveService] Cleaning up anti-corruption file {antiCorruptionPath}");
+                try { File.Delete(antiCorruptionPath); } catch { }
+            }
         }
     }
 
