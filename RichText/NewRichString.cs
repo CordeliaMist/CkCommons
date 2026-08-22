@@ -38,8 +38,8 @@ public class NewRichString
     /// <summary>
     ///   If the text is only Emojis, indicating they are larger than normal for display.
     /// </summary>
-    public bool OnlyEmojis => _payloads.Count > 0 && _payloads.All(p => p is EomjiSegment);
-    
+    public bool OnlyEmojis => _payloads.Count > 0 && _payloads.All(p => p is EomjiSegment || p is ColorSegment || p is StrokeSegment);
+
     public bool IsValid => _isValid;
 
     /// <summary>

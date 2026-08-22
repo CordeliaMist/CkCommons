@@ -187,19 +187,23 @@ public static class Generic
     }
 
     /// <summary> Consumes any ObjectDisposedExceptions when trying to recreate a token source. </summary>
+    /// <param name="cts">The token source to cancel and dispose.</param>
+    /// <param name="delay">An optional delay before the newly created token is automatically canceled.</param>
     /// <remarks> Only use if you know what you are doing and need to consume the error. </remarks>
-    public static CancellationTokenSource SafeCancelRecreate(this CancellationTokenSource? cts)
+    public static CancellationTokenSource SafeCancelRecreate(this CancellationTokenSource? cts, TimeSpan? delay = null)
     {
         cts?.SafeCancelDispose();
-        return new CancellationTokenSource();
+        return delay.HasValue ? new CancellationTokenSource(delay.Value) : new CancellationTokenSource();
     }
 
     /// <summary> Consumes any ObjectDisposedExceptions when trying to recreate a token source. </summary>
+    /// <param name="cts">The token source to cancel, dispose, and replace.</param>
+    /// <param name="delay">An optional delay before the newly created token is automatically canceled.</param>
     /// <remarks> Only use if you know what you are doing and need to consume the error. </remarks>
-    public static void SafeCancelRecreate(ref CancellationTokenSource? cts)
+    public static void SafeCancelRecreate(ref CancellationTokenSource? cts, TimeSpan? delay = null)
     {
         cts?.SafeCancelDispose();
-        cts = new CancellationTokenSource();
+        cts = delay.HasValue ? new CancellationTokenSource(delay.Value) : new CancellationTokenSource();
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using OtterGui.Text;
+using System.Runtime.CompilerServices;
 
 namespace CkCommons.Gui;
 
@@ -43,6 +44,10 @@ public static partial class CkGui
         byte a = (byte)(alpha * 255f);
         return (rgba & 0x00FFFFFF) | ((uint)a << 24);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint AlphaWhite(float alpha)
+        => 0x00FFFFFF | ((uint)(alpha * 255f) << 24);
 
 
 
