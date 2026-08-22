@@ -22,7 +22,6 @@ public class RichTextString
     private Stack<uint> _strokeColors = new();
     private bool _isValid;
     private ImFontPtr _lastFont;
-    private float _lastStartX;
     private float _lastWrapWidth;
     private int _lineCount;
     private uint? CurrentStroke => _strokeColors.Count > 0 ? _strokeColors.Peek() : null;
