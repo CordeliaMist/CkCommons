@@ -41,12 +41,6 @@ public class RichTextString
     public void RenderTextWrappedDummy(ImFontPtr font, float wrapWidth)
     {
         using var _ = ImRaii.Group();
-        ImGui.Text(wrapWidth.ToString());
-        ImGui.SameLine();
-        var startX = ImGui.GetCursorStartPos().X;
-        var startXCursor = ImGui.GetCursorPosX();
-        ImGui.Text($"PosX={startXCursor},StartX={startX}");
-        ImGui.SameLine();
         // if there is a missmatch with the font pointer and wrapwidth, recalculate.
         if (!MatchesCachedState(font, wrapWidth))
         {
