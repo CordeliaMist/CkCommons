@@ -48,7 +48,13 @@ public static class PlayerContent
                 return Cache[id];
             }
         }
-        Cache[id] = id.ToString();
+        // ExcelSheets wont add these are for the modern lighting housing areas, so these are manually named (for now)
+        if (id is 1249) Cache[id] = "Private Cottage";
+        else if (id is 1250) Cache[id] = "Private House";
+        else if (id is 1251) Cache[id] = "Private Mansion";
+        // Fallback to ID otherwise so we can identify unknowns.
+        else Cache[id] = id.ToString();
+        // Return the cached value.
         return Cache[id];
     }
 
