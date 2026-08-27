@@ -47,7 +47,6 @@ public static class CkCommonsHost
             $"and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}.");
 
         // AudioSystem.Init();
-        CkRichText.Init(logFilter.HasFlag(CkLogFilter.RichText));
         NewRichText.Init();
     }
 
@@ -67,7 +66,6 @@ public static class CkCommonsHost
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
         // Generic.Safe(AudioSystem.Dispose);
-        Generic.Safe(CkRichText.Dispose);
         Generic.Safe(NewRichText.Dispose);
         Generic.Safe(TextureManager.Dispose);
     }
