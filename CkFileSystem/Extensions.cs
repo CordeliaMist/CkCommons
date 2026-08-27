@@ -5,7 +5,7 @@ namespace CkCommons.FileSystem;
 public static partial class Extensions
 {
     /// <summary>
-    ///     Add an [IPath] leaf to a list if it does not exist yet, or replace the leaf if comparison equals..
+    ///  Add an [IPath] leaf to a list if it does not exist yet, or replace the leaf if comparison equals..
     /// </summary>
     public static int AddOrReplace<T>(this List<T> list, T obj) where T : IEquatable<T>
     {

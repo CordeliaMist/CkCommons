@@ -41,7 +41,7 @@ public static class LociIcon
         => Draw((uint)iconId, stacks, size);
 
     /// <summary>
-    ///     Draws the Loci icon. This only draw a single image so you can use IsItemHovered() outside.
+    ///  Draws the Loci icon. This only draw a single image so you can use IsItemHovered() outside.
     /// </summary>
     public static void Draw(uint iconId, int stacks, Vector2 size)
     {

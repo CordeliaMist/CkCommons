@@ -1,8 +1,8 @@
 namespace CkCommons.DrawSystem.Selector;
 
 /// <summary>
-///     Inherits <see cref="IDynamicCache{T}"/> 
-///     for a standard <see cref="IDynamicFolderGroup{T}"/>.
+///  Inherits <see cref="IDynamicCache{T}"/> 
+///  for a standard <see cref="IDynamicFolderGroup{T}"/>.
 /// </summary>
 public class DynamicFolderGroupCache<T>(IDynamicFolderGroup<T> folder) : IDynamicCache<T> where T : class
 {

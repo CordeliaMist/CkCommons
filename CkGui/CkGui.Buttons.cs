@@ -139,7 +139,7 @@ public static partial class CkGui
     }
 
     /// <summary> 
-    ///     The additional param for an ID is optional. if not provided, the id will be the text.
+    ///  The additional param for an ID is optional. if not provided, the id will be the text.
     /// </summary>
     public static bool IconButton(FAI icon, float? height = null, string? id = null, bool disabled = false, bool inPopup = false)
         => IconButtonInternal(icon, inPopup ? 0 : null, disabled, height, id);
@@ -331,8 +331,8 @@ public static partial class CkGui
         => ImUtf8.FrameHeight + 2 * ImGuiHelpers.ScaledVector2(border + shadow).Y;
 
     /// <summary>
-    ///     Please do remember that the button's height will not be fixated to the frameHeight. 
-    ///     You must also consider the border and shadow to consider.
+    ///  Please do remember that the button's height will not be fixated to the frameHeight. 
+    ///  You must also consider the border and shadow to consider.
     /// </summary>
     /// <param name="icon"> The icon to display on the button. </param>
     /// <param name="text"> The text beside the icon. </param>

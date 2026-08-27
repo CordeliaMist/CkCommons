@@ -13,8 +13,8 @@ public partial class DynamicDrawer<T>
     protected bool IsDragging => DragDrop.IsActive;
 
     /// <summary>
-    ///     Attaches a Drag-Drop source to the previously drawn item, with the given label. <para />
-    ///     Labels are to be defined by the draw function call method.
+    ///  Attaches a Drag-Drop source to the previously drawn item, with the given label. <para />
+    ///  Labels are to be defined by the draw function call method.
     /// </summary>
     /// <param name="entity"> The Entity being handled as a drag-drop source. </param>
     /// <returns> If the payload source was marked. If it was, we should not return </returns>
@@ -78,8 +78,8 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The main logic that is performed after a drag-drop is validated. <para />
-    ///     Can be overridden to provide custom behavior on drop, but know what you're doing!
+    ///  The main logic that is performed after a drag-drop is validated. <para />
+    ///  Can be overridden to provide custom behavior on drop, but know what you're doing!
     /// </summary>
     protected virtual void PerformDrop(IDynamicNode<T> target)
     { }

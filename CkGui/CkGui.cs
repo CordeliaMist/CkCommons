@@ -36,8 +36,8 @@ public static partial class CkGui
     }
 
     /// <summary>
-    ///     Apply an alpha opacity float between 0 and 1 to an existing uint. <para />
-    ///     If you give something not between 0 and 1, that's on you lol.
+    ///  Apply an alpha opacity float between 0 and 1 to an existing uint. <para />
+    ///  If you give something not between 0 and 1, that's on you lol.
     /// </summary>
     public static uint ApplyAlpha(uint rgba, float alpha)
     {
@@ -104,7 +104,7 @@ public static partial class CkGui
     }
 
     /// <summary>
-    ///     Checkbox, but with a disable condition.
+    ///  Checkbox, but with a disable condition.
     /// </summary>
     public static bool Checkbox(ImU8String label, ref bool v, bool disabled)
     {

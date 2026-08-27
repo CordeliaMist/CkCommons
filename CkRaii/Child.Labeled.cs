@@ -113,8 +113,8 @@ public static partial class CkRaii
         => ChildLabelButton(size, widthSpan, text, rounding, CkStyle.FrameThickness(), clicked, tt, df, lf);
 
     /// <summary>
-    ///     Interactable label header within a padded child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Interactable label header within a padded child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelButton(Vector2 size, float widthSpan, string text, float rounding, float stroke, Action<ImGuiMouseButton>? clicked, string? tt = null, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -173,8 +173,8 @@ public static partial class CkRaii
         => ChildLabelButtonFull(size, text, rounding, CkStyle.FrameThickness(), clicked, tt, df, lf);
 
     /// <summary>
-    ///     Interactable label header within a padded child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Interactable label header within a padded child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelButtonFull(Vector2 size, string text, float rounding, float stroke, Action<ImGuiMouseButton>? clicked, string? tt = null, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -238,8 +238,8 @@ public static partial class CkRaii
         => ChildLabelCustomButton(id, size, label, rounding, CkStyle.FrameThickness(), clicked, tt, df, lf);
 
     /// <summary>
-    ///     Interactable label header within a padded child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Interactable label header within a padded child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelCustomButton(string id, Vector2 size, Action label, float rounding, float stroke, Action<ImGuiMouseButton>? clicked, string? tt = null, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -303,8 +303,8 @@ public static partial class CkRaii
         => ChildLabelCustomButtonFull(id, size, rounding, CkStyle.FrameThickness(), label, clicked, tt, df, lf);
 
     /// <summary>
-    ///     Interactable label header within a padded child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Interactable label header within a padded child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelCustomButtonFull(string id, Vector2 size, float rounding, float stroke, Action label, Action<ImGuiMouseButton>? clicked, string? tt = null, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -368,8 +368,8 @@ public static partial class CkRaii
 
 
     /// <summary> 
-    ///     Custom drawn label, that is attached to a child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Custom drawn label, that is attached to a child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelCustom(string id, Vector2 size, Action label, float rounding, float stroke, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -426,8 +426,8 @@ public static partial class CkRaii
         => ChildLabelCustomFull(id, size, rounding, CkStyle.FrameThickness(), label, df, lf);
 
     /// <summary> 
-    ///     Custom drawn label, that is attached to a child. <para/>
-    ///     If you intend to make this scrollable, make another child inside.
+    ///  Custom drawn label, that is attached to a child. <para/>
+    ///  If you intend to make this scrollable, make another child inside.
     /// </summary>
     /// <remarks> Note that the dummy covering the header is part of the child. </remarks>
     public static IEOLabelContainer ChildLabelCustomFull(string id, Vector2 size, float rounding, float stroke, Action label, DFlags df = DFlags.None, LabelFlags lf = LabelFlags.None)
@@ -488,8 +488,8 @@ public static partial class CkRaii
         => LabelHeaderChild(region, label, width, offset, rounding, cFlags, lFlags);
 
     /// <summary>
-    ///     Creates a child object (no padding) with a nice colored background and label. <para />
-    ///     Label has no hitbox, you can draw overtop it. (Not for cases that desire 0 padding)
+    ///  Creates a child object (no padding) with a nice colored background and label. <para />
+    ///  Label has no hitbox, you can draw overtop it. (Not for cases that desire 0 padding)
     /// </summary>
     public static IEOContainer LabelHeaderChild(Vector2 region, string label, float width, float offset, float rounding, float thickness, DFlags childFlags = DFlags.None, DFlags labelFlags = DFlags.RoundCornersBottomRight)
     {

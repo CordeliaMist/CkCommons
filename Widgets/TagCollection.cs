@@ -30,7 +30,7 @@ public class TagCollection
     private bool   _setFocus;
 
     /// <summary>
-    ///     Updates the latest string and tag collection if the tags have changed.
+    ///  Updates the latest string and tag collection if the tags have changed.
     /// </summary>
     private void UpdateOrSetLatest(string csvString)
     {
@@ -42,7 +42,7 @@ public class TagCollection
     }
 
     /// <summary>
-    ///     Updates the latest string and tag collection if the tags have changed.
+    ///  Updates the latest string and tag collection if the tags have changed.
     /// </summary>
     private void UpdateOrSetLatest(IEnumerable<string> tags)
     {
@@ -55,7 +55,7 @@ public class TagCollection
     }
 
     /// <summary> 
-    ///     Returns a collection of tags from a csv string.
+    ///  Returns a collection of tags from a csv string.
     /// </summary>
     public IEnumerable<string> GetTagCollection(string csvString)
         => csvString.Split(',', StringSplitOptions.RemoveEmptyEntries)
@@ -63,7 +63,7 @@ public class TagCollection
             .Where(s => s.Length > 0);
 
     /// <summary>
-    ///     Returns a collection of tags from an array.
+    ///  Returns a collection of tags from an array.
     /// </summary>
     public IEnumerable<string> GetTagCollection(IEnumerable<string> tags)
         => tags

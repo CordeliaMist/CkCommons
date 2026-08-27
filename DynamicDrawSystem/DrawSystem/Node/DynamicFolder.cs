@@ -3,8 +3,8 @@ using Dalamud.Bindings.ImGui;
 namespace CkCommons.DrawSystem;
 
 /// <summary>
-///     A folder serves as a reference for all generated leaves within it. Refreshed with a refresh call. <para />
-///     Serves as a base class for others to be built upon.
+///  A folder serves as a reference for all generated leaves within it. Refreshed with a refresh call. <para />
+///  Serves as a base class for others to be built upon.
 /// </summary>
 public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
 {
@@ -125,14 +125,14 @@ public abstract class DynamicFolder<T> : IDynamicFolder<T> where T : class
     }
 
     /// <summary>
-    ///     Abstract method to obtain all items for the folder.
+    ///  Abstract method to obtain all items for the folder.
     /// </summary>
     protected abstract IReadOnlyList<T> GetAllItems();
 
     /// <summary>
-    ///     Abstract method to determine how leaves are generated for this folder. <para />
-    ///     You can technically break the hierarchy if you set the parent to anything 
-    ///     but this folder's parent, so dont do that.
+    ///  Abstract method to determine how leaves are generated for this folder. <para />
+    ///  You can technically break the hierarchy if you set the parent to anything 
+    ///  but this folder's parent, so dont do that.
     /// </summary>
     protected abstract DynamicLeaf<T> ToLeaf(T item);
 

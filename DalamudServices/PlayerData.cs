@@ -19,8 +19,8 @@ using LuminaWorld = Lumina.Excel.Sheets.World;
 namespace CkCommons;
 
 /// <summary> 
-///     Static Accessor for everything Player Related one might need to access. <para />
-///     Many of these calls can be made off the main thread and will still be valid.
+///  Static Accessor for everything Player Related one might need to access. <para />
+///  Many of these calls can be made off the main thread and will still be valid.
 /// </summary>
 public static unsafe class PlayerData
 {

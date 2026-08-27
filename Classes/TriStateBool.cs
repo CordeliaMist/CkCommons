@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 namespace CkCommons.Classes;
 
 /// <summary>
-///     Based off OtterGui.OptionalBool, but with more utility.
+///  Based off OtterGui.OptionalBool, but with more utility.
 /// </summary>
 public readonly struct TriStateBool : IEquatable<TriStateBool>, IEquatable<bool?>, IEquatable<bool>
 {

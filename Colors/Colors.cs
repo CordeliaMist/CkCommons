@@ -8,7 +8,7 @@ using static FFXIVClientStructs.STD.Helper.IStaticMemorySpace;
 namespace CkCommons;
 
 /// <summary>
-///     Colors used for CkCommons Internal style elements.
+///  Colors used for CkCommons Internal style elements.
 /// </summary>
 [Flags]
 public enum CkCol : int
@@ -107,7 +107,7 @@ public enum CkCol : int
     TabBarFrame,
 
     /// <summary>
-    ///     The total number of ColorVars in CkCommons
+    ///  The total number of ColorVars in CkCommons
     /// </summary>
     Count,
 }

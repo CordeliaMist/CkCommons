@@ -11,7 +11,7 @@ namespace CkCommons.Gui.Utility;
 public static partial class CkGuiUtils
 {
     /// <summary>
-    ///     Draws a stylized progress bar with rounded corners, outlined text, and customizable size, color, and label.
+    ///  Draws a stylized progress bar with rounded corners, outlined text, and customizable size, color, and label.
     /// </summary>
     /// <param name="progress">Progress value from 0.0 to 1.0.</param>
     /// <param name="size">Total size of the bar. Height should usually match font height.</param>

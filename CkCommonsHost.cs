@@ -21,11 +21,11 @@ public enum CkLogFilter
 
 
 /// <summary>
-///     The main hoster for CkCommons. <see cref="Init(IDalamudPluginInterface, IDalamudPlugin)"/> must
-///     be called during your <see cref="IDalamudPlugin"/> entry point. <para/>
-///     
-///     Likewise, it's <see cref="Dispose"/> should be called once <see cref="IDalamudPlugin"/> falls
-///     out of plugin scope.
+///  The main hoster for CkCommons. <see cref="Init(IDalamudPluginInterface, IDalamudPlugin)"/> must
+///  be called during your <see cref="IDalamudPlugin"/> entry point. <para/>
+///  
+///  Likewise, it's <see cref="Dispose"/> should be called once <see cref="IDalamudPlugin"/> falls
+///  out of plugin scope.
 /// </summary>
 public static class CkCommonsHost
 {
@@ -34,7 +34,7 @@ public static class CkCommonsHost
     public static CkLogFilter LogFilter { get; private set; } = CkLogFilter.All;
 
     /// <summary>
-    ///     CkCommons sections that use <see cref="IDalamudPlugin"/> accessors WON'T WORK calling this on plugin entry.
+    ///  CkCommons sections that use <see cref="IDalamudPlugin"/> accessors WON'T WORK calling this on plugin entry.
     /// </summary>
     public static void Init(IDalamudPluginInterface pluginInterface, IDalamudPlugin instance, CkLogFilter logFilter = CkLogFilter.All)
     {

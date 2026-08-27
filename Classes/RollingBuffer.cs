@@ -1,8 +1,8 @@
 namespace CkCommons.Classes;
 
 /// <summary>
-///     Similar to a circular buffer, except all previous data save a fraction 
-///     is cleared each time the threshold is reached, to provide more efficient storage.
+///  Similar to a circular buffer, except all previous data save a fraction 
+///  is cleared each time the threshold is reached, to provide more efficient storage.
 /// </summary>
 /// <remarks> Values can be referenced due to it being array. </remarks>
 public class RollingBuffer<T>

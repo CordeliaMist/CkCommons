@@ -8,7 +8,7 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 namespace CkCommons;
 
 /// <summary> 
-///     Static Accessor for everything Player Related one might need to access.
+///  Static Accessor for everything Player Related one might need to access.
 /// </summary>
 public static class PlayerContent
 {

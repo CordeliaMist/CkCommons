@@ -59,7 +59,7 @@ public partial class DynamicDrawer<T> : IDisposable
         => DrawContents(width, indent, indent, flags);
 
     /// <summary>
-    ///     Draws the filtered DynamicDrawer.
+    ///  Draws the filtered DynamicDrawer.
     /// </summary>
     /// <param name="width"> The width of the draw area. </param>
     /// <param name="groupIndent"> The indent to use for folder groups. </param>
@@ -95,7 +95,7 @@ public partial class DynamicDrawer<T> : IDisposable
         => DrawContents<TFolder>(width, indent, indent, flags);
 
     /// <summary>
-    ///     Draws the filtered DynamicDrawer, showing only folders of type <typeparamref name="TFolder"/>.
+    ///  Draws the filtered DynamicDrawer, showing only folders of type <typeparamref name="TFolder"/>.
     /// </summary>
     /// <param name="width"> The width of the draw area. </param>
     /// <param name="groupIndent"> The indent to use for folder groups. </param>
@@ -132,7 +132,7 @@ public partial class DynamicDrawer<T> : IDisposable
         => DrawFolder(folder, width, indent, indent, flags);
 
     /// <summary>
-    ///     Attempts to draw a IDynamicCache Folder or FolderGroup by its IDynamicCollection counterpart.
+    ///  Attempts to draw a IDynamicCache Folder or FolderGroup by its IDynamicCollection counterpart.
     /// </summary>
     /// <param name="folder"> The Folder we want to draw the cached version of </param>
     /// <param name="width"> The width of the draw area. </param>
@@ -163,9 +163,9 @@ public partial class DynamicDrawer<T> : IDisposable
     }
 
     /// <summary>
-    ///     Add post-draw logic that is executed after drawing the full DynamicDrawSelector UI. <para />
-    ///     Reserved for operations that would modify the cache state, or set the filter to dirty. <para />
-    ///     If you override this make sure that the base is called, or else post-draw actions will not be processed.
+    ///  Add post-draw logic that is executed after drawing the full DynamicDrawSelector UI. <para />
+    ///  Reserved for operations that would modify the cache state, or set the filter to dirty. <para />
+    ///  If you override this make sure that the base is called, or else post-draw actions will not be processed.
     /// </summary>
     protected void PostDraw()
     {

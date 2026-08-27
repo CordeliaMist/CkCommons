@@ -55,7 +55,7 @@ public static partial class RegexEx
     }
 
     /// <summary>
-    ///     Removes all the BBCode from the color tags.
+    ///  Removes all the BBCode from the color tags.
     /// </summary>
     public static string StripColorTags(this string input)
     {
@@ -68,7 +68,7 @@ public static partial class RegexEx
     }
 
     /// <summary>
-    ///     Encapsulates the puppeteer command within '(' and ')'
+    ///  Encapsulates the puppeteer command within '(' and ')'
     /// </summary>
     public static SeString GetSubstringWithinParentheses(this SeString str, char startBracket = '(', char EndBracket = ')')
     {
@@ -82,15 +82,15 @@ public static partial class RegexEx
     }
 
     /// <summary>
-    ///     Converts square brackets to angle brackets
+    ///  Converts square brackets to angle brackets
     /// </summary>
     public static SeString ConvertSquareToAngleBrackets(this SeString str)
         => str.TextValue.Replace("[", "<").Replace("]", ">");
 
 
     /// <summary>
-    ///     Attempts to convert an input string of a Vector4 as seen in the code editor to a Vector4 value. <para/>
-    ///     <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
+    ///  Attempts to convert an input string of a Vector4 as seen in the code editor to a Vector4 value. <para/>
+    ///  <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParseVec4Code(this string input, out Vector4 result)
@@ -110,15 +110,15 @@ public static partial class RegexEx
     }
 
     /// <summary>
-    ///     Seperates a BBCode into their individual components, such as the text and the color tags. <para/>
-    ///     Useful for CkRichText parsing.
+    ///  Seperates a BBCode into their individual components, such as the text and the color tags. <para/>
+    ///  Useful for CkRichText parsing.
     /// </summary>
     [GeneratedRegex(@"(\[color=[0-9a-zA-Z]+\])|(\[\/color\])|(\[glow=[0-9a-zA-Z]+\])|(\[\/glow\])|(\[i\])|(\[\/i\])", RegexOptions.IgnoreCase, "en-US")]
     public static partial Regex SplitRegex();
 
     /// <summary>
-    ///     Matches a Vector4 as displayed in a code editor. <para/>
-    ///     <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
+    ///  Matches a Vector4 as displayed in a code editor. <para/>
+    ///  <c>new Vector4(0.0f, 0.0f, 0.0f, 1.0f)</c>
     /// </summary>
     [GeneratedRegex(@"new\s+Vector4\s*\(\s*(?<x>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<y>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<z>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*,\s*(?<w>[+-]?(?:\d+\.?\d*|\.\d+))f?\s*\)$", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
     public static partial Regex Vec4CodeRegex();

@@ -15,13 +15,13 @@ public enum OutputType
 }
 
 ///// <summary>
-/////     As much as i would have REALLY PREFERED to work with the native game audio's SCD files, 
-/////     nobody else seems to really want to help me uncover how I can make that possible. <para/>
-/////     So we are stuck with this shit for now. <para/>
-/////     
-/////     Spatial Audio will allow various sounds to be played through NAudio, and happen via poximity of distance. <para/>
-/////     
-/////     This is a temporary implementation for me to fiddle around and test things with.
+/////  As much as i would have REALLY PREFERED to work with the native game audio's SCD files, 
+/////  nobody else seems to really want to help me uncover how I can make that possible. <para/>
+/////  So we are stuck with this shit for now. <para/>
+/////  
+/////  Spatial Audio will allow various sounds to be played through NAudio, and happen via poximity of distance. <para/>
+/////  
+/////  This is a temporary implementation for me to fiddle around and test things with.
 ///// </summary>
 ///// <remarks> This can occur in mix with other effects through the actual spatial audio system which needs some revisiting. </remarks>
 //public static class AudioSystem
@@ -103,11 +103,11 @@ public enum OutputType
 //    }
 
 //    /// <summary>
-//    ///     Plays a sound into the audio system mixer, running together with other sounds.
+//    ///  Plays a sound into the audio system mixer, running together with other sounds.
 //    /// </summary>
 //    /// <remarks>
-//    ///     If the sound doesn't loop, it is removed automatically upon finishing. 
-//    ///     Otherwise, the looped ones must be stopped.
+//    ///  If the sound doesn't loop, it is removed automatically upon finishing. 
+//    ///  Otherwise, the looped ones must be stopped.
 //    /// </remarks>
 //    public static void PlaySound(string soundKey, CachedSound sound, bool loop = true)
 //    {

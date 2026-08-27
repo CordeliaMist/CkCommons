@@ -4,10 +4,10 @@ using CkCommons.Helpers;
 namespace CkCommons.Classes;
 
 /// <summary>
-///     Keeps a TimeSpan converted into a string cached lazily until updated.
+///  Keeps a TimeSpan converted into a string cached lazily until updated.
 /// </summary>
 /// <remarks>
-///     This is a placeholder class until I can figure out something more optimized to handle this.
+///  This is a placeholder class until I can figure out something more optimized to handle this.
 /// </remarks>
 public class InputTextTimeSpan
 {

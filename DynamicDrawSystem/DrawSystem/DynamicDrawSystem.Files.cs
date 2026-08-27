@@ -12,8 +12,8 @@ namespace CkCommons.DrawSystem;
 public partial class DynamicDrawSystem<T>
 {
     /// <summary>
-    ///     Stores the FolderGroup Hierarchy and the paths of all opened folders in dictionary format. <para />
-    ///     All of this is written into the streamWriter.
+    ///  Stores the FolderGroup Hierarchy and the paths of all opened folders in dictionary format. <para />
+    ///  All of this is written into the streamWriter.
     /// </summary>
     protected void SaveToFile(StreamWriter writer)
     {
@@ -71,9 +71,9 @@ public partial class DynamicDrawSystem<T>
     }
 
     /// <summary>
-    ///     Helper function to specify the file location that we want to load our JObject from. <para />
-    ///     Returns the dictionary mapping all Folders to their location in the FolderHierarchy, 
-    ///     and also all opened folder paths. (may change overtime)
+    ///  Helper function to specify the file location that we want to load our JObject from. <para />
+    ///  Returns the dictionary mapping all Folders to their location in the FolderHierarchy, 
+    ///  and also all opened folder paths. (may change overtime)
     /// </summary>
     protected bool LoadFile(FileInfo file)
     {
@@ -90,7 +90,7 @@ public partial class DynamicDrawSystem<T>
         return LoadObject(jObj);
     }
     /// <summary>
-    ///     Generates the DynamicDrawSystem from the contents of the JObject.
+    ///  Generates the DynamicDrawSystem from the contents of the JObject.
     /// </summary>
     /// <returns> If any FolderGroups, or folders were created. </returns>
     protected bool LoadObject(JObject? jObject)
@@ -162,9 +162,9 @@ public partial class DynamicDrawSystem<T>
     }
 
     /// <summary>
-    ///     Ensures that all expected folders are created. <para />
-    ///     Provides the folder map obtained via loading, to determine 
-    ///     what folders link to which FolderGroups.
+    ///  Ensures that all expected folders are created. <para />
+    ///  Provides the folder map obtained via loading, to determine 
+    ///  what folders link to which FolderGroups.
     /// </summary>
     /// <remarks> If a folder does not have a mapping, it is assumed to bind to Root. </remarks>
     /// <returns> If any folders were created. </returns>

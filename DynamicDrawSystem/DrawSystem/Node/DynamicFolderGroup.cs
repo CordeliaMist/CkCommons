@@ -4,8 +4,8 @@ using Dalamud.Interface;
 namespace CkCommons.DrawSystem;
 
 /// <summary>
-///     Publicly accessible Folder for a DynamicDrawSystem node. <para />
-///     All functions and setters are only accessible internally to ensure integrity.
+///  Publicly accessible Folder for a DynamicDrawSystem node. <para />
+///  All functions and setters are only accessible internally to ensure integrity.
 /// </summary>
 public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
 {
@@ -107,8 +107,8 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
         => Name;
 
     /// <summary>
-    ///     Adds a child to the FolderGroup. (Validation not checked) <para />
-    ///     The added child decouples itself from it's previous parent. <para />
+    ///  Adds a child to the FolderGroup. (Validation not checked) <para />
+    ///  The added child decouples itself from it's previous parent. <para />
     /// </summary>
     internal void AddChild(IDynamicCollection<T> child)
     {
@@ -128,7 +128,7 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
     }
 
     /// <summary>
-    ///     Adds all children to the FolderGroup, does not sort after and must be called.
+    ///  Adds all children to the FolderGroup, does not sort after and must be called.
     /// </summary>
     internal void AddChildren(IEnumerable<IDynamicCollection<T>> children)
     {
@@ -151,7 +151,7 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
     }
 
     /// <summary>
-    ///     Inserts all children at a selected IDX then sorts by node type.
+    ///  Inserts all children at a selected IDX then sorts by node type.
     /// </summary>
     internal void InsertChildren(IEnumerable<IDynamicCollection<T>> children, int idx)
     {
@@ -181,7 +181,7 @@ public class DynamicFolderGroup<T> : IDynamicFolderGroup<T> where T : class
     }
 
     /// <summary>
-    ///     Sort by priority, FolderGroups, Folders, then Leaves, then whatever else.
+    ///  Sort by priority, FolderGroups, Folders, then Leaves, then whatever else.
     /// </summary>
     internal void SortChildren()
         => Children.Sort((a, b) => a.Priority.CompareTo(b.Priority));

@@ -11,8 +11,8 @@ public enum SelectionChange
 }
 
 /// <summary>
-///     A Manager for all selections in a <see cref="DynamicDrawer{T}"/>. <para />
-///     Pulls info from <see cref="DynamicFilterCache{T}"/> and <see cref="DynamicDrawSystem{T}"/>
+///  A Manager for all selections in a <see cref="DynamicDrawer{T}"/>. <para />
+///  Pulls info from <see cref="DynamicFilterCache{T}"/> and <see cref="DynamicDrawSystem{T}"/>
 /// </summary>
 public class DynamicSelections<T> : IDisposable where T : class
 {
@@ -70,7 +70,7 @@ public class DynamicSelections<T> : IDisposable where T : class
         => _selected.Contains(entity);
 
     /// <summary>
-    ///     Perform a full clear of all selected items in the DDS.
+    ///  Perform a full clear of all selected items in the DDS.
     /// </summary>
     public void ClearSelected()
     {
@@ -234,8 +234,8 @@ public class DynamicSelections<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     For ensuring that selections are cached between 
-    ///     reloads to restore selections.
+    ///  For ensuring that selections are cached between 
+    ///  reloads to restore selections.
     /// </summary>
     private void OnDrawSystemChange(DDSChange type, IDynamicNode<T> _, IDynamicCollection<T>? __, IDynamicCollection<T>? ___)
     {
@@ -252,7 +252,7 @@ public class DynamicSelections<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     FolderUpdated events can output removed paths, useful for deslecting nodes no longer present. <para />
+    ///  FolderUpdated events can output removed paths, useful for deslecting nodes no longer present. <para />
     /// </summary>
     private void OnCollectionChange(CollectionUpdate kind, IDynamicCollection<T> collection, IEnumerable<DynamicLeaf<T>>? removed)
     {

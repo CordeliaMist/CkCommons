@@ -11,42 +11,42 @@ public enum IconType : byte
 }
 
 /// <summary>
-///     Helper for parsing status icons.
+///  Helper for parsing status icons.
 /// </summary>
 public struct StatusIconData
 {
     /// <summary>
-    ///     The Icons Name.
+    ///  The Icons Name.
     /// </summary>
     public string Name;
 
     /// <summary>
-    ///     It's ID
+    ///  It's ID
     /// </summary>
     public uint IconID;
 
     /// <summary> 
-    ///     The Type of Status it is.
+    ///  The Type of Status it is.
     /// </summary>
     public IconType Type;
 
     /// <summary>
-    ///     If this Status Icon is stackable.
+    ///  If this Status Icon is stackable.
     /// </summary>
     public bool IsStackable;
 
     /// <summary>
-    ///     The ClassJob Category the StatusIcon is associated with.
+    ///  The ClassJob Category the StatusIcon is associated with.
     /// </summary>
     public ClassJobCategory ClassJobCategory;
 
     /// <summary>
-    ///     If it is an FC Buff
+    ///  If it is an FC Buff
     /// </summary>
     public bool IsFCBuff;
 
     /// <summary>
-    ///     The Description of the StatusIconData.
+    ///  The Description of the StatusIconData.
     /// </summary>
     public string Description;
 

@@ -3,7 +3,7 @@
 //namespace CkCommons.Audio;
 
 ///// <summary>
-/////     ISample provider with built in loop support.
+/////  ISample provider with built in loop support.
 ///// </summary>
 //public class LoopingSampleProvider : ISampleProvider
 //{

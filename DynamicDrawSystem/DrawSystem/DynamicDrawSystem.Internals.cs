@@ -15,8 +15,8 @@ public partial class DynamicDrawSystem<T>
     }
 
     /// <summary>
-    ///     Internally rename a Folder or FolderGroup to a new name. <para />
-    ///     Fails if the new name is invalid, or the name exists in the drawSystem already.
+    ///  Internally rename a Folder or FolderGroup to a new name. <para />
+    ///  Fails if the new name is invalid, or the name exists in the drawSystem already.
     /// </summary>
     /// <param name="folder"> the folder to rename. </param>
     /// <param name="newName"> the new name. </param>
@@ -158,7 +158,7 @@ public partial class DynamicDrawSystem<T>
 
 
     /// <summary>
-    ///     Creates all folders to the end, automatically excluding leaf paths from assignment.
+    ///  Creates all folders to the end, automatically excluding leaf paths from assignment.
     /// </summary>
     /// <param name="fullPath"> the entity's FullPath variable, excluding root. </param>
     /// <param name="topFolder"> the topmost available folder or folder collection in the path.</param>
@@ -237,7 +237,7 @@ public partial class DynamicDrawSystem<T>
     }
 
     /// <summary> 
-    ///     Try to merge all children <paramref name="from"/> into <paramref name="to"/>.
+    ///  Try to merge all children <paramref name="from"/> into <paramref name="to"/>.
     /// </summary>
     private Result MergeFolders(DynamicFolderGroup<T> from, DynamicFolderGroup<T> to)
     {

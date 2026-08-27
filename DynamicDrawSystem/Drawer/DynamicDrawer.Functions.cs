@@ -8,7 +8,7 @@ public partial class DynamicDrawer<T>
     // Additionally, if we need to, the below functions can become protected if nessisary.
 
     /// <summary>
-    ///     Expand all ancestors of a given path, used for when new objects are created.
+    ///  Expand all ancestors of a given path, used for when new objects are created.
     /// </summary>
     /// <returns> If any state was changed. </returns>
     private bool ExpandAncestors(IDynamicNode<T> entity)

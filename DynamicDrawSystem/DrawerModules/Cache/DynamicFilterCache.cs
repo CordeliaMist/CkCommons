@@ -5,9 +5,9 @@ using Dalamud.Interface.Utility.Raii;
 namespace CkCommons.DrawSystem.Selector;
 
 /// <summary>
-///     The Cache used by a <see cref="DynamicDrawer{T}"/>, which
-///     holds information about the nodes visible for a searchable filter. <para />
-///     Includes a lookup cachedNode map of all DrawSystem collections.
+///  The Cache used by a <see cref="DynamicDrawer{T}"/>, which
+///  holds information about the nodes visible for a searchable filter. <para />
+///  Includes a lookup cachedNode map of all DrawSystem collections.
 /// </summary>
 /// <remarks> If you want to store additional data in the cache, inherit and add more data. </remarks>
 public class DynamicFilterCache<T> : IDisposable where T : class
@@ -46,8 +46,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     public bool IsFilterDirty => _isDirty;
 
     /// <summary>
-    ///     The Filter string used to generate the DynamicCache. <para />
-    ///     Automatically marks the cache as dirty when updated.
+    ///  The Filter string used to generate the DynamicCache. <para />
+    ///  Automatically marks the cache as dirty when updated.
     /// </summary>
     /// <remarks> _cacheDirty doesn't update if Filter is set to the same as current. </remarks>
     public string Filter
@@ -64,21 +64,21 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     The cached root node, with all sorting and filters applied. <para />
-    ///     Used in most common shared draw functions that display in hierarchical form.
+    ///  The cached root node, with all sorting and filters applied. <para />
+    ///  Used in most common shared draw functions that display in hierarchical form.
     /// </summary>
     /// <remarks> Use as public until we find a way to make a Read-Only version. </remarks>
     public DynamicFolderGroupCache<T> RootCache { get; private set; }
 
     /// <summary>
-    ///     The flattened list of RootNodeCache. <para />
-    ///     Used primarily for multi-selection, but not much elsewhere. <para />
+    ///  The flattened list of RootNodeCache. <para />
+    ///  Used primarily for multi-selection, but not much elsewhere. <para />
     /// </summary>
     public IReadOnlyList<IDynamicNode<T>> FlatList => flatNodeCache;
 
     /// <summary>
-    ///     Maps all collections from the parent <see cref="DynamicDrawSystem{T}"/>'s Root Folder. <para />
-    ///     Unlike RootNodeCache, this includes folders that were fully filtered out and have no children. <para />
+    ///  Maps all collections from the parent <see cref="DynamicDrawSystem{T}"/>'s Root Folder. <para />
+    ///  Unlike RootNodeCache, this includes folders that were fully filtered out and have no children. <para />
     /// </summary>
     /// <remarks> Used when we are drawing individual folders, or a group of select folders that could have been filtered out. </remarks>
     public IReadOnlyDictionary<IDynamicCollection<T>, IDynamicCache<T>> CacheMap => cachedFolderMap;
@@ -86,14 +86,14 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     public IEnumerable<IDynamicLeaf<T>> VisibleLeaves => RootCache.GetAllDescendants().OfType<IDynamicLeaf<T>>();
 
     /// <summary>
-    ///     Generic call to mark the entire cache as dirty, requiring a full recalculation.
+    ///  Generic call to mark the entire cache as dirty, requiring a full recalculation.
     /// </summary>
     public void MarkCacheDirty()
         => _isDirty = true;
 
     /// <summary>
-    ///     Marks a single cached folder as dirty, requiring the cache update to
-    ///     only recalculate one folder and its children over the entire cache.
+    ///  Marks a single cached folder as dirty, requiring the cache update to
+    ///  only recalculate one folder and its children over the entire cache.
     /// </summary>
     public virtual void MarkForReload(IDynamicCollection<T> folder, bool reloadParent = false)
     {
@@ -113,8 +113,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Marks a sorter for a particular folder as dirty, 
-    ///     forcing a re-sort of this folder's children only, saving on computation time.
+    ///  Marks a sorter for a particular folder as dirty, 
+    ///  forcing a re-sort of this folder's children only, saving on computation time.
     /// </summary>
     public void MarkForSortUpdate(IDynamicCollection<T> folder)
     {
@@ -128,9 +128,9 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Updates the current cache if the filter is marked as dirty, 
-    ///     or handles per-folder recalclations where nessisary. <para />
-    ///     <b> Fairly safe to call every drawframe. Only calculates on dirty filter. </b>
+    ///  Updates the current cache if the filter is marked as dirty, 
+    ///  or handles per-folder recalclations where nessisary. <para />
+    ///  <b> Fairly safe to call every drawframe. Only calculates on dirty filter. </b>
     /// </summary>
     public void UpdateCache()
     {
@@ -193,8 +193,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Recursively constructs a <paramref name="cachedNode"/>, filtering
-    ///     out non-visible nodes, sorting remaining, and updating the map.
+    ///  Recursively constructs a <paramref name="cachedNode"/>, filtering
+    ///  out non-visible nodes, sorting remaining, and updating the map.
     /// </summary>
     protected virtual bool BuildDynamicCache(IDynamicCache<T> cachedNode)
     {
@@ -274,8 +274,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Scan for any descendants of a collapsed folder to see if any match. <para />
-    ///     Check all sub-folders recursively, if ANY match, the nodes parent should be visible.
+    ///  Scan for any descendants of a collapsed folder to see if any match. <para />
+    ///  Check all sub-folders recursively, if ANY match, the nodes parent should be visible.
     /// </summary>
     protected bool IsCollapsedNodeVisible(IDynamicNode<T> node)
     {
@@ -294,16 +294,16 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Used when obtaining the filtered results of an IDynamicNode. <para />
-    ///     If you desire custom filter logic, override this in a parent class.
+    ///  Used when obtaining the filtered results of an IDynamicNode. <para />
+    ///  If you desire custom filter logic, override this in a parent class.
     /// </summary>
     protected virtual bool IsVisible(IDynamicNode<T> node)
         => Filter.Length is 0 || node.FullPath.Contains(Filter, StringComparison.OrdinalIgnoreCase);
 
 
     /// <summary>
-    ///     Primarily to automatically update the cache whenever an 
-    ///     internal change to the hierarchy occurs.
+    ///  Primarily to automatically update the cache whenever an 
+    ///  internal change to the hierarchy occurs.
     /// </summary>
     private void OnDrawSystemChange(DDSChange type, IDynamicNode<T> obj, IDynamicCollection<T>? _, IDynamicCollection<T>? __)
     {
@@ -323,8 +323,8 @@ public class DynamicFilterCache<T> : IDisposable where T : class
     }
 
     /// <summary>
-    ///     Ensure only the parts of the cache that should be updated, are updated. <para />
-    ///     Helps save on computation time for recalculations.
+    ///  Ensure only the parts of the cache that should be updated, are updated. <para />
+    ///  Helps save on computation time for recalculations.
     /// </summary>
     private void OnCollectionChange(CollectionUpdate kind, IDynamicCollection<T> collection, IEnumerable<DynamicLeaf<T>>? _)
     {

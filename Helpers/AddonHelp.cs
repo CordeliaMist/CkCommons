@@ -18,13 +18,13 @@ public static unsafe class AddonHelp
         => addon->AtkResNode.IsVisible() && addon->Component->UldManager.LoadedState == AtkLoadState.Loaded;
 
     /// <summary>
-    ///     Obtain the unit base of an AddonArgs instance.
+    ///  Obtain the unit base of an AddonArgs instance.
     /// </summary>
     public static AtkUnitBase* Base(this AddonArgs args) 
         => (AtkUnitBase*)args.Addon.Address;
 
     /// <summary>
-    ///     Obtain an addon* by its name alone. If it is not found, returns false.
+    ///  Obtain an addon* by its name alone. If it is not found, returns false.
     /// </summary>
     public static bool TryGetAddonByName<T>(string addon, out T* addonPtr) where T : unmanaged
     {
@@ -43,9 +43,9 @@ public static unsafe class AddonHelp
     }
 
     /// <summary>
-    ///     Avoid constructing a list and instead allocate a single array, copying a trimmed version after. <para />
-    ///     Helps safe possibility of passing the nodes list twice completely for all cases when possible. <para />
-    ///     Can be reversed.
+    ///  Avoid constructing a list and instead allocate a single array, copying a trimmed version after. <para />
+    ///  Helps safe possibility of passing the nodes list twice completely for all cases when possible. <para />
+    ///  Can be reversed.
     /// </summary>
     public static AtkResNode*[] GetNodeIconArray(AtkResNode* node, bool reverse = false)
     {

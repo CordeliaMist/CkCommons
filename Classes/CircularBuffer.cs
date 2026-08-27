@@ -1,9 +1,9 @@
 namespace CkCommons.Classes;
 #nullable disable
 /// <summary>
-///     Circular buffer that maintains a fixed size. <para/>
-///     Yoinked from NightmareXIV's ECommons project, as it efficiently helps with datastreaming.
-///     https://github.com/NightmareXIV/ECommons/blob/e5c432fcaecb340b246a187bbf174c61318fbd28/ECommons/CircularBuffers/CircularBuffer.cs
+///  Circular buffer that maintains a fixed size. <para/>
+///  Yoinked from NightmareXIV's ECommons project, as it efficiently helps with datastreaming.
+///  https://github.com/NightmareXIV/ECommons/blob/e5c432fcaecb340b246a187bbf174c61318fbd28/ECommons/CircularBuffers/CircularBuffer.cs
 /// </summary>
 public class CircularBuffer<T> : IEnumerable<T>, IReadOnlyCollection<T>
 {
@@ -21,8 +21,8 @@ public class CircularBuffer<T> : IEnumerable<T>, IReadOnlyCollection<T>
     { }
 
     /// <param name='items'>
-    ///     Items to fill buffer with. Items length must be less than capacity. <para/>
-    ///     Use Skip(x).Take(y).ToArray() to build this argument from enumerable.
+    ///  Items to fill buffer with. Items length must be less than capacity. <para/>
+    ///  Use Skip(x).Take(y).ToArray() to build this argument from enumerable.
     /// </param>
     public CircularBuffer(uint capacity, T[] items)
     {
@@ -125,8 +125,8 @@ public class CircularBuffer<T> : IEnumerable<T>, IReadOnlyCollection<T>
     }
 
     /// <summary> 
-    ///     Pushes the item to the front of the buffer. (this[0]) <para/>
-    ///     Full buffers will cause element at (this[Size-1]) to be popped, allowing room to fit.
+    ///  Pushes the item to the front of the buffer. (this[0]) <para/>
+    ///  Full buffers will cause element at (this[Size-1]) to be popped, allowing room to fit.
     /// </summary>
     public void PushFront(T item)
     {
@@ -194,13 +194,13 @@ public class CircularBuffer<T> : IEnumerable<T>, IReadOnlyCollection<T>
     }
 
     /// <summary>
-    ///     Get the contents of the buffer as 2 ArraySegments.
-    ///     Respects the logical contents of the buffer, where
-    ///     each segment and items in each segment are ordered
-    ///     according to insertion.
+    ///  Get the contents of the buffer as 2 ArraySegments.
+    ///  Respects the logical contents of the buffer, where
+    ///  each segment and items in each segment are ordered
+    ///  according to insertion.
     ///
-    ///     Fast: does not copy the array elements.
-    ///     Useful for methods like <c>Send(IList&lt;ArraySegment&lt;Byte&gt;&gt;)</c>.
+    ///  Fast: does not copy the array elements.
+    ///  Useful for methods like <c>Send(IList&lt;ArraySegment&lt;Byte&gt;&gt;)</c>.
     /// </summary>
     /// <remarks>Segments may be empty.</remarks>
     /// <returns>An IList with 2 segments corresponding to the buffer content.</returns>

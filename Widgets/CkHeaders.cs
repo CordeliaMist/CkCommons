@@ -137,7 +137,7 @@ public class CkHeader
     }
 
     /// <summary>
-    ///     A helper function that draws out the fancy curved header (not to be used for restraint sets)
+    ///  A helper function that draws out the fancy curved header (not to be used for restraint sets)
     /// </summary>
     public static QuadDrawRegions FancyCurve(uint col, float leftH, float splitW, float rightW, float curveRadius, bool showSplit = true)
     {

@@ -2,11 +2,11 @@ using Dalamud.Interface.Textures.TextureWraps;
 
 namespace CkCommons.Textures;
 /// <summary>
-///     Stores a Concurrent Dictionary <see cref="IDalamudTextureWrap"/> cache that retains
-///     its texture throughout plugin lifetime. Thread-Safe, and Uses Enums as keys.
+///  Stores a Concurrent Dictionary <see cref="IDalamudTextureWrap"/> cache that retains
+///  its texture throughout plugin lifetime. Thread-Safe, and Uses Enums as keys.
 /// </summary>
 /// <remarks> 
-///     Automatically disposed of if created from <see cref="TextureManager>"/>.
+///  Automatically disposed of if created from <see cref="TextureManager>"/>.
 /// </remarks>
 public class EnumTextureCache<TEnum> : IDisposable where TEnum : Enum
 {

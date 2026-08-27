@@ -1,10 +1,10 @@
 namespace CkCommons.DrawSystem;
 
 /// <summary>
-///     A representation of data nodes within a DynamicDrawSystem. <para />
-///     Because they are created at any point in time based off <see cref="DynamicFolder{T}"/>'s 'EnsureLeaves' method,
-///     There is no distinct ID bound to a leaf. <para />
-///     Instead, its purpose is to hold the reference to its parents, it's name, and its data.
+///  A representation of data nodes within a DynamicDrawSystem. <para />
+///  Because they are created at any point in time based off <see cref="DynamicFolder{T}"/>'s 'EnsureLeaves' method,
+///  There is no distinct ID bound to a leaf. <para />
+///  Instead, its purpose is to hold the reference to its parents, it's name, and its data.
 /// </summary>
 public class DynamicLeaf<T> : IDynamicLeaf<T> where T : class
 {

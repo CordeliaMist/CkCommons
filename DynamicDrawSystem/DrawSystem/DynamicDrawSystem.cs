@@ -23,11 +23,11 @@ public enum CollectionUpdate
 }
 
 /// <summary>
-///     A DynamicDrawSystem works in a similar fashion to CkFileSystem / OtterGui.FileSystem,
-///     except all leaves are managed internally through generators. <para />
-///     Every created folder is assigned with a Generator, which updates the respective leaves in it. <para />
-///     As such, only folders and folder collections can be moved, renamed, or have other actions performed on it. <para />
-///     Update this overtime, or potentially make the dynamic draw system abstract for additional forced implementations.
+///  A DynamicDrawSystem works in a similar fashion to CkFileSystem / OtterGui.FileSystem,
+///  except all leaves are managed internally through generators. <para />
+///  Every created folder is assigned with a Generator, which updates the respective leaves in it. <para />
+///  As such, only folders and folder collections can be moved, renamed, or have other actions performed on it. <para />
+///  Update this overtime, or potentially make the dynamic draw system abstract for additional forced implementations.
 /// </summary>
 public abstract partial class DynamicDrawSystem<T> where T : class
 {
@@ -54,8 +54,8 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     public bool SortRoot { get; private set; } = true;
 
     /// <summary>
-    ///     Read-only Accessor for root via classes desiring inspection while preventing edits.
-    ///     (This is technically already dont via internal setters but whatever).
+    ///  Read-only Accessor for root via classes desiring inspection while preventing edits.
+    ///  (This is technically already dont via internal setters but whatever).
     /// </summary>
     public IDynamicFolderGroup<T> Root
         => root;
@@ -272,8 +272,8 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     }
 
     /// <summary>
-    ///     Delete a folder from it's Parent. Locates the folder by name first. <para />
-    ///     An Exception is thrown if the entity is root.
+    ///  Delete a folder from it's Parent. Locates the folder by name first. <para />
+    ///  An Exception is thrown if the entity is root.
     /// </summary>
     /// <exception cref="Exception"></exception>
     public bool Delete(string folderName)
@@ -286,8 +286,8 @@ public abstract partial class DynamicDrawSystem<T> where T : class
     }
 
     /// <summary>
-    ///     Delete a folder from it's Parent. <para />
-    ///     An Exception is thrown if the entity is root.
+    ///  Delete a folder from it's Parent. <para />
+    ///  An Exception is thrown if the entity is root.
     /// </summary>
     /// <exception cref="Exception"></exception>
     public void Delete(IDynamicCollection<T> folder)

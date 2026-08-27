@@ -4,18 +4,18 @@ namespace CkCommons.DrawSystem;
 public interface IReadOnlyDynamicSorter<TItem> : IReadOnlyList<ISortMethod<TItem>> where TItem : class
 {
     /// <summary>
-    ///     If the first step is in descending order.
+    ///  If the first step is in descending order.
     /// </summary>
     public bool FirstDescending { get; }
 
     /// <summary>
-    ///     The steps of the dynamic sorter.
+    ///  The steps of the dynamic sorter.
     /// </summary>
     IReadOnlyList<ISortMethod<TItem>> Steps { get; }
 
     /// <summary>
-    ///     Sorts all passed in items with the sorter's steps.
-    ///     Items must match the defined type <typeparamref name="T"/>.
+    ///  Sorts all passed in items with the sorter's steps.
+    ///  Items must match the defined type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="items"> The items to sort. </param>
     /// <param name="fallback"> The fallback to use. </param>

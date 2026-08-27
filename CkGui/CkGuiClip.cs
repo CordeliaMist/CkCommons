@@ -64,8 +64,8 @@ public static class CkGuiClip
     }
 
     /// <summary>
-    ///     Performs a dynamic clipped gallery draw with specified columns and item width. <para />
-    ///     Can have any height on drawn items.
+    ///  Performs a dynamic clipped gallery draw with specified columns and item width. <para />
+    ///  Can have any height on drawn items.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"> Items must be greater than 0. </exception>
     /// <returns> The remainder index. </returns>
@@ -133,8 +133,8 @@ public static class CkGuiClip
     }
 
     /// <summary>
-    ///     Clipped gallery draw with specified columns and item width. Can have any height on drawn items. <para />
-    ///     Passes the local IDX iterator to the draw actions.
+    ///  Clipped gallery draw with specified columns and item width. Can have any height on drawn items. <para />
+    ///  Passes the local IDX iterator to the draw actions.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"> Items must be greater than 0. </exception>
     /// <returns> The remainder index. </returns>
@@ -204,7 +204,7 @@ public static class CkGuiClip
 
 
     /// <summary>
-    ///     A variant of ImGuiClip that accepts the width paramater to define drawlength.
+    ///  A variant of ImGuiClip that accepts the width paramater to define drawlength.
     /// </summary>
     public static int FilteredClippedDraw<T>(IEnumerable<T> data, int skips, Func<T, bool> checkFilter, Action<T, float> draw, float? width = null)
         => ClippedDraw(data.Where(checkFilter), skips, draw, width);

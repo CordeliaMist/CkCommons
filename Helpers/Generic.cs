@@ -27,7 +27,7 @@ public static class Generic
     }
 
     /// <summary>
-    ///     Attempt to remove an item from a list as if it was a Queue.
+    ///  Attempt to remove an item from a list as if it was a Queue.
     /// </summary>
     public static bool TryDequeue<T>(this IList<T> List, out T result)
     {

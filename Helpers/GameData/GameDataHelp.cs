@@ -32,7 +32,7 @@ public static class GameDataHelp
     };
 
     /// <summary>
-    ///     Get a VFX path from a given status icon ID.
+    ///  Get a VFX path from a given status icon ID.
     /// </summary>
     /// <remarks> Can return an empty string if not found. </remarks>
     public static string GetVfxPathByID(uint iconID)
@@ -49,7 +49,7 @@ public static class GameDataHelp
     }
 
     /// <summary>
-    ///     Get a VFX related path from a given .avfx name.
+    ///  Get a VFX related path from a given .avfx name.
     /// </summary>
     /// <remarks> Can return an empty string if not found. </remarks>
     public static string GetVfxPath(string path)

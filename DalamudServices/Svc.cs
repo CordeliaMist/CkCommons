@@ -7,7 +7,7 @@ namespace CkCommons;
 #nullable disable
 
 /// <summary>
-///     A collection of internally handled Dalamud Interface static services
+///  A collection of internally handled Dalamud Interface static services
 /// </summary>
 /// <remarks> Keep in mind that interfaces are a performance loss. If you can get the data via FFXIVCLientStructs, do so. </remarks>
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]

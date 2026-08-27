@@ -197,7 +197,7 @@ public partial class CkFileSystem<T>
     }
 
     /// <summary>
-    ///     Load a given FileSystem from pre-cached folder route addresses and pathings over the conventional file reading.
+    ///  Load a given FileSystem from pre-cached folder route addresses and pathings over the conventional file reading.
     /// </summary>
     protected bool Load(Dictionary<string, string> data, string[] emptyFolders, IEnumerable<T> objects, Func<T, string> toId, Func<T, string> toName)
     {

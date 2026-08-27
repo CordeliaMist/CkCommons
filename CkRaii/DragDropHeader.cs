@@ -10,8 +10,8 @@ public static partial class CkRaii
         => DragDropHeader(text, height, CkStyle.HeaderRounding(), WFlags.None);
 
     /// <summary>
-    ///     A Defined header to the left, of a content body to the right. <para />
-    ///     The left body is drag-droppable.
+    ///  A Defined header to the left, of a content body to the right. <para />
+    ///  The left body is drag-droppable.
     /// </summary>
     public static ImRaii.IEndObject DragDropHeader(string text, float height, float rounding, WFlags flags)
     {

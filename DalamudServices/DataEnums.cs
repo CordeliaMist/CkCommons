@@ -10,8 +10,8 @@ public enum DeepDungeonType
 }
 
 /// <summary>
-///     The TerritoryIntendedUse enum from FFXIVClientStructs. <br/>
-///     Comes with attributes and rename to avoid conflict with Lumina.
+///  The TerritoryIntendedUse enum from FFXIVClientStructs. <br/>
+///  Comes with attributes and rename to avoid conflict with Lumina.
 /// </summary>
 public enum IntendedUseEnum : byte
 {

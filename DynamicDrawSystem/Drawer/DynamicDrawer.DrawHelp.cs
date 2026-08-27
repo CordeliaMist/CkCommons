@@ -25,8 +25,8 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Overridable DynamicDrawer 'Header' Element. (Filter Search) <para />
-    ///     By default, no additional options are shown outside of the search filter.
+    ///  Overridable DynamicDrawer 'Header' Element. (Filter Search) <para />
+    ///  By default, no additional options are shown outside of the search filter.
     /// </summary>
     protected virtual void DrawSearchBar(float width, int length)
     {
@@ -40,8 +40,8 @@ public partial class DynamicDrawer<T>
 
     #region Top Level CacheNodes Drawers
     /// <summary>
-    ///     Highest level call to draw a cached <see cref="IDynamicCollection{T}"/> node from the draw system. <br/>
-    ///     This node is expected to be filtered by the drawer / cache. <para />
+    ///  Highest level call to draw a cached <see cref="IDynamicCollection{T}"/> node from the draw system. <br/>
+    ///  This node is expected to be filtered by the drawer / cache. <para />
     /// </summary>
     /// <param name="cachedNode"> The cached node to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
@@ -56,9 +56,9 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Draws a cached <see cref="IDynamicCollection{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
-    ///     This node is expected to be filtered by the drawer / cache. <para />
-    ///     Any folder not matching <typeparamref name="TFolder"/> is skipped.
+    ///  Draws a cached <see cref="IDynamicCollection{T}"/> node from the draw system. (FolderGroup or Folder by default) <br/>
+    ///  This node is expected to be filtered by the drawer / cache. <para />
+    ///  Any folder not matching <typeparamref name="TFolder"/> is skipped.
     /// </summary>
     /// <param name="cachedNode"> The cached node to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>
@@ -161,7 +161,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     The visible folder draw region.
+    ///  The visible folder draw region.
     /// </summary>
     /// <param name="fg"> The folder group to draw. </param>
     /// <param name="region"> The size of the folder draw region. </param>
@@ -180,7 +180,7 @@ public partial class DynamicDrawer<T>
     }
 
     /// <summary>
-    ///     Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
+    ///  Draws the child nodes of <see cref="DynamicFolderGroup{T}"/>. Can be customized. <para />
     /// </summary>
     /// <param name="cfg"> The cached folder group to draw. </param>
     /// <param name="groupIndent"> The indent spacing given to DynamicGroupFolders. (0 for ignored) </param>

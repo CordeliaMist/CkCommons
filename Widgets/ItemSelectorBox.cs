@@ -85,7 +85,7 @@ public class ItemSelectorBoxBuilder<T>
 
 
 /// <summary> 
-///     A generic widget format for the <seealso cref="TagCollection"/>, that has it's own builder.
+///  A generic widget format for the <seealso cref="TagCollection"/>, that has it's own builder.
 /// </summary>
 public class ItemSelectorBox<T>
 {
@@ -175,9 +175,9 @@ public class ItemSelectorBox<T>
     }
 
     /// <summary>
-    ///     The primary draw function. <para />
-    ///     TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
-    ///     This is currenly list so that changes to its order are performed on the passed in list.
+    ///  The primary draw function. <para />
+    ///  TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
+    ///  This is currenly list so that changes to its order are performed on the passed in list.
     /// </summary>
     public void DrawSelectorChildBox(string id, Vector2 region, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName, Vector4 tooltipCol)
     {
@@ -198,9 +198,9 @@ public class ItemSelectorBox<T>
     }
 
     /// <summary>
-    ///     The primary draw function. <para />
-    ///     TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
-    ///     This is currenly list so that changes to its order are performed on the passed in list.
+    ///  The primary draw function. <para />
+    ///  TODO: Make this for IEnumerable<typeparamref name="T"/> or IReadOnlyCollection<typeparamref name="T"/> instead.
+    ///  This is currenly list so that changes to its order are performed on the passed in list.
     /// </summary>
     public void DrawSelectorBox(string id, bool lockFirst, IReadOnlyCollection<T> items, T? selected, Func<T, string> toName, Vector4 tooltipCol)
     {

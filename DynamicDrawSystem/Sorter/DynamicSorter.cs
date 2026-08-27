@@ -5,7 +5,7 @@ public class DynamicSorter<T> : IDynamicSorter<T>, IReadOnlyDynamicSorter<T> whe
     private readonly List<ISortMethod<T>> _sortSteps = [];
 
     /// <summary>
-    ///     Constructor for optional parameters, defaulting to nothing being assigned. <para />
+    ///  Constructor for optional parameters, defaulting to nothing being assigned. <para />
     /// </summary>
     public DynamicSorter(IEnumerable<ISortMethod<T>>? steps = null)
     {
