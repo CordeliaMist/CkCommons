@@ -247,14 +247,14 @@ public class RichChatDrawer<T> where T : IChatMessage
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             inPopup = message;
-            ImGui.OpenPopup($"sund-log-{ChatLog!.ID}-msg-actions");
+            ImGui.OpenPopup($"ckchatlog-{ChatLog!.ID}-msg-actions");
         }
     }
 
     protected void HandleContentMenu()
     {
         // If the popup closed, clear inPopup
-        if (!ImGui.IsPopupOpen($"sund-log-{ChatLog!.ID}-msg-actions"))
+        if (!ImGui.IsPopupOpen($"ckchatlog-{ChatLog!.ID}-msg-actions"))
         {
             inPopup = default;
             return;
@@ -271,7 +271,7 @@ public class RichChatDrawer<T> where T : IChatMessage
         // That, or we would have modified this chatlog to be an instanced class with theme support.
         using var col = ImRaii.PushColor(ImGuiCol.Border, ImGuiColors.ParsedGold);
 
-        using var popup = ImRaii.Popup($"sund-log-{ChatLog!.ID}-msg-actions");
+        using var popup = ImRaii.Popup($"ckchatlog-{ChatLog!.ID}-msg-actions");
         if (!popup) return;
         DrawContentMenu(inPopup);
     }

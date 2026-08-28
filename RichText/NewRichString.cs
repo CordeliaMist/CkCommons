@@ -208,7 +208,7 @@ public class NewRichString
 
     public void UpdateCaches(ImFontPtr font, float curX, float startX, float endX)
     {
-        if (CkRichText.DoLogging)
+        if (NewRichText.DoLogging)
         {
             Svc.Log.Information($"[RichText] Recalculating caches @ startX={startX}, endX={endX}.");
             for (var i = 0; i < _payloads.Count; i++)
@@ -233,13 +233,13 @@ public class NewRichString
         //rawText = rawText.Replace("\n\n", "[para]"); // Double newline are large gaps
         rawText = rawText.Replace("\n", "[br]"); // Single newline are line breaks
 
-        string[] result = CkRichText.RichTextRegex().Split(rawText); // [color, stroke]
+        string[] result = NewRichText.RichTextRegex().Split(rawText); // [color, stroke]
         int[] valid = new int[2]; // [0] = color, [1] = stroke
         var sw = new Stopwatch();
         sw.Start();
         try
         {
-            if (CkRichText.DoLogging)
+            if (NewRichText.DoLogging)
                 Svc.Log.Information($"[RichText] Parsing rich text string: {rawText}");
             
             foreach (string part in result)
@@ -247,7 +247,7 @@ public class NewRichString
                 if (string.IsNullOrWhiteSpace(part))
                     continue;
 
-                if (CkRichText.DoLogging)
+                if (NewRichText.DoLogging)
                     Svc.Log.Information($"[RichText] payload type was: {part}");
 
                 // off switches.
@@ -352,7 +352,7 @@ public class NewRichString
         finally
         {
             sw.Stop();
-            if (CkRichText.DoLogging)
+            if (NewRichText.DoLogging)
                 Svc.Log.Information($"[RichText] Parsed {_payloads.Count} payloads in {sw.ElapsedMilliseconds}ms. Colors: {valid[0]}, Strokes: {valid[1]}");
         }
     }
