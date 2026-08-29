@@ -215,6 +215,24 @@ public static partial class NewRichText
             // if the token has [], it is a tag.
             if (t.StartsWith("[") && t.EndsWith("]"))
             {
+                // Handle link specific fallback (downgrade to plain text if disallowed)
+                if (t.StartsWith("[link=", StringComparison.OrdinalIgnoreCase))
+                {
+                    if ((allowed & RichTextFilter.Links) != 0)
+                        result.Append(t);
+                    else
+                    {
+                        // Strip the tag but keep the display text
+                        var linkData = t[6..^1]; // Removes "[link=" and "]"
+                        var pipeIdx = linkData.IndexOf('|');
+                        // If there's a pipe, grab the text after it. Otherwise, just use the URL.
+                        var text = pipeIdx > 0 ? linkData[(pipeIdx + 1)..] : linkData;
+                        result.Append(text);
+                    }
+                    continue;
+                }
+
+                // Common stuff we should completely remove if true.
                 var isAllowed = t switch
                 {
                     "[line]" => (allowed & RichTextFilter.Line) != 0,
@@ -260,8 +278,7 @@ public static partial class NewRichText
         return result.ToString();
     }
 
-
-    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(\[link=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])|(\[br\])", RegexOptions.IgnoreCase)]
     public static partial Regex RichTextRegex();
 
     // Compressed Version below, still untested.
