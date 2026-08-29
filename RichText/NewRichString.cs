@@ -362,7 +362,7 @@ public class NewRichString
         }
         catch (Exception ex)
         {
-            Svc.Log.Error($"Error while parsing rich text string: {rawText}\n{ex}");
+            Svc.Log.Debug($"Error while parsing rich text string: {rawText}\n{ex}");
             _payloads.Clear();
             _payloads.Add(new TextSegment(rawText));
             _isValid = false;
