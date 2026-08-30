@@ -6,14 +6,14 @@ namespace CkCommons.Raii;
 public static partial class CkRaii
 {
     /// <inheritdoc cref="DragDropHeader(string, float, float, WFlags)"/>"
-    public static ImRaii.IEndObject DragDropHeader(string text, float height, WFlags flags = WFlags.None)
+    public static IEndObject DragDropHeader(string text, float height, WFlags flags = WFlags.None)
         => DragDropHeader(text, height, CkStyle.HeaderRounding(), WFlags.None);
 
     /// <summary>
     ///  A Defined header to the left, of a content body to the right. <para />
     ///  The left body is drag-droppable.
     /// </summary>
-    public static ImRaii.IEndObject DragDropHeader(string text, float height, float rounding, WFlags flags)
+    public static IEndObject DragDropHeader(string text, float height, float rounding, WFlags flags)
     {
         // Begin the group combining the two elements.
         ImGui.BeginGroup();

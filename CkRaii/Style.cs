@@ -1,5 +1,4 @@
 using Dalamud.Bindings.ImGui;
-using OtterGui.Raii;
 
 namespace CkCommons.Raii;
 public static partial class CkRaii
@@ -12,8 +11,25 @@ public static partial class CkRaii
             _ => new Vector2((headerWidth - textWidth) / 2, (headerHeight - ImGui.GetTextLineHeight()) / 2), // Center is default.
         };
 
+    private struct EndConditionally(Action endAction, bool success) : IEndObject
+    {
+        private Action EndAction { get; } = endAction;
+        public bool Success { get; } = success;
+        public bool Disposed { get; private set; } = false;
+
+        public void Dispose()
+        {
+            if (Disposed)
+                return;
+
+            if (Success)
+                EndAction();
+            Disposed = true;
+        }
+    }
+
     // used by ImGui.Child and ImGui.Group
-    private struct EndUnconditionally(Action endAction, bool success) : ImRaii.IEndObject
+    private struct EndUnconditionally(Action endAction, bool success) : IEndObject
     {
         private Action EndAction { get; } = endAction;
         public bool Success { get; } = success;
@@ -74,9 +90,33 @@ public static partial class CkRaii
         Vector2 InnerNoLabel { get; }
     }
 
-    public interface IEOContainer : ImRaii.IEndObject
+    public interface IEOContainer : IEndObject
     {
         /// <summary> The inner region below the label. </summary>
         Vector2 InnerRegion { get; }
+    }
+
+    // Exported interface for RAII until we find an alternative better via the Dalamud ChildDisposable stuff.
+    public interface IEndObject : IDisposable
+    {
+        public bool Success { get; }
+
+        public static bool operator true(IEndObject i)
+            => i.Success;
+
+        public static bool operator false(IEndObject i)
+            => !i.Success;
+
+        public static bool operator !(IEndObject i)
+            => !i.Success;
+
+        public static bool operator &(IEndObject i, bool value)
+            => i.Success && value;
+
+        public static bool operator |(IEndObject i, bool value)
+            => i.Success || value;
+
+        // Empty end object.
+        static readonly IEndObject Empty = new EndConditionally(() => { }, false);
     }
 }

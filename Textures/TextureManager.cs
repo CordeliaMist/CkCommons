@@ -1,5 +1,4 @@
 using Dalamud.Interface.Textures.TextureWraps;
-using OtterGui.Classes;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,15 +12,16 @@ public static class TextureManager
     public static string EmoteFolderPath => Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "Assets", "Emotes");
 
 
-    // Internally stores the monitored emote caches for future cleanup.
-    internal static readonly ConcurrentSet<IDisposable> _monitoredTextureEnumCaches = new();
+    private static readonly object _cacheLock = new();
+    internal static readonly HashSet<IDisposable> _monitoredTextureEnumCaches = new();
 
     /// <summary> Safely allocate a new TextureCache for an Enum type. Then, store it internally for cleanup </summary>
     /// <returns> A new TextureCache instance for the specified Enum type.</returns>
     public static EnumTextureCache<TEnum> CreateEnumTextureCache<TEnum>(Dictionary<TEnum, string> texturePathMap) where TEnum : Enum
     {
         var cache = new EnumTextureCache<TEnum>(texturePathMap);
-        _monitoredTextureEnumCaches.TryAdd(cache);
+        lock (_cacheLock)
+            _monitoredTextureEnumCaches.Add(cache);
         return cache;
     }
 
@@ -85,8 +85,15 @@ public static class TextureManager
     public static void Dispose()
     {
         Svc.Log.Information("[CoreTextureManager] Disposing of Cache.");
-        // Dispose of all monitored texture enum caches.
-        foreach (var cache in _monitoredTextureEnumCaches)
+        IDisposable[] cachesToDispose;
+        // Lock only to extract and clear the items
+        lock (_cacheLock)
+        {
+            cachesToDispose = _monitoredTextureEnumCaches.ToArray();
+            _monitoredTextureEnumCaches.Clear();
+        }
+        // Dispose outside the lock to prevent deadlocks
+        foreach (var cache in cachesToDispose)
             cache.Dispose();
     }
 }

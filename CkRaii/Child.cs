@@ -1,11 +1,10 @@
 using Dalamud.Bindings.ImGui;
-using OtterGui.Raii;
 
 namespace CkCommons.Raii;
 public static partial class CkRaii
 {
     /// <inheritdoc cref="OtterGui.Text.EndObjects.Child"/>"
-    public static ImRaii.IEndObject Child(string id)
+    public static IEndObject Child(string id)
         => new EndUnconditionally(() => ImGui.EndChild(), ImGui.BeginChild(id));
 
     /// <inheritdoc cref="OtterGui.Text.EndObjects.Child"/>"
