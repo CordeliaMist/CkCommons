@@ -3,6 +3,7 @@ using CkCommons.Helpers;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Utility;
 using Lumina.Excel.Sheets;
 using System.Buffers.Binary;
 using System.Diagnostics;
@@ -321,6 +322,23 @@ public class NewRichString
                     continue;
                 }
 
+                if (part.StartsWith("[link=", StringComparison.OrdinalIgnoreCase))
+                {
+                    var linkData = part[6..^1]; // strip [link= and ]
+                    var url = linkData;
+                    var text = linkData;
+                    // Check if there is a pipe separator for custom display text
+                    int pipeIdx = linkData.IndexOf('|');
+                    if (pipeIdx > 0)
+                    {
+                        url = linkData[..pipeIdx];
+                        text = linkData[(pipeIdx + 1)..];
+                    }
+                    _payloads.Add(new LinkSegment(url, text));
+                    continue;
+                }
+
+
                 // From Asset folder (dont let people be too exploitive lol)
                 if (part.StartsWith("[img=", StringComparison.OrdinalIgnoreCase))
                 {
@@ -344,7 +362,7 @@ public class NewRichString
         }
         catch (Exception ex)
         {
-            Svc.Log.Error($"Error while parsing rich text string: {rawText}\n{ex}");
+            Svc.Log.Debug($"Error while parsing rich text string: {rawText}\n{ex}");
             _payloads.Clear();
             _payloads.Add(new TextSegment(rawText));
             _isValid = false;
