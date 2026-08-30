@@ -37,4 +37,29 @@ public static partial class CkStyle
     public static float HeaderRounding() => ImGui.GetStyle().FrameRounding * 2f;
     public static float FrameThickness() => ImGui.GetStyle().WindowPadding.X / 2;
     public static float ThinThickness() => 2f * ImGuiHelpers.GlobalScale;
+
+    public static uint GetFrameBg(bool hovered, bool held)
+        => ImGui.GetColorU32((hovered, held) switch
+        {
+            (true, true) => ImGuiCol.FrameBgActive,
+            (true, false) => ImGuiCol.FrameBgHovered,
+            _ => ImGuiCol.FrameBg,
+        });
+
+    public static uint GetFrameBg(bool hovered, bool active, uint defaultColor)
+    {
+        if (active && hovered) return ImGui.GetColorU32(ImGuiCol.FrameBgActive);
+        else if (hovered) return ImGui.GetColorU32(ImGuiCol.FrameBgHovered);
+        else return defaultColor;
+    }
+
+    public static uint GetBtnColor(bool hovered, bool held)
+        => ImGui.GetColorU32((hovered, held) switch
+        {
+            (true, true) => ImGuiCol.ButtonActive,
+            (true, false) => ImGuiCol.ButtonHovered,
+            _ => ImGuiCol.Button,
+        });
+
+
 }

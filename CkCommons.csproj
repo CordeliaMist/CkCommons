@@ -49,7 +49,7 @@
     </PropertyGroup>
 	
 	<ItemGroup>
-		<!--Nessisary for some core functionality in the fileSystem-->
+	   <!--Nessisary for some core functionality in the fileSystem-->
 		<ProjectReference Include="..\OtterGui\OtterGui.csproj" />
         <!--For image processing and manipulation beyond dalamuds textureprovider capabilities..-->
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />

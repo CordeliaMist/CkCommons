@@ -17,7 +17,6 @@ public enum CkCol : int
     Help, // Unused ATM
     HelpHovered,
     HelpActive,
-    HelpDisabled, // Unused ATM
 
     ProgressBar, // Unused?
 
@@ -35,11 +34,19 @@ public enum CkCol : int
     DividerHovered,
     DividerActive,
 
+    // Gold Base (Can make this another color at some point)
+    Gold,
+    GoldBase,
+    GoldWarm,
+    GoldBright,
+    GoldDeep,
+    GoldDark,
+    Silver,
+
     // Favoriting
     Favorite,
     FavoriteHovered,
     FavoriteActive,
-    FavoriteOff,
 
     // TriStateBoxes
     TriStateCheck,
@@ -294,8 +301,6 @@ public static class CkColors
     }
     #endregion
 
-
-
     #region Conversions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -333,7 +338,6 @@ public static class CkColors
         { CkCol.Help,              new Vector4(0.500f, 0.500f, 0.500f, 1.000f) },
         { CkCol.HelpHovered,       new Vector4(0.000f, 0.600f, 1.000f, 1.000f) },
         { CkCol.HelpActive,        new Vector4(0.000f, 0.800f, 1.000f, 1.000f) },
-        { CkCol.HelpDisabled,      new Vector4(0.350f, 0.350f, 0.350f, 1.000f) },
 
         { CkCol.ProgressBar,       new Vector4(0.977f, 0.380f, 0.640f, 0.914f) }, // Placeholder
 
@@ -346,6 +350,15 @@ public static class CkColors
         // Tooltips
         { CkCol.TipFrame,          new Vector4(0.977f, 0.380f, 0.640f, 0.914f) },
 
+        // Gold Color
+        { CkCol.Gold,              new Vector4(0.957f, 0.682f, 0.294f, 1.000f) },
+        { CkCol.GoldBase,          new Vector4(1.000f, 0.839f, 0.000f, 1.000f) },
+        { CkCol.GoldWarm,          new Vector4(1.000f, 0.784f, 0.239f, 1.000f) },
+        { CkCol.GoldBright,        new Vector4(1.000f, 0.945f, 0.659f, 1.000f) },
+        { CkCol.GoldDeep,          new Vector4(0.722f, 0.565f, 0.110f, 1.000f) },
+        { CkCol.GoldDark,          new Vector4(0.353f, 0.271f, 0.067f, 1.000f) },
+        { CkCol.Silver,           new Vector4(.778f, .778f, .778f, 1f) },
+
         // CkGui.ColorSeparator
         { CkCol.Divider,           new Vector4(0.145f, 0.157f, 0.204f, 1.000f) },
         { CkCol.DividerHovered,    new Vector4(0.180f, 0.195f, 0.255f, 1.000f) },
@@ -354,7 +367,6 @@ public static class CkColors
         // Favorite Star Utils
         { CkCol.Favorite,          new Vector4(0.816f, 0.816f, 0.251f, 1.000f) },
         { CkCol.FavoriteHovered,   new Vector4(0.816f, 0.251f, 0.816f, 1.000f) },
-        { CkCol.FavoriteOff,       new Vector4(0.502f, 0.502f, 0.502f, 0.125f) },
 
         // TriStateBoxes
         { CkCol.TriStateCheck,     new Vector4(0.000f, 0.816f, 0.000f, 1.000f) },
@@ -429,9 +441,15 @@ public static class CkColors
         CkCol.Help => "Help",
         CkCol.HelpHovered => "Help (Hovered)",
         CkCol.HelpActive => "Help (Active)",
-        CkCol.HelpDisabled => "Help (Disabled)",
 
         CkCol.ProgressBar => "Progress Bar",
+
+        CkCol.Gold => "Gold",
+        CkCol.GoldBase => "Gold Base",
+        CkCol.GoldWarm => "Gold Warm",
+        CkCol.GoldBright => "Gold Bright",
+        CkCol.GoldDeep => "Gold Deep",
+        CkCol.GoldDark => "Gold Dark",
 
         CkCol.BoxItem => "Box Item",
         CkCol.BoxItemHovered => "Box Item (Hovered)",
@@ -451,7 +469,6 @@ public static class CkColors
         CkCol.Favorite => "Favorite",
         CkCol.FavoriteHovered => "Favorite (Hovered)",
         CkCol.FavoriteActive => "Favorite (Active)",
-        CkCol.FavoriteOff => "Favorite (Off)",
 
         // TriStateBoxes
         CkCol.TriStateCheck => "TriState Check",
