@@ -87,8 +87,8 @@ public partial class CkFileSystemSelector<T, TStateStorage> : IDisposable
     /// <remarks> Is not called directly, but through ApplyFiltersAndState, which can be overwritten separately. </remarks>
     /// <returns> If any filters matched for this path. </returns>
     protected virtual bool ApplyFilters(CkFileSystem<T>.IPath path)
-        => FilterValue.Length != 0 && !path.FullName().Contains(FilterValue);
-
+        => FilterValue.Length != 0 && !path.FullName().Contains(FilterValue, StringComparison.OrdinalIgnoreCase);
+    
     /// <summary> Customization point to get the state associated with a given path. </summary>
     /// <param name="path"> The path to get the state for. </param>
     /// <remarks> Is not called directly, but through ApplyFiltersAndState, which can be overwritten separately. </remarks>
