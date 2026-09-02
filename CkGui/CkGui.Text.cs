@@ -20,18 +20,18 @@ public static partial class CkGui
         CkGui.TextWrapped(text);
     }
 
-    public static void BulletText(string text, uint color)
+    public static void BulletText(string text, uint color, bool condition = true)
     {
-        using var col = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var col = ImRaii.PushColor(ImGuiCol.Text, color, condition);
         using var _ = ImRaii.Group();
         ImGui.Bullet();
         ImGui.SameLine();
         CkGui.TextWrapped(text);
     }
 
-    public static void BulletText(string text, Vector4 color)
+    public static void BulletText(string text, Vector4 color, bool condition = true)
     {
-        using var col = ImRaii.PushColor(ImGuiCol.Text, color);
+        using var col = ImRaii.PushColor(ImGuiCol.Text, color, condition);
         using var _ = ImRaii.Group();
         ImGui.Bullet();
         ImGui.SameLine();
