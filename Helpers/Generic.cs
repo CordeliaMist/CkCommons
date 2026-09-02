@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 namespace CkCommons;
 public static class Generic
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static IEnumerable<(T Value, int Index)> WithIndex<T>(this IEnumerable<T> list)
+        => list.Select((x, i) => (x, i));
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsInRange<T>(this int idx, IReadOnlyCollection<T> collection)
         => (uint)idx < (uint)collection.Count;

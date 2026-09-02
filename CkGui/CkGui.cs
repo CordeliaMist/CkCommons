@@ -50,8 +50,6 @@ public static partial class CkGui
         => 0x00FFFFFF | ((uint)(alpha * 255f) << 24);
 
 
-
-
     /// <summary> A helper function for retrieving the proper color value given a vector4. </summary>
     /// <returns> The color formatted as a uint </returns>
     public static uint Color(Vector4 color)
@@ -88,6 +86,56 @@ public static partial class CkGui
 
     public static Vector4 GetBoolColor(bool input) => input ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed;
 
+    public static ImGuiStylePtr Style
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ImGui.GetStyle();
+    }
+
+    /// <summary> The regular spacing between items when using <see cref="ImGui.SameLine()"/> or new lines. </summary>
+    public static Vector2 ItemSpacing
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Style.ItemSpacing;
+    }
+
+    /// <summary> The spacing used between grouped objects like an input and a label. </summary>
+    public static Vector2 ItemInnerSpacing
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Style.ItemInnerSpacing;
+    }
+
+    public static Vector2 FramePadding
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Style.FramePadding;
+    }
+
+    public static float TextHeight
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ImGui.GetTextLineHeight();
+    }
+
+    public static float FrameHeight
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ImGui.GetFrameHeight();
+    }
+
+    public static float TextHeightSpacing
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ImGui.GetTextLineHeightWithSpacing();
+    }
+
+    public static float FrameHeightSpacing
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ImGui.GetFrameHeightWithSpacing();
+    }
+
     public static float GetWindowContentRegionWidth()
         => ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X;
 
@@ -97,10 +145,14 @@ public static partial class CkGui
         ImGui.SameLine();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void SameLineInner()
+        => ImGui.SameLine(0, ItemInnerSpacing.X);
+
     public static void InlineSpacingInner()
     {
         ImGui.Spacing();
-        ImUtf8.SameLineInner();
+        SameLineInner();
     }
 
     /// <summary>
@@ -119,7 +171,7 @@ public static partial class CkGui
     {
         var pos = ImGui.GetCursorScreenPos();
         var size = ImGui.CalcTextSize(text);
-        var tagPadX = padding ?? ImUtf8.FramePadding.X;
+        var tagPadX = padding ?? FramePadding.X;
         var tagCol = col ?? ImGui.GetColorU32(ImGuiCol.Button);
         var padWidth = new Vector2(tagPadX, 0);
         // Draw out the text and stuff.
@@ -131,7 +183,7 @@ public static partial class CkGui
     {
         var pos = ImGui.GetCursorScreenPos();
         var size = ImGui.CalcTextSize(text);
-        var tagPadX = padding ?? ImUtf8.FramePadding.X;
+        var tagPadX = padding ?? FramePadding.X;
         var padWidth = new Vector2(tagPadX, 0);
         // Draw out the text and stuff.
         ImGui.GetWindowDrawList().AddRectFilled(pos - padWidth, pos + size + padWidth, col.ToUint(), ImGui.GetStyle().FrameRounding);
@@ -243,7 +295,7 @@ public static partial class CkGui
 
         ImGui.PushID(id);
 
-        var padding = ImUtf8.FramePadding;
+        var padding = FramePadding;
         var vector2 = ImGui.CalcTextSize(label);
         var windowDrawList = ImGui.GetWindowDrawList();
         var num2 = 3f * ImGuiHelpers.GlobalScale;
@@ -251,7 +303,7 @@ public static partial class CkGui
         var frameHeight = ImGui.GetFrameHeight();
         ImGui.Dummy(new Vector2(frameHeight));
         var minPos = ImGui.GetItemRectMin();
-        ImUtf8.SameLineInner();
+        SameLineInner();
         ImGui.SetNextItemWidth(x - vector.X - num2 * 4); // idk why this works, it probably doesnt on different scaling. Idfk. Look into later.
         var result = ImGui.InputTextWithHint(label, hint, ref inputStr, maxLength, flags);
 
@@ -301,7 +353,7 @@ public static partial class CkGui
 
     public static void BoolIcon(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
-        if (inline) ImUtf8.SameLineInner();
+        if (inline) SameLineInner();
         var toPush = value ? ((colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue) : ((colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse);
         using var col = ImRaii.PushColor(ImGuiCol.Text, toPush);
         IconText(value ? trueIcon : falseIcon);
@@ -310,7 +362,7 @@ public static partial class CkGui
     // make a non-framed variant of this soon.
     public static void BoolIconFramed(bool value, bool inline = true, FAI trueIcon = FAI.Check, FAI falseIcon = FAI.Times, Vector4 colorTrue = default, Vector4 colorFalse = default)
     {
-        if (inline) ImUtf8.SameLineInner();
+        if (inline) SameLineInner();
         var toPush = value ? ((colorTrue == default) ? ImGuiColors.HealerGreen : colorTrue) : ((colorFalse == default) ? ImGuiColors.DalamudRed : colorFalse);
         using var col = ImRaii.PushColor(ImGuiCol.Text, toPush);
         FramedIconText(value ? trueIcon : falseIcon);

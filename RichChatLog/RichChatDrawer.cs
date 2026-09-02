@@ -1,11 +1,9 @@
-using CkCommons;
 using CkCommons.Gui;
 using CkCommons.Raii;
 using CkCommons.RichText;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using OtterGui.Text;
 
 namespace CkCommons.RichChat;
 
@@ -50,7 +48,7 @@ public class RichChatDrawer<T> where T : IChatMessage
     }
 
     protected virtual float GetInputHeight()
-        => ImUtf8.FrameHeightSpacing;
+        => ImGui.GetFrameHeightWithSpacing();
 
     protected virtual void FlushLocalData()
     {
@@ -142,7 +140,7 @@ public class RichChatDrawer<T> where T : IChatMessage
         if (remaining is 0)
             return;
 
-        var spacing = ImUtf8.ItemSpacing.Y;
+        var spacing = ImGui.GetStyle().ItemSpacing.Y;
         var dummyH = 0f;
         foreach (var msg in data)
             dummyH += NewRichText.GetTextSize(msg.Message, ChatLog!.ID + msg.MsgId).Y + spacing;
@@ -172,7 +170,7 @@ public class RichChatDrawer<T> where T : IChatMessage
             shouldFocusInput = false;
         }
 
-        ImGui.SetNextItemWidth(width - CkGui.IconButtonSize(scrollIcon).X - ImUtf8.ItemInnerSpacing.X);
+        ImGui.SetNextItemWidth(width - CkGui.IconButtonSize(scrollIcon).X - ImGui.GetStyle().ItemInnerSpacing.X);
         ImGui.InputTextWithHint($"##chat-input-{ChatLog!.ID}", $"Message {ChatLog.ID}...", ref previewMessage, 400, ImGuiInputTextFlags.CallbackHistory, OnChatInputCallback);
         // Process submission Prevent losing chat focus after pressing the Enter key.
         if (ImGui.IsItemFocused() && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
@@ -181,7 +179,7 @@ public class RichChatDrawer<T> where T : IChatMessage
             SendMessage(previewMessage);
         }
 
-        ImUtf8.SameLineInner();
+        CkGui.SameLineInner();
         if (CkGui.IconButton(scrollIcon))
             ChatLog!.AutoScroll = !ChatLog.AutoScroll;
         CkGui.AttachTooltip($"Toggles AutoScroll (Current: {(ChatLog!.AutoScroll ? "Enabled" : "Disabled")})");
@@ -283,9 +281,9 @@ public class RichChatDrawer<T> where T : IChatMessage
     protected virtual void DrawIgnoredMessageRow(T message, float width)
     {
         var txtWidth = ImGui.CalcTextSize("Ignored Message");
-        var lineW = (width - ImUtf8.ItemInnerSpacing.X * 2 - txtWidth.X) / 2;
+        var lineW = (width - CkGui.ItemInnerSpacing.X * 2 - txtWidth.X) / 2;
         var min = ImGui.GetCursorScreenPos();
-        var lineY = min.Y + (ImUtf8.TextHeight / 2);
+        var lineY = min.Y + (CkGui.TextHeight / 2);
 
         ImGui.GetWindowDrawList().AddLine(new Vector2(min.X, lineY), new Vector2(min.X + lineW, lineY), ImGuiColors.ParsedGrey.ToUint(), 2f);
         CkGui.ColorTextCentered("Ignored Message", ImGuiColors.ParsedGrey);
