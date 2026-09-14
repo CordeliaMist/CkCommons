@@ -73,6 +73,9 @@ public partial class DynamicDrawer<T> : IDisposable
         HandleMainContext();
         FilterCache.UpdateCache();
 
+        // Handle any logic prior to the execution
+        PreDraw();
+
         // Set the style for the draw logic.
         ImGui.SetScrollX(0);
         using var s = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.One)
@@ -106,6 +109,9 @@ public partial class DynamicDrawer<T> : IDisposable
     {
         using var _ = ImRaii.Child(Label, new Vector2(width, -1), false, WFlags.NoScrollbar);
         if (!_) return;
+
+        // Handle any logic prior to the execution
+        PreDraw();
 
         HandleMainContext();
         FilterCache.UpdateCache();
@@ -161,6 +167,13 @@ public partial class DynamicDrawer<T> : IDisposable
         DrawClippedCacheNode(cachedNode, groupIndent, indent, flags);
         PostDraw();
     }
+
+    /// <summary>
+    ///   For any logic nessisary to handle prior to drawing all items.
+    /// </summary>
+    protected virtual void PreDraw()
+    { }
+
 
     /// <summary>
     ///  Add post-draw logic that is executed after drawing the full DynamicDrawSelector UI. <para />
