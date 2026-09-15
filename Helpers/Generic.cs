@@ -210,6 +210,17 @@ public static class Generic
         cts = delay.HasValue ? new CancellationTokenSource(delay.Value) : new CancellationTokenSource();
     }
 
+    /// <summary> Gracefully release a Semaphore, ignore ObjectDisposedException if it occurs. </summary>
+    public static void SafeRelease(this SemaphoreSlim semaphore)
+    {
+        try
+        {
+            semaphore.Release();
+        }
+        catch (ObjectDisposedException)
+        { }
+    }
+
     /// <summary>
     /// Reads SeString.
     /// </summary>
