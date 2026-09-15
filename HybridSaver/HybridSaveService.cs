@@ -113,7 +113,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 failedConfigs.Add(config);
         }
 
-        Svc.Log.Warning($"[SaveService] Flushed {configs.Count} dirty configs. {failedConfigs.Count} failed to save.");
+        Svc.Log.Verbose($"[SaveService] Flushed {configs.Count} dirty configs. {failedConfigs.Count} failed to save.");
     }
 
 
