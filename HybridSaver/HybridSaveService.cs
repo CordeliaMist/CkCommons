@@ -105,13 +105,19 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             _saveLock.Release();
         }
 
-        // Perform the config saves
+        // Track which ones failed
+        var failedConfigs = new List<IHybridSavable<T>>();
         foreach (var config in configs)
-            SaveConfigAsync(config);
+        {
+            if (!SaveConfigAsync(config))
+                failedConfigs.Add(config);
+        }
+
+        Svc.Log.Warning($"[SaveService] Flushed {configs.Count} dirty configs. {failedConfigs.Count} failed to save.");
     }
 
 
-    private void SaveConfigAsync(IHybridSavable<T> config)
+    private bool SaveConfigAsync(IHybridSavable<T> config)
     {
         var configPath = config.ToFilePath(FileNames);
 
@@ -121,7 +127,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         if (!Directory.Exists(directory))
         {
             Svc.Log.Warning($"[SaveService] Directory did not exist: {directory}. Ensure your fileProvider inheriting this initializes your folders!");
-            return;
+            return false;
         }
 
         // Use a unique anti-corruption file to avoid overwriting a previous failed save.
@@ -134,10 +140,12 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             CreateBackupIfNeeded(config, configPath);
             // Atomically move to real file after.
             File.Move(antiCorruptionPath, configPath, overwrite: true);
+            return true;
         }
         catch (Exception ex)
         {
             Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
+            return false;
         }
         finally
         {
