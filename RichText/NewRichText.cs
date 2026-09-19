@@ -215,6 +215,25 @@ public static partial class NewRichText
             // if the token has [], it is a tag.
             if (t.StartsWith("[") && t.EndsWith("]"))
             {
+                // Handle timestamp specific fallback (downgrade to plain text if disallowed)
+                if (t.StartsWith("[t=", StringComparison.OrdinalIgnoreCase))
+                {
+                    if ((allowed & RichTextFilter.Timestamps) != 0)
+                        result.Append(t);
+                    else
+                    {
+                        // Strip the tag but keep the display text
+                        var timeData = t[3..^1]; // Removes "[t=" and "]"
+                        var commaIdx = timeData.LastIndexOf(',');
+
+                        // If there is a format char at the end, strip it out
+                        if (commaIdx > 0 && commaIdx == timeData.Length - 2)
+                            result.Append(timeData[..commaIdx]);
+                        else
+                            result.Append(timeData);
+                    }
+                    continue;
+                }
                 // Handle link specific fallback (downgrade to plain text if disallowed)
                 if (t.StartsWith("[link=", StringComparison.OrdinalIgnoreCase))
                 {
@@ -278,7 +297,7 @@ public static partial class NewRichText
         return result.ToString();
     }
 
-    [GeneratedRegex(@"(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(\[link=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])|(\[br\])", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\[t=[^\]]+\])|(\[rawcolor=(?:0x[0-9a-fA-F]{1,8}|\d+)\])|(\[/rawcolor\])|(\[color=[0-9a-z#]+\])|(\[\/color\])|(\[stroke=[0-9a-z#]+\])|(\[i\])|(\[\/i\])|(\[\/stroke\])|(\[glow=[0-9a-z#]+\])|(\[\/glow\])|(\[img=[^\]]+\])|(\[link=[^\]]+\])|(:[^:\[\]\s]+:)|(\[para\])|(\[line\])|(\[br\])", RegexOptions.IgnoreCase)]
     public static partial Regex RichTextRegex();
 
     // Compressed Version below, still untested.

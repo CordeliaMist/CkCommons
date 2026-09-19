@@ -14,6 +14,8 @@ public enum RichTextFilter
     Paragraph = 1 << 7,
     Links = 1 << 8,
     Line = 1 << 9,
+    Timestamps = 1 << 10,
 
-    All = Emotes | Images | Stickers | Glow | Stroke | Color | RawColor | Paragraph | Line | Links
+    All = Emotes | Images | Stickers | Glow | Stroke 
+        | Color | RawColor | Paragraph | Line | Links | Timestamps,
 }

@@ -324,7 +324,7 @@ public class NewRichString
 
                 if (part.StartsWith("[link=", StringComparison.OrdinalIgnoreCase))
                 {
-                    var linkData = part[6..^1]; // strip [link= and ]
+                    var linkData = part[6..^1];
                     var url = linkData;
                     var text = linkData;
                     // Check if there is a pipe separator for custom display text
@@ -335,6 +335,27 @@ public class NewRichString
                         text = linkData[(pipeIdx + 1)..];
                     }
                     _payloads.Add(new LinkSegment(url, text));
+                    continue;
+                }
+
+                if (part.StartsWith("[t=", StringComparison.OrdinalIgnoreCase))
+                {
+                    var inner = part[3..^1];
+                    var commaIdx = inner.LastIndexOf(',');
+                    string timeData;
+                    var format = 'f';
+                    // All time formatting is 1 character, so this is reliable.
+                    if (commaIdx > 0 && commaIdx == inner.Length - 2)
+                    {
+                        timeData = inner[..commaIdx];
+                        format = inner[^1];
+                    }
+                    else
+                    {
+                        timeData = inner;
+                    }
+
+                    _payloads.Add(new TimestampSegment(timeData, format));
                     continue;
                 }
 
