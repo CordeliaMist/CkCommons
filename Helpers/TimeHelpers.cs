@@ -61,7 +61,32 @@ public static class TimeEx
         if (timeSpan.Days > 0) sb.Append($"{timeSpan.Days}d ");
         if (timeSpan.Hours > 0) sb.Append($"{timeSpan.Hours}h ");
         if (timeSpan.Minutes > 0) sb.Append($"{timeSpan.Minutes}m ");
-        if (timeSpan.Seconds > 0 || sb.Length == 0) sb.Append($"{timeSpan.Seconds}s ");
+        if ((timeSpan.Seconds > 0 || sb.Length == 0)) sb.Append($"{timeSpan.Seconds}s ");
+        return sb.ToString();
+    }
+
+    public static string ToTimeSpanStr(this TimeSpan timeSpan, int shownUnits = 4, bool showSeconds = true)
+    {
+        var sb = new StringBuilder();
+        var units = 0;
+        if (units < shownUnits && timeSpan.Days > 0)
+        {
+            sb.Append($"{timeSpan.Days}d ");
+            units++;
+        }
+        if (units < shownUnits && timeSpan.Hours > 0)
+        {
+            sb.Append($"{timeSpan.Hours}h ");
+            units++;
+        }
+        if (units < shownUnits && timeSpan.Minutes > 0)
+        {
+            sb.Append($"{timeSpan.Minutes}m ");
+            units++;
+        }
+        if (showSeconds && (timeSpan.Seconds > 0 || sb.Length == 0))
+            sb.Append($"{timeSpan.Seconds}s ");
+
         return sb.ToString();
     }
 }
