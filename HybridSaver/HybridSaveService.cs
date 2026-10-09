@@ -10,11 +10,15 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     private readonly HashSet<IHybridSavable<T>> _dirtyConfigs = [];
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private readonly CancellationTokenSource _cts = new();
+    private readonly bool _useReliableStorage;
 
     public readonly T FileNames = default(T)!;
-    public HybridSaveServiceBase(T fileNameStructure)
+    
+    /// <param name="useReliableStorage"> Save through Dalamud's IReliableFileStorage instead of temp files and .bak backups. </param>
+    public HybridSaveServiceBase(T fileNameStructure, bool useReliableStorage = false)
     {
         FileNames = fileNameStructure;
+        _useReliableStorage = useReliableStorage;
     }
 
     private Task? _saveLoopTask;
@@ -109,7 +113,8 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         var failedConfigs = new List<IHybridSavable<T>>();
         foreach (var config in configs)
         {
-            if (!SaveConfigAsync(config))
+            var saved = _useReliableStorage ? await SaveReliableAsync(config).ConfigureAwait(false) : SaveConfigAsync(config);
+            if (!saved)
                 failedConfigs.Add(config);
         }
 
@@ -155,6 +160,32 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
                 Svc.Log.Warning($"[SaveService] Cleaning up anti-corruption file {antiCorruptionPath}");
                 try { File.Delete(antiCorruptionPath); } catch { }
             }
+        }
+    }
+
+    private async Task<bool> SaveReliableAsync(IHybridSavable<T> config)
+    {
+        var configPath = config.ToFilePath(FileNames);
+        try
+        {
+            string text;
+            if (config.SaveType is HybridSaveType.Json)
+                text = config.JsonSerialize();
+            else
+            {
+                using var ms = new MemoryStream();
+                using (var writer = new StreamWriter(ms, new UTF8Encoding(false)))
+                    config.WriteToStream(writer);
+                text = Encoding.UTF8.GetString(ms.ToArray());
+            }
+
+            await Svc.ReliableStorage.WriteAllTextAsync(configPath, text).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
+            return false;
         }
     }
 

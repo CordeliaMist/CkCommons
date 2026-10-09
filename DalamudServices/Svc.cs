@@ -37,6 +37,7 @@ public class Svc
     [PluginService] public static INotificationManager Notifications { get; private set; } = null!;
     [PluginService] public static IObjectTable Objects { get; private set; } = null!;
     [PluginService] public static IPartyList Party { get; private set; } = null!;
+    [PluginService] public static IReliableFileStorage ReliableStorage { get; private set; } = null!;
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static ITargetManager Targets { get; private set; } = null!;
     [PluginService] public static ITextureProvider Texture { get; private set; } = null!;
