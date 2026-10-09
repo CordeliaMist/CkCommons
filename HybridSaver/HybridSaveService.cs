@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,6 +85,11 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             _saveLock.Release();
         }
     }
+
+    /// <summary> Loads the config's file, recovering from corruption where possible. See <see cref="HybridJson.Load"/>. </summary>
+    /// <returns> The parsed JObject, or null if the file does not exist or could not be recovered. </returns>
+    public JObject? Load(IHybridSavable<T> config)
+        => HybridJson.Load(config.ToFilePath(FileNames));
 
     private async Task FlushDirtyConfigs()
     {
