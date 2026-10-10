@@ -22,7 +22,7 @@ public static class HybridJson
             if (reads > 1)
             {
                 Svc.Log.Warning($"[HybridJson] {fileName} was corrupt, restored from reliable storage backup.");
-                Notify(NotificationType.Warning, $"{fileName} was corrupted and has been restored from a backup.");
+                Notify(NotificationType.Warning, $"{fileName} was corrupted and has been restored from a backup.", TimeSpan.FromSeconds(30));
             }
             return jObject;
         }
@@ -45,7 +45,7 @@ public static class HybridJson
             {
                 jObject = JObject.Parse(File.ReadAllText(bak.FullName));
                 Svc.Log.Warning($"[HybridJson] Restored {fileName} from {bak.Name}");
-                Notify(NotificationType.Warning, $"{fileName} was corrupted and has been restored from a backup made {bak.LastWriteTime:g}.");
+                Notify(NotificationType.Warning, $"{fileName} was corrupted and has been restored from a backup made {bak.LastWriteTime:g}.", TimeSpan.FromSeconds(30));
                 return jObject;
             }
             catch
@@ -59,17 +59,17 @@ public static class HybridJson
         catch (Exception ex) { Svc.Log.Error($"[HybridJson] Failed to move corrupt {fileName} aside: {ex.Message}"); }
 
         Svc.Log.Error($"[HybridJson] No valid backup for {fileName}, it will be reset. Corrupt copy kept at {corruptPath}");
-        Notify(NotificationType.Error, $"{fileName} was corrupted and no backup could be loaded, so it has been reset.\nThe corrupt copy was kept as {Path.GetFileName(corruptPath)}.");
+        Notify(NotificationType.Error, $"{fileName} was corrupted and no backup could be loaded, so it has been reset.\nThe corrupt copy was kept as {Path.GetFileName(corruptPath)}.", TimeSpan.MaxValue);
         return null;
     }
 
-    private static void Notify(NotificationType type, string content)
+    private static void Notify(NotificationType type, string content, TimeSpan duration)
         => Svc.Notifications.AddNotification(new Notification()
         {
             Title = "Config File Corrupted",
             Content = content,
             Type = type,
             Minimized = false,
-            InitialDuration = TimeSpan.FromSeconds(30)
+            InitialDuration = duration
         });
 }
