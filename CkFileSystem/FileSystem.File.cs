@@ -1,3 +1,4 @@
+using CkCommons.HybridSaver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
@@ -61,18 +62,7 @@ public partial class CkFileSystem<T>
 
     protected bool Load(FileInfo file, IEnumerable<T> objects, Func<T, string> toIdentifier, Func<T, string> toName)
     {
-        JObject? jObj = null;
-        if (File.Exists(file.FullName))
-            try
-            {
-                jObj = JObject.Parse(File.ReadAllText(file.FullName));
-            }
-            catch
-            {
-                // ignored
-            }
-
-        return Load(jObj, objects, toIdentifier, toName);
+        return Load(HybridJson.Load(file.FullName), objects, toIdentifier, toName);
     }
 
     /// <summary>

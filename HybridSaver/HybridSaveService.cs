@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,6 +86,11 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
     }
 
+    /// <summary> Loads the config's file, recovering from corruption where possible. See <see cref="HybridJson.Load"/>. </summary>
+    /// <returns> The parsed JObject, or null if the file does not exist or could not be recovered. </returns>
+    public JObject? Load(IHybridSavable<T> config)
+        => HybridJson.Load(config.ToFilePath(FileNames));
+
     private async Task FlushDirtyConfigs()
     {
         List<IHybridSavable<T>> configs;
@@ -109,7 +115,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         var failedConfigs = new List<IHybridSavable<T>>();
         foreach (var config in configs)
         {
-            if (!SaveConfigAsync(config))
+            if (!await SaveConfigAsync(config).ConfigureAwait(false))
                 failedConfigs.Add(config);
         }
 
@@ -117,7 +123,8 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     }
 
 
-    private bool SaveConfigAsync(IHybridSavable<T> config)
+    /// <summary> Writes through Dalamud's IReliableFileStorage, which is atomic and keeps a backup copy for recovery, plus a timed .bak copy. </summary>
+    private async Task<bool> SaveConfigAsync(IHybridSavable<T> config)
     {
         var configPath = config.ToFilePath(FileNames);
 
@@ -130,16 +137,21 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             return false;
         }
 
-        // Use a unique anti-corruption file to avoid overwriting a previous failed save.
-        var antiCorruptionPath = $"{configPath}.new.{Guid.NewGuid():N}";
         try
         {
-            // Write to antiCorruption file
-            WriteTempFile(config, antiCorruptionPath);
-            // Backup if nessisary before we attempt to move.
+            string text;
+            if (config.SaveType is HybridSaveType.Json)
+                text = config.JsonSerialize();
+            else
+            {
+                using var ms = new MemoryStream();
+                using (var writer = new StreamWriter(ms, new UTF8Encoding(false)))
+                    config.WriteToStream(writer);
+                text = Encoding.UTF8.GetString(ms.ToArray());
+            }
+
             CreateBackupIfNeeded(config, configPath);
-            // Atomically move to real file after.
-            File.Move(antiCorruptionPath, configPath, overwrite: true);
+            await Svc.ReliableStorage.WriteAllTextAsync(configPath, text).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -147,40 +159,9 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
             Svc.Log.Error($"[SaveService] Failed to save {configPath}: {ex}");
             return false;
         }
-        finally
-        {
-            // Cleanup the antiCorruption file if it still exists.
-            if (File.Exists(antiCorruptionPath))
-            {
-                Svc.Log.Warning($"[SaveService] Cleaning up anti-corruption file {antiCorruptionPath}");
-                try { File.Delete(antiCorruptionPath); } catch { }
-            }
-        }
     }
 
-    private static void WriteTempFile(IHybridSavable<T> config, string fullPath)
-    {
-        switch (config.SaveType)
-        {
-            case HybridSaveType.Json:
-                {
-                    var json = config.JsonSerialize();
-                    File.WriteAllText(fullPath, json, Encoding.UTF8);
-                    break;
-                }
-            case HybridSaveType.StreamWrite:
-                {
-                    using var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
-                    using var writer = new StreamWriter(fs, Encoding.UTF8);
-                    config.WriteToStream(writer);
-                    break;
-                }
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    // Temp solution until we migrate to IReliableStorage.
+    // Kept alongside IReliableFileStorage for now, can be removed once its backups have proven reliable.
     private static void CreateBackupIfNeeded(IHybridSavable<T> config, string configPath)
     {
         if (!File.Exists(configPath))

@@ -1,3 +1,4 @@
+using CkCommons.HybridSaver;
 using Dalamud.Bindings.ImGui;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -80,7 +81,7 @@ public partial class DynamicDrawSystem<T>
         JObject? jObj = null;
         // Safely load the JObject if it exists.
         if (File.Exists(file.FullName))
-            Generic.Safe(() => jObj = JObject.Parse(File.ReadAllText(file.FullName)));
+            jObj = HybridJson.Load(file.FullName);
         else
         {
             Svc.Log.Warning($"DDS LoadFile called but file does not exist: {file.FullName}");
