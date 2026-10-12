@@ -1,3 +1,4 @@
+using CkCommons.Audio;
 using CkCommons.RichText;
 using CkCommons.Textures;
 using Dalamud.Plugin;
@@ -46,7 +47,7 @@ public static class CkCommonsHost
         Svc.Log.Information($"This is CkCommons v{typeof(CkCommonsHost).Assembly.GetName().Version} " +
             $"and {Svc.PluginInterface.InternalName} v{instance.GetType().Assembly.GetName().Version}.");
 
-        // AudioSystem.Init();
+        AudioSystem.Init();
         NewRichText.Init();
     }
 
@@ -65,7 +66,7 @@ public static class CkCommonsHost
         Disposed = true;
 
         // Any classes that initialize, have an initializer, store data that should be replaced, or do not use IDisposable, should be manually disposed.
-        // Generic.Safe(AudioSystem.Dispose);
+        Generic.Safe(AudioSystem.Dispose);
         Generic.Safe(NewRichText.Dispose);
         Generic.Safe(TextureManager.Dispose);
     }

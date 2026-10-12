@@ -12,30 +12,30 @@ namespace CkCommons.Gui;
 // Partial Class for Text Display Helpers.
 public static partial class CkGui
 {
-    public static void BulletText(string text)
+    public static void BulletText(string text, float wrapWidth = 0)
     {
         using var _ = ImRaii.Group();
         ImGui.Bullet();
         ImGui.SameLine();
-        CkGui.TextWrapped(text);
+        CkGui.TextWrapped(text, wrapWidth);
     }
 
-    public static void BulletText(string text, uint color, bool condition = true)
+    public static void BulletText(string text, uint color, bool condition = true, float wrapWidth = 0)
     {
         using var col = ImRaii.PushColor(ImGuiCol.Text, color, condition);
         using var _ = ImRaii.Group();
         ImGui.Bullet();
         ImGui.SameLine();
-        CkGui.TextWrapped(text);
+        CkGui.TextWrapped(text, wrapWidth);
     }
 
-    public static void BulletText(string text, Vector4 color, bool condition = true)
+    public static void BulletText(string text, Vector4 color, bool condition = true, float wrapWidth = 0)
     {
         using var col = ImRaii.PushColor(ImGuiCol.Text, color, condition);
         using var _ = ImRaii.Group();
         ImGui.Bullet();
         ImGui.SameLine();
-        CkGui.TextWrapped(text);
+        CkGui.TextWrapped(text, wrapWidth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
