@@ -12,7 +12,7 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     private readonly SemaphoreSlim _saveLock = new(1, 1);
     private readonly CancellationTokenSource _cts = new();
 
-    public readonly T FileNames = default(T)!;
+    public readonly T FileNames = default!;
     public HybridSaveServiceBase(T fileNameStructure)
     {
         FileNames = fileNameStructure;
@@ -86,7 +86,9 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
     }
 
-    /// <summary> Loads the config's file, recovering from corruption where possible. See <see cref="HybridJson.Load"/>. </summary>
+    /// <summary>
+    ///   Loads the config's file, recovering from corruption where possible. See <see cref="HybridJson.Load"/>.
+    /// </summary>
     /// <returns> The parsed JObject, or null if the file does not exist or could not be recovered. </returns>
     public JObject? Load(IHybridSavable<T> config)
         => HybridJson.Load(config.ToFilePath(FileNames));
@@ -123,7 +125,9 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
     }
 
 
-    /// <summary> Writes through Dalamud's IReliableFileStorage, which is atomic and keeps a backup copy for recovery, plus a timed .bak copy. </summary>
+    /// <summary>
+    ///   Writes through Dalamud's IReliableFileStorage, which is atomic and keeps a backup copy for recovery, plus a timed .bak copy.
+    /// </summary>
     private async Task<bool> SaveConfigAsync(IHybridSavable<T> config)
     {
         var configPath = config.ToFilePath(FileNames);
@@ -161,7 +165,9 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
         }
     }
 
-    // Kept alongside IReliableFileStorage for now, can be removed once its backups have proven reliable.
+    /// <summary>
+    ///   Kept alongside IReliableFileStorage for now, can be removed once its backups have proven reliable.
+    /// </summary>
     private static void CreateBackupIfNeeded(IHybridSavable<T> config, string configPath)
     {
         if (!File.Exists(configPath))
@@ -203,6 +209,12 @@ public class HybridSaveServiceBase<T> where T : IConfigFileProvider
 
         // Populate a unified cleanup loop enforces the MaxBackups limit
         for (int i = config.MaxBackups; i < bakFiles.Count; i++)
-            try { bakFiles[i].Delete(); } catch { }
+        {
+            try
+            {
+                bakFiles[i].Delete();
+            }
+            catch { }
+        }
     }
 }
