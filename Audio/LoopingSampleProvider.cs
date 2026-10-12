@@ -13,11 +13,12 @@ public class LoopingSampleProvider : ISampleProvider
     private bool _stopped = false;
     private readonly bool _loop;
 
-    public LoopingSampleProvider(CachedSound cachedSound, bool loop)
+    public LoopingSampleProvider(CachedSound cachedSound, bool loop, long startPosition = 0)
     {
         _audioData = cachedSound.AudioData;
         _waveFormat = cachedSound.WaveFormat;
         _loop = loop;
+        _position = startPosition;
     }
 
     public bool HasCompleted => _stopped;
