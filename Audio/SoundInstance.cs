@@ -38,7 +38,7 @@ public class SoundInstance
     }
 
     public void Stop()
-        => _loopSource.Stop();
+        => _volume.Stop();
 
     //// Updates volume based on where another player is from us in distance. (Dont add this yet, maybe in a different class)
     //public void Update(Vector3 soundSourcePos)

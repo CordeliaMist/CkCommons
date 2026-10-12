@@ -129,8 +129,6 @@ public static class AudioSystem
         if (_activeMixerSounds.TryGetValue(soundKey, out var instance))
         {
             instance.Stop();
-            // Detatch from mixer
-            _mixer.RemoveMixerInput(instance.Output);
             // Free key so the sound can be registered again later
             _activeMixerSounds.TryRemove(soundKey, out _);
             Svc.Log.Verbose($"Stopped sound: {soundKey}.");

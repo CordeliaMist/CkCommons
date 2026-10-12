@@ -13,6 +13,7 @@ public class RampedVolumeProvider : ISampleProvider
     private float _step;
     private float _rampTarget;
     private volatile float _target;
+    private volatile bool _stopping;
 
     public RampedVolumeProvider(ISampleProvider source)
     {
@@ -24,8 +25,18 @@ public class RampedVolumeProvider : ISampleProvider
 
     public float Volume { set => _target = value; }
 
+    // Fades out, then returns 0 so the mixer drops this input.
+    public void Stop()
+    {
+        _stopping = true;
+        _target = 0;
+    }
+
     public int Read(float[] buffer, int offset, int count)
     {
+        if (_stopping && _current == 0)
+            return 0;
+
         var read = _source.Read(buffer, offset, count);
         var channels = WaveFormat.Channels;
         var target = _target;
