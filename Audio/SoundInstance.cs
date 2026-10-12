@@ -1,5 +1,4 @@
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 
 namespace CkCommons.Audio;
 
@@ -7,7 +6,7 @@ public class SoundInstance
 {
     private readonly CachedSound _sound;
     private readonly LoopingSampleProvider _loopSource;
-    private readonly VolumeSampleProvider _volume;
+    private readonly RampedVolumeProvider _volume;
 
     private double _intensity;
 
@@ -27,11 +26,11 @@ public class SoundInstance
         }
     }
 
-    public SoundInstance(CachedSound sound, bool loop, double initialIntensity = 0.0)
+    public SoundInstance(CachedSound sound, bool loop, double initialIntensity = 0.0, long startPosition = 0)
     {
         _sound = sound;
-        _loopSource = new LoopingSampleProvider(sound, loop);
-        _volume = new VolumeSampleProvider(_loopSource)
+        _loopSource = new LoopingSampleProvider(sound, loop, startPosition);
+        _volume = new RampedVolumeProvider(_loopSource)
         {
             Volume = (float)Math.Clamp(initialIntensity, 0.0, 1.0)
         };

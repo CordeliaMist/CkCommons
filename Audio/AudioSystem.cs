@@ -23,6 +23,7 @@ public static class AudioSystem
 {
     private static MixingSampleProvider _mixer = new(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2)) { ReadFully = true };
     private static IWavePlayer _output = new DirectSoundOut();
+    private const int Latency = 150; // ms, default 40 underruns (crackles) under load. Maybe make this a config option instead?
 
     private static readonly ConcurrentDictionary<string, CachedSound> _soundCache = new();
     private static readonly ConcurrentDictionary<string, SoundInstance> _activeMixerSounds = new();
@@ -40,7 +41,8 @@ public static class AudioSystem
         FetchLatestAudioDevices();
 
         // set the output item.
-        _output = new DirectSoundOut();
+        _output = new DirectSoundOut(Latency);
+        _output.PlaybackStopped += OnPlaybackStopped;
         _output.Init(_mixer);
         _output.Play();
     }
@@ -50,8 +52,17 @@ public static class AudioSystem
         StopAllSounds();
         _soundCache.Clear();
 
+        _output.PlaybackStopped -= OnPlaybackStopped;
         _output?.Stop();
         _output?.Dispose();
+    }
+
+    // Output halts for good on underrun / device errors, so restart it.
+    private static void OnPlaybackStopped(object? sender, StoppedEventArgs e)
+    {
+        if (e.Exception is not null)
+            Svc.Log.Warning($"Audio output stopped: {e.Exception}");
+        _output.Play();
     }
 
     public static void PlayMixer()
@@ -89,14 +100,14 @@ public static class AudioSystem
     /// <summary>
     ///   Starts playing a sound into the mixer. If it's a rotor, initialIntensity allows fading it in from 0.
     /// </summary>
-    public static void PlaySound(string soundKey, CachedSound sound, bool loop = true, double initialIntensity = 1.0)
+    public static void PlaySound(string soundKey, CachedSound sound, bool loop = true, double initialIntensity = 1.0, long startPosition = 0)
     {
         if (_activeMixerSounds.ContainsKey(soundKey))
         {
             Svc.Log.Verbose($"Sound {soundKey} is already playing, skipping.");
             return;
         }
-        var soundInstance = new SoundInstance(sound, loop, initialIntensity);
+        var soundInstance = new SoundInstance(sound, loop, initialIntensity, startPosition);
         if (_activeMixerSounds.TryAdd(soundKey, soundInstance))
         {
             _mixer.AddMixerInput(soundInstance.Output);
@@ -138,6 +149,7 @@ public static class AudioSystem
 
     public static void InitializeOutputDevice(OutputType newType, string deviceId)
     {
+        _output.PlaybackStopped -= OnPlaybackStopped;
         _output?.Dispose();
         Svc.Log.Debug($"Initializing audio device using {newType}");
 
@@ -146,8 +158,8 @@ public static class AudioSystem
             _output = newType switch
             {
                 OutputType.DirectSound => Guid.TryParse(deviceId, out Guid guid)
-                    ? new DirectSoundOut(guid)
-                    : new DirectSoundOut(),
+                    ? new DirectSoundOut(guid, Latency)
+                    : new DirectSoundOut(Latency),
 
                 OutputType.Asio => (string.IsNullOrEmpty(deviceId) || deviceId == "Default")
                     ? new AsioOut()
@@ -160,6 +172,7 @@ public static class AudioSystem
                 _ => throw new ArgumentOutOfRangeException(nameof(newType), $"Unsupported output type: {newType}")
             };
 
+            _output.PlaybackStopped += OnPlaybackStopped;
             _output.Init(_mixer);
             _output.Play();
         }
