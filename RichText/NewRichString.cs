@@ -264,12 +264,22 @@ public class NewRichString
                         _payloads.Add(new ParagraphSegment());
                         continue;
                     case "[/color]" or "[/rawcolor]":
-                        _payloads.Add(ColorSegment.Off);
-                        valid[0]--;
+                        if (valid[0] is 0)
+                            _payloads.Add(new TextSegment(part));
+                        else
+                        {
+                            _payloads.Add(ColorSegment.Off);
+                            valid[0]--;
+                        }
                         continue;
                     case "[/stroke]" or "[/glow]":
-                        _payloads.Add(StrokeSegment.Off);
-                        valid[1]--;
+                        if (valid[1] is 0)
+                            _payloads.Add(new TextSegment(part));
+                        else
+                        {
+                            _payloads.Add(StrokeSegment.Off);
+                            valid[1]--;
+                        }
                         continue;
                 }
 
@@ -378,6 +388,11 @@ public class NewRichString
                 // Otherwise just normal text payload.
                 _payloads.Add(new TextSegment(part));
             }
+            // Close any unclosed tags so they never leak past this string.
+            for (; valid[0] > 0; valid[0]--)
+                _payloads.Add(ColorSegment.Off);
+            for (; valid[1] > 0; valid[1]--)
+                _payloads.Add(StrokeSegment.Off);
             // all were valid.
             _isValid = true;
         }
