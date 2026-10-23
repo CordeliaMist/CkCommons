@@ -252,7 +252,7 @@ public static partial class NewRichText
                 }
 
                 // Common stuff we should completely remove if true.
-                var isAllowed = t switch
+                var isAllowed = t.ToLowerInvariant() switch
                 {
                     "[line]" => (allowed & RichTextFilter.Line) != 0,
                     "[para]" => (allowed & RichTextFilter.Paragraph) != 0,
