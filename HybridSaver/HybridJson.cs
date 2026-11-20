@@ -12,6 +12,10 @@ public static class HybridJson
     /// <remarks> If nothing could be recovered, the corrupt file is kept as .corrupt{time} and the user is notified. </remarks>
     public static JObject? Load(string path)
     {
+        // If the file doesn't exist, treat it as if it were empty.
+        if (!File.Exists(path))
+            return null;
+        
         var fileName = Path.GetFileName(path);
         JObject? jObject = null;
         var reads = 0;
